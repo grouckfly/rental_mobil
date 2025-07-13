@@ -25,7 +25,7 @@
     <header class="main-header">
         <div class="container header-container">
             <div class="logo-container">
-                <a href="<?= BASE_URL ?>index.php"><span>RentalMobil</span></a>
+                <h2>Rental Mobil</h2>
             </div>
 
             <?php if (!isset($_SESSION['id_pengguna'])): ?>
