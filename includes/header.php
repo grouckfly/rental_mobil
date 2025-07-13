@@ -32,6 +32,8 @@
                 <nav class="main-nav">
                     <ul>
                         <li><a href="<?= BASE_URL ?>index.php">Home</a></li>
+                        <li><a href="<?= BASE_URL ?>about.php">Tentang Kami</a></li>
+                        <li><a href="<?= BASE_URL ?>services.php">Layanan</a></li>
                         <li><a href="<?= BASE_URL ?>mobil.php">Daftar Mobil</a></li>
                     </ul>
                 </nav>
