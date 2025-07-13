@@ -677,3 +677,87 @@ tbody tr:hover {
         font-size: 2.2rem;
     }
 }
+
+/* ======================================================== */
+/* Style Khusus untuk Mencetak (Print) - VERSI PERBAIKAN    */
+/* ======================================================== */
+@media print {
+    /* 1. Sembunyikan semua elemen yang tidak perlu dicetak */
+    .main-header,
+    .sidebar,
+    .main-footer,
+    .page-header,
+    .detail-actions,
+    .bukti-pembayaran,
+    .cancellation-info form { /* Sembunyikan form dan tombol aksi */
+        display: none !important;
+    }
+
+    /* 2. Reset layout utama agar fokus pada konten yang akan dicetak */
+    body {
+        background-color: #fff !important; /* Pastikan latar belakang putih */
+    }
+
+    .page-wrapper,
+    .main-content,
+    .container {
+        display: block !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* 3. Atur ulang container detail agar menjadi fokus utama halaman cetak */
+    .detail-container {
+        width: 100% !important;
+        display: grid !important;
+        /* Pertahankan layout 2 kolom dengan persentase agar pas di kertas */
+        grid-template-columns: 35% 1fr !important; 
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* 4. Tambahkan judul di atas halaman cetak */
+    .detail-container::before {
+        content: 'Bukti Detail Pemesanan'; /* Judul cetakan */
+        display: block;
+        grid-column: 1 / -1; /* Membuat judul melintasi kedua kolom */
+        text-align: center;
+        font-size: 18pt;
+        font-weight: bold;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 15px;
+    }
+    
+    /* 5. Atur ulang warna untuk efisiensi tinta dan kejelasan */
+    * {
+        color: #000 !important;
+        background: transparent !important;
+    }
+
+    .detail-info h2 {
+        font-size: 16pt;
+    }
+
+    .info-item .label {
+        font-size: 10pt;
+        color: #555 !important;
+    }
+
+    .info-item .value {
+        font-size: 12pt;
+    }
+
+    .value.description {
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+
+    /* 6. Mencegah URL dari link ikut tercetak */
+    a[href]::after {
+        content: "" !important;
+    }
+}

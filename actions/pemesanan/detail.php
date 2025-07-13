@@ -110,7 +110,7 @@ require_once '../../includes/header.php';
             <span class="value price"><?= format_rupiah($pemesanan['total_biaya']) ?></span>
         </div>
         <?php if ($pemesanan['bukti_pembayaran']): ?>
-            <div class="info-item">
+            <div class="info-item bukti-pembayaran">
                 <span class="label">Bukti Pembayaran</span>
                 <span class="value"><a href="<?= BASE_URL ?>assets/img/bukti_pembayaran/<?= htmlspecialchars($pemesanan['bukti_pembayaran']) ?>" target="_blank">Lihat Bukti</a></span>
             </div>
@@ -131,27 +131,41 @@ require_once '../../includes/header.php';
         <?php endif; ?>
 
         <div class="detail-actions">
+            <button onclick="window.print();" class="btn btn-info">Cetak Detail</button>
+            <?php // BAGIAN UNTUK ADMIN DAN KARYAWAN 
+            ?>
             <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
 
-                <?php // Tombol untuk Admin/Karyawan
-                if ($pemesanan['status_pemesanan'] === 'Pengajuan Pembatalan'): ?>
-                    <form action="<?= BASE_URL ?>actions/pemesanan/proses_pembatalan.php" method="POST" onsubmit="return confirm('Anda akan membatalkan pesanan ini dan mengembalikan status mobil menjadi tersedia. Lanjutkan?');">
+                <?php
+                if ($pemesanan['bukti_pembayaran'] && $pemesanan['status_pembayaran'] === 'Menunggu Verifikasi'):
+                ?>
+                    <form action="<?= BASE_URL ?>actions/pembayaran/verifikasi.php" method="POST" onsubmit="return confirm('Anda yakin ingin memverifikasi pembayaran ini? Status mobil akan diubah menjadi Disewa.');">
                         <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
                         <input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>">
-                        <button type="submit" class="btn btn-danger">Proses & Batalkan Pesanan</button>
+                        <button type="submit" class="btn btn-primary">Verifikasi Pembayaran</button>
                     </form>
+
+                <?php // Tombol lain untuk Admin/Karyawan
+                elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
+                    <a href="#" class="btn btn-success">Mulai Penyewaan</a>
+                <?php elseif ($pemesanan['status_pemesanan'] === 'Berjalan'): ?>
+                    <a href="#" class="btn btn-info">Selesaikan Penyewaan</a>
                 <?php endif; ?>
 
+                <?php // BAGIAN UNTUK PELANGGAN 
+                ?>
             <?php elseif ($role_session === 'Pelanggan'): ?>
 
                 <?php // Tombol untuk Pelanggan
-                if ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
+                if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && !$pemesanan['bukti_pembayaran']): ?>
+                    <a href="<?= BASE_URL ?>pelanggan/pembayaran.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Lakukan Pembayaran</a>
+                <?php elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
                     <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
                 <?php endif; ?>
 
             <?php endif; ?>
 
-            <a href="<?= BASE_URL . strtolower($role_session) ?>/dashboard.php" class="btn btn-secondary">Kembali</a>
+            <a href="<?= BASE_URL . strtolower($role_session) ?>/dashboard.php" class="btn btn-secondary">Kembali ke Dashboard</a>
         </div>
     </div>
 </div>
