@@ -500,6 +500,87 @@ tbody tr:hover {
     background-color: #138496;
 }
 
+/* ===================================== */
+/* Style untuk Halaman Detail Mobil      */
+/* ===================================== */
+
+.detail-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr; /* Layout 2 kolom */
+    gap: 30px;
+    background-color: var(--surface-color);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.detail-image img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.detail-info h2 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.detail-info .status-badge {
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 25px;
+    margin-bottom: 20px;
+}
+
+.info-item .label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--muted-text-color);
+    margin-bottom: 2px;
+}
+
+.info-item .value {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.info-item .value.price {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-item .description {
+    background-color: var(--bg-color);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    line-height: 1.7;
+    white-space: pre-wrap; /* Menjaga format teks dari textarea */
+}
+
+.detail-actions {
+    margin-top: 30px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+/* Responsiveness untuk halaman detail */
+@media (max-width: 992px) {
+    .detail-container {
+        grid-template-columns: 1fr; /* Jadi 1 kolom di layar kecil */
+    }
+}
+
 /* 6. Responsive (Media Queries) */
 @media (max-width: 992px) {
     .sidebar {
