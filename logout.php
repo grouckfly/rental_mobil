@@ -1,13 +1,17 @@
 <?php
-// File: logout.php
+// File: logout.php (Versi Final)
 
+// Panggil file konfigurasi untuk memulai session yang ada
 require_once 'includes/config.php';
-require_once 'includes/functions.php';
 
-// Hapus semua data session
+// Hapus semua variabel session yang ada
 session_unset();
+
+// Hancurkan session secara total
 session_destroy();
 
-// Redirect ke halaman login dengan pesan sukses
-redirect_with_message('login.php', 'Anda telah berhasil logout.');
+// Alihkan ke halaman login dengan parameter status di URL untuk memicu notifikasi
+header('Location: login.php?status=logout_success');
+exit;
+
 ?>

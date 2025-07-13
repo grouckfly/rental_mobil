@@ -1,65 +1,56 @@
 <?php
-// File: login.php
+// File: login.php (Versi Final)
 
-// Memanggil file-file penting
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
 
-// 1. Jika pengguna sudah login, langsung alihkan ke dashboard yang sesuai
+// Cek jika pengguna sudah login, alihkan ke dashboard
 if (isset($_SESSION['id_pengguna'])) {
-    $role_dashboard = strtolower($_SESSION['role']); // contoh: 'admin', 'karyawan'
+    $role_dashboard = strtolower($_SESSION['role']);
     header("Location: {$role_dashboard}/dashboard.php");
     exit();
 }
 
-// Inisialisasi variabel untuk menampung pesan error
+// Inisialisasi variabel untuk pesan error dan notifikasi
 $error_message = '';
+$notification_script = '';
 
-// 2. Proses form hanya jika metode request adalah POST
+// Cek status dari URL (misalnya setelah logout)
+if (isset($_GET['status']) && $_GET['status'] === 'logout_success') {
+    // Siapkan script untuk memanggil notifikasi toast
+    $notification_script = "<script>document.addEventListener('DOMContentLoaded', () => { showToast('Anda telah berhasil logout.', 'success'); });</script>";
+}
+
+// Proses form login jika metode request adalah POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-    // Ambil input dari form dan bersihkan spasi yang tidak perlu
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
-    // Validasi dasar: pastikan input tidak kosong
     if (empty($username) || empty($password)) {
         $error_message = 'Username dan password tidak boleh kosong.';
     } else {
         try {
-            // 3. Siapkan query untuk mengambil data pengguna berdasarkan username
             $stmt = $pdo->prepare("SELECT id_pengguna, username, password, role FROM pengguna WHERE username = ?");
             $stmt->execute([$username]);
             $user = $stmt->fetch();
 
-            // 4. Periksa apakah pengguna ditemukan DAN password cocok
             if ($user && password_verify($password, $user['password'])) {
-                
-                // --- LOGIN BERHASIL ---
-                
-                // Set semua data session yang dibutuhkan
+                // Login Berhasil
                 $_SESSION['id_pengguna'] = $user['id_pengguna'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
-
-                // Alihkan ke dashboard yang sesuai dengan peran (role) pengguna
+                
                 $role_dashboard = strtolower($user['role']);
                 redirect_with_message("{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($user['username']) . "!");
-
             } else {
-                // Jika pengguna tidak ditemukan atau password salah, beri pesan error yang sama
                 $error_message = 'Kombinasi username dan password salah.';
             }
-
         } catch (PDOException $e) {
-            // Tangani error database
             $error_message = "Terjadi kesalahan pada sistem. Silakan coba lagi nanti.";
-            // Untuk debugging, Anda bisa mencatat error: error_log($e->getMessage());
         }
     }
 }
 
-// Set judul halaman dan panggil header
 $page_title = 'Login';
 require_once 'includes/header.php';
 ?>
@@ -70,12 +61,12 @@ require_once 'includes/header.php';
         <p>Silakan masuk untuk melanjutkan.</p>
         
         <?php 
-        // Tampilkan pesan error jika ada
+        // Menampilkan pesan error dari proses login
         if(!empty($error_message)) {
             echo "<div class='flash-message flash-error'>{$error_message}</div>";
         }
         
-        // Tampilkan pesan flash dari halaman lain (misalnya setelah logout)
+        // Menampilkan pesan flash dari aksi lain (misal: setelah registrasi)
         display_flash_message(); 
         ?>
 
@@ -97,6 +88,8 @@ require_once 'includes/header.php';
 </div>
 
 <?php
-// Panggil footer
 require_once 'includes/footer.php';
+
+// Mencetak script notifikasi di akhir halaman jika ada
+echo $notification_script;
 ?>
