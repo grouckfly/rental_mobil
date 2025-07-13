@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Proses upload gambar
     $nama_file_gambar = '';
     if (isset($_FILES['gambar_mobil']) && $_FILES['gambar_mobil']['error'] === UPLOAD_ERR_OK) {
-        $upload_result = upload_file($_FILES['gambar_mobil'], '../../img/mobil/');
+        $upload_result = upload_file($_FILES['gambar_mobil'], '../../assets/img/mobil/');
         if (is_array($upload_result)) {
             $errors[] = $upload_result['error'];
         } else {
