@@ -24,17 +24,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Hitung total biaya
     $durasi = hitung_durasi_sewa($tanggal_mulai, $tanggal_selesai);
     $total_biaya = $durasi * $harga_sewa_harian;
+
+    // PANGGIL FUNGSI GENERATOR KODE DI SINI
+    $kode_pemesanan = generate_booking_code($pdo);
     
     // Simpan ke database pemesanan
     try {
-        $sql = "INSERT INTO pemesanan (id_pengguna, id_mobil, tanggal_mulai, tanggal_selesai, total_biaya, status_pemesanan) 
-                VALUES (?, ?, ?, ?, ?, 'Menunggu Pembayaran')";
+        // TAMBAHKAN kolom 'kode_pemesanan' ke dalam query INSERT
+        $sql = "INSERT INTO pemesanan (kode_pemesanan, id_pengguna, id_mobil, tanggal_mulai, tanggal_selesai, total_biaya, status_pemesanan) 
+                VALUES (?, ?, ?, ?, ?, ?, 'Menunggu Pembayaran')";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$id_pengguna, $id_mobil, $tanggal_mulai, $tanggal_selesai, $total_biaya]);
+        // Tambahkan variabel $kode_pemesanan ke dalam execute
+        $stmt->execute([$kode_pemesanan, $id_pengguna, $id_mobil, $tanggal_mulai, $tanggal_selesai, $total_biaya]);
         
         $id_pemesanan_baru = $pdo->lastInsertId();
 
-        redirect_with_message(BASE_URL . "pelanggan/pembayaran.php?id=$id_pemesanan_baru", 'Pemesanan berhasil dibuat! Silakan lakukan pembayaran.');
+        redirect_with_message(BASE_URL . "pelanggan/pemesanan.php", 'Pemesanan berhasil dibuat! Kode Pemesanan Anda: ' . $kode_pemesanan);
     } catch (PDOException $e) {
         redirect_with_message(BASE_URL . "actions/mobil/detail.php?id=$id_mobil", 'Gagal membuat pemesanan: ' . $e->getMessage(), 'error');
     }

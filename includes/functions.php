@@ -13,6 +13,34 @@ function format_rupiah($angka) {
 }
 
 /**
+ * Menghasilkan kode pemesanan yang unik dan mudah dibaca.
+ * Terus mencoba hingga menemukan kode yang belum ada di database.
+ * @param PDO $pdo Objek koneksi database.
+ * @return string Kode pemesanan unik (contoh: BOOK-A4D9F1).
+ */
+function generate_booking_code(PDO $pdo) {
+    do {
+        // Hasilkan 6 karakter acak (kombinasi huruf besar dan angka)
+        $karakter = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $panjang_karakter = strlen($karakter);
+        $random_string = '';
+        for ($i = 0; $i < 6; $i++) {
+            $random_string .= $karakter[rand(0, $panjang_karakter - 1)];
+        }
+        
+        $booking_code = 'BOOK-' . $random_string;
+
+        // Cek apakah kode sudah ada di database untuk memastikan keunikan
+        $stmt = $pdo->prepare("SELECT id_pemesanan FROM pemesanan WHERE kode_pemesanan = ?");
+        $stmt->execute([$booking_code]);
+        $exists = $stmt->fetch();
+
+    } while ($exists); // Ulangi proses jika kode yang dihasilkan sudah ada
+
+    return $booking_code;
+}
+
+/**
  * Menghitung selisih hari antara dua tanggal.
  * Berguna untuk menghitung total biaya sewa.
  *

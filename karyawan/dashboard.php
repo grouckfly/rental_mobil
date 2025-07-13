@@ -58,6 +58,14 @@ try {
     </div>
 </div>
 
+<div class="search-container">
+    <h3>Konfirmasi Pemesanan Langsung</h3>
+    <form action="konfirmasi.php" method="GET" class="search-form">
+        <input type="text" name="kode" class="form-control" placeholder="Masukkan Kode Pemesanan..." required>
+        <button type="submit" class="btn btn-primary">Cari</button>
+    </form>
+</div>
+
 <div class="table-container">
     <h2>Tugas Terbaru</h2>
     <table>

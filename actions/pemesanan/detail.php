@@ -50,8 +50,11 @@ $page_title = 'Detail Pemesanan #' . htmlspecialchars($pemesanan['id_pemesanan']
 require_once '../../includes/header.php';
 ?>
 
-<div class="page-header">
-    <h1>Detail Pemesanan #<?= htmlspecialchars($pemesanan['id_pemesanan']) ?></h1>
+<div class="detail-info">
+    <div class="info-item booking-code-item">
+        <span class="label">Kode Pemesanan</span>
+        <span class="value code"><?= htmlspecialchars($pemesanan['kode_pemesanan']) ?></span>
+    </div>
 </div>
 
 <div class="detail-container">
