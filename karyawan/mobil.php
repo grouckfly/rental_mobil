@@ -43,14 +43,15 @@ try {
                     <tr>
                         <td><?= htmlspecialchars($car['id_mobil']) ?></td>
                         <td>
-                            <img src="../uploads/mobil/<?= htmlspecialchars($car['gambar_mobil'] ?: 'default-car.png') ?>" alt="Gambar Mobil" width="80">
+                            <img src="../assets/img/mobil/<?= htmlspecialchars($car['gambar_mobil'] ?: 'default-car.png') ?>" alt="Gambar Mobil" width="80">
                         </td>
                         <td><?= htmlspecialchars($car['plat_nomor']) ?></td>
                         <td><?= htmlspecialchars($car['merk'] . ' ' . $car['model']) ?></td>
                         <td><?= format_rupiah($car['harga_sewa_harian']) ?></td>
                         <td><span class="status-badge status-<?= strtolower($car['status']) ?>"><?= htmlspecialchars($car['status']) ?></span></td>
                         <td>
-                            <a href="edit_mobil.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary btn-sm">Kelola Status</a>
+                            <a href="../actions/mobil/detail.php?id=<?= $car['id_mobil'] ?>" class="btn btn-info btn-sm">Detail</a>
+                            <a href="../actions/mobil/edit.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary btn-sm">Edit</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

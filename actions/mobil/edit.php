@@ -14,7 +14,8 @@ $errors = [];
 $id_mobil = isset($_REQUEST['id']) ? (int)$_REQUEST['id'] : 0;
 
 if ($id_mobil === 0) {
-    redirect_with_message('../../admin/mobil.php', 'ID Mobil tidak valid.', 'error');
+    $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
+    redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Mobil tidak ditemukan.', 'error');
 }
 
 
@@ -70,7 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id_mobil
             ]);
 
-            redirect_with_message('../../admin/mobil.php', 'Data mobil berhasil diperbarui!');
+            $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
+            redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Mobil berhasil diperbarui!');
         } catch (PDOException $e) {
             $errors[] = 'Gagal memperbarui data: ' . $e->getMessage();
         }
@@ -86,10 +88,12 @@ try {
     $stmt->execute([$id_mobil]);
     $mobil = $stmt->fetch();
     if (!$mobil) {
-        redirect_with_message('../../admin/mobil.php', 'Mobil tidak ditemukan.', 'error');
+        $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
+        redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Mobil tidak ditemukan.', 'error');
     }
 } catch (PDOException $e) {
-    redirect_with_message('../../admin/mobil.php', 'Error database saat mengambil data.', 'error');
+    $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
+    redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Terjadi kesalahan pada database: ' . $e->getMessage(), 'error');
 }
 
 $page_title = 'Edit Mobil';
@@ -166,7 +170,7 @@ require_once '../../includes/header.php';
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                <a href="../../admin/mobil.php" class="btn btn-secondary">Batal</a>
+                <a href="<?= BASE_URL . strtolower($_SESSION['role']) ?>/mobil.php" class="btn btn-secondary">Batal</a>
             </div>
         </form>
     </div>

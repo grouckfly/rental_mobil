@@ -39,7 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "INSERT INTO mobil (merk, model, jenis_mobil, plat_nomor, tahun, harga_sewa_harian, denda_per_hari, spesifikasi, gambar_mobil) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$_POST['merk'], $_POST['model'], $_POST['jenis_mobil'], $_POST['plat_nomor'], $_POST['tahun'], $_POST['harga_sewa_harian'], $_POST['denda_per_hari'], $_POST['spesifikasi'], $nama_file_gambar]);
-            redirect_with_message('../../admin/mobil.php', 'Mobil baru berhasil ditambahkan!');
+            $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
+            redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Mobil baru berhasil ditambahkan!');
         } catch (PDOException $e) {
             $errors[] = 'Gagal menyimpan data: ' . $e->getMessage();
         }
@@ -81,7 +82,7 @@ require_once '../../includes/header.php';
                 <div class="form-group full-width"><label for="gambar_mobil">Gambar Mobil</label><input type="file" id="gambar_mobil" name="gambar_mobil" required accept="image/*"></div>
             </div>
             <button type="submit" class="btn btn-primary">Simpan Mobil</button>
-            <a href="../../admin/mobil.php" class="btn btn-secondary">Batal</a>
+            <a href="<?= BASE_URL . strtolower($_SESSION['role']) ?>/mobil.php" class="btn btn-secondary">Batal</a>
         </form>
     </div>
 </div>

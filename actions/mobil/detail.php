@@ -74,7 +74,7 @@ require_once '../../includes/header.php';
         </div>
 
         <div class="detail-actions">
-            <a href="../../admin/mobil.php" class="btn btn-secondary">Kembali ke Daftar</a>
+            <a href="<?= BASE_URL . strtolower($_SESSION['role']) ?>/mobil.php" class="btn btn-secondary">Kembali ke Daftar</a>
         </div>
     </div>
 </div>

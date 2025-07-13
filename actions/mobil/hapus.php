@@ -47,15 +47,18 @@ try {
     }
 
     // 6. Alihkan kembali ke halaman daftar mobil dengan pesan sukses
-    redirect_with_message('../../admin/mobil.php', 'Mobil berhasil dihapus.');
+    $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
+    redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Mobil berhasil dihapus.');
 
 } catch (PDOException $e) {
     // Tangani error jika mobil tidak bisa dihapus (misalnya: karena terkait dengan data pemesanan)
     // Kode error '23000' menandakan adanya pelanggaran foreign key constraint
     if ($e->getCode() == '23000') {
-         redirect_with_message('../../admin/mobil.php', 'Gagal menghapus! Mobil ini masih terikat dengan riwayat pemesanan.', 'error');
+        $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
+        redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Gagal menghapus! Mobil ini masih terikat dengan riwayat pemesanan.', 'error');
     } else {
-         redirect_with_message('../../admin/mobil.php', 'Terjadi kesalahan pada database: ' . $e->getMessage(), 'error');
+        $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
+        redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Terjadi kesalahan pada database: ' . $e->getMessage(), 'error');
     }
 }
 ?>
