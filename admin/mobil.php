@@ -24,8 +24,6 @@ try {
     <a href="tambah_mobil.php" class="btn btn-primary">Tambah Mobil Baru</a>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="table-container">
     <table>
         <thead>
