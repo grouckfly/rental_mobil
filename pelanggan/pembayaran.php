@@ -65,8 +65,6 @@ require_once '../includes/header.php';
     <h1>Pembayaran Pesanan #<?= htmlspecialchars($id_pemesanan) ?></h1>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="payment-container">
     <div class="payment-details">
         <h3>Detail Tagihan</h3>

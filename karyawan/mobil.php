@@ -24,8 +24,6 @@ try {
     <p>Lihat dan kelola status ketersediaan armada mobil.</p>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="table-container">
     <table>
         <thead>
