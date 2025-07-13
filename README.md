@@ -1,3 +1,6 @@
 # rental_mobil
 
-Latihan buat web rental mobil make PHP, CSS, JavaScript dan Database MySQL
+Web rental mobil menggunakan PHP, CSS, JavaScript dan Database MySQL
+
+# Status
+ON GOING
