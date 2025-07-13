@@ -42,8 +42,8 @@ try {
     $stmt_delete->execute([$id_mobil]);
 
     // 5. Hapus file gambar terkait dari folder 'uploads/mobil/'
-    if ($nama_file_gambar && file_exists('../../img/mobil/' . $nama_file_gambar)) {
-        unlink('../../img/mobil/' . $nama_file_gambar);
+    if ($nama_file_gambar && file_exists('../../assets/img/mobil/' . $nama_file_gambar)) {
+        unlink('../../assets/img/mobil/' . $nama_file_gambar);
     }
 
     // 6. Alihkan kembali ke halaman daftar mobil dengan pesan sukses
