@@ -21,7 +21,7 @@ try {
 
 <div class="page-header with-action">
     <h1>Kelola Data Mobil</h1>
-    <a href="tambah_mobil.php" class="btn btn-primary">Tambah Mobil Baru</a>
+    <a href="../actions/mobil/tambah.php" class="btn btn-primary">Tambah Mobil Baru</a>
 </div>
 
 <div class="table-container">
@@ -50,8 +50,8 @@ try {
                         <td><?= format_rupiah($car['harga_sewa_harian']) ?></td>
                         <td><span class="status-badge status-<?= strtolower($car['status']) ?>"><?= htmlspecialchars($car['status']) ?></span></td>
                         <td>
-                            <a href="edit_mobil.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary btn-sm">Edit</a>
-                            <form action="hapus_mobil.php" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mobil ini?');">
+                            <a href="../actions/mobil/edit.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary btn-sm">Edit</a>
+                            <form action="../actions/mobil/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mobil ini?');">
                                 <input type="hidden" name="id_mobil" value="<?= $car['id_mobil'] ?>">
                                 <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                             </form>
