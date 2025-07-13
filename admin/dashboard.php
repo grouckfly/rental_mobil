@@ -9,17 +9,43 @@ require_once '../includes/functions.php';
 check_auth('Admin');
 
 $page_title = 'Dashboard Admin';
+// PENTING: Untuk grafik, kita perlu memanggil header di sini
 require_once '../includes/header.php';
 
-// Mengambil data statistik dari database
+// --- DATA UNTUK WIDGET ---
 try {
     $total_pengguna = $pdo->query("SELECT COUNT(*) FROM pengguna")->fetchColumn();
     $total_mobil = $pdo->query("SELECT COUNT(*) FROM mobil")->fetchColumn();
     $pemesanan_aktif = $pdo->query("SELECT COUNT(*) FROM pemesanan WHERE status_pemesanan = 'Berjalan'")->fetchColumn();
     $menunggu_konfirmasi = $pdo->query("SELECT COUNT(*) FROM pemesanan WHERE status_pemesanan = 'Menunggu Pembayaran'")->fetchColumn();
+} catch (PDOException $e) {
+    $total_pengguna = $total_mobil = $pemesanan_aktif = $menunggu_konfirmasi = 'N/A';
+}
 
-    // Mengambil 5 pemesanan terbaru
-    $stmt = $pdo->query("
+// --- DATA UNTUK GRAFIK (6 BULAN TERAKHIR) ---
+$chart_labels = [];
+$chart_values = [];
+try {
+    $stmt_chart = $pdo->query("
+        SELECT DATE_FORMAT(tanggal_pemesanan, '%Y-%m') AS bulan, COUNT(*) AS jumlah
+        FROM pemesanan
+        WHERE tanggal_pemesanan >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+        GROUP BY bulan
+        ORDER BY bulan ASC
+    ");
+    $chart_data = $stmt_chart->fetchAll();
+
+    foreach ($chart_data as $data) {
+        $chart_labels[] = date("F Y", strtotime($data['bulan'] . "-01")); // Format nama bulan (e.g., Juli 2025)
+        $chart_values[] = $data['jumlah'];
+    }
+} catch (PDOException $e) {
+    // Biarkan array kosong jika error
+}
+
+// --- DATA UNTUK TABEL AKTIVITAS TERBARU ---
+try {
+    $stmt_recent = $pdo->query("
         SELECT p.id_pemesanan, pg.nama_lengkap, m.merk, m.model, p.status_pemesanan
         FROM pemesanan p
         JOIN pengguna pg ON p.id_pengguna = pg.id_pengguna
@@ -27,14 +53,13 @@ try {
         ORDER BY p.tanggal_pemesanan DESC
         LIMIT 5
     ");
-    $recent_bookings = $stmt->fetchAll();
-
+    $recent_bookings = $stmt_recent->fetchAll();
 } catch (PDOException $e) {
-    // Tangani error jika query gagal
-    $total_pengguna = $total_mobil = $pemesanan_aktif = $menunggu_konfirmasi = 'N/A';
     $recent_bookings = [];
 }
 ?>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="page-header">
     <h1>Dashboard Administrator</h1>
@@ -61,6 +86,16 @@ try {
         <h3>Menunggu Konfirmasi</h3>
         <p class="widget-data"><?= $menunggu_konfirmasi ?></p>
         <a href="pembayaran.php">Konfirmasi Sekarang &rarr;</a>
+    </div>
+</div>
+
+<div class="chart-container">
+    <h2>Grafik Pemesanan (6 Bulan Terakhir)</h2>
+    <div class="chart-wrapper">
+        <canvas id="dashboardChart" 
+                data-labels='<?= json_encode($chart_labels) ?>' 
+                data-values='<?= json_encode($chart_values) ?>'>
+        </canvas>
     </div>
 </div>
 

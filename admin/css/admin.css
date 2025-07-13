@@ -1,0 +1,88 @@
+/*
+ * File: admin/css/admin.css
+ * Deskripsi: Style khusus untuk halaman panel admin.
+*/
+
+/* 1. Layout Header Halaman */
+.page-header.with-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.page-header.with-action h1 {
+    margin-bottom: 0;
+}
+
+/* 2. Styling Widget Dashboard */
+.dashboard-widgets .widget {
+    border-left: 4px solid var(--primary-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.dashboard-widgets .widget:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+.widget a {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
+/* 3. Style untuk Grafik */
+.chart-container {
+    background-color: var(--surface-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin: 40px 0;
+}
+.chart-container h2 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+.chart-wrapper {
+    height: 350px;
+    position: relative;
+}
+
+/* 4. Style untuk Pencarian Tabel */
+.search-container {
+    margin-bottom: 20px;
+}
+.search-container #table-search {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+}
+
+/* 5. Penyesuaian Tabel Data */
+.table-container th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--muted-text-color);
+}
+.table-container td .btn {
+    margin-right: 5px;
+}
+body:not(.dark-mode) .table-container tbody tr:hover {
+    background-color: #eef5ff;
+}
+
+/* Penyesuaian dark mode */
+body.dark-mode .chart-container {
+    background-color: var(--surface-color);
+}
+body.dark-mode .table-container tbody tr:hover {
+    background-color: #2a2a2a;
+}
+body.dark-mode .search-container #table-search {
+    background-color: #2c2c2c;
+    border-color: #444;
+    color: var(--text-color);
+}
