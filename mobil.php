@@ -46,7 +46,7 @@ $cars = $stmt->fetchAll();
                         <div class="car-card-content">
                             <h3><?= htmlspecialchars($car['merk'] . ' ' . $car['model']) ?></h3>
                             <p class="car-price"><strong><?= format_rupiah($car['harga_sewa_harian']) ?></strong> / hari</p>
-                            <a href="detail_mobil.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary">Lihat Detail</a>
+                            <a href="<?= BASE_URL ?>actions/mobil/detail.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary">Lihat Detail</a>
                         </div>
                     </div>
                 <?php endforeach; ?>

@@ -55,9 +55,9 @@ try {
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $booking['status_pemesanan'])) ?>"><?= htmlspecialchars($booking['status_pemesanan']) ?></span></td>
                         <td>
                             <?php if ($booking['status_pemesanan'] == 'Menunggu Pembayaran'): ?>
-                                <a href="pembayaran.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-primary btn-sm">Bayar Sekarang</a>
+                                <a href="../actions/pemesanan/detail.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
                             <?php else: ?>
-                                <a href="detail_pemesanan.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-secondary btn-sm">Lihat Detail</a>
+                                <a href="../actions/pemesanan/detail.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
                             <?php endif; ?>
                         </td>
                     </tr>

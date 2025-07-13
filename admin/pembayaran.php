@@ -55,8 +55,8 @@ try {
                         <td><?= date('d M Y, H:i', strtotime($booking['tanggal_mulai'])) ?></td>
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $booking['status_pemesanan'])) ?>"><?= htmlspecialchars($booking['status_pemesanan']) ?></span></td>
                         <td>
-                            <a href="detail_pemesanan.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-secondary btn-sm">Detail</a>
-                            </td>
+                            <a href="../actions/pemesanan/detail.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
