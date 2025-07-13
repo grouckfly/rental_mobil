@@ -24,8 +24,6 @@ try {
     <a href="tambah_user.php" class="btn btn-primary">Tambah Pengguna Baru</a>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="table-container">
     <table>
         <thead>

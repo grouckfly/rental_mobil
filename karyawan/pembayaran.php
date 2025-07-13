@@ -32,8 +32,6 @@ try {
     <p>Kelola pemesanan yang menunggu pembayaran atau sedang berjalan.</p>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="table-container">
     <table>
         <thead>

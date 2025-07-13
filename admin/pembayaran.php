@@ -31,8 +31,6 @@ try {
     <p>Halaman ini berisi daftar pemesanan yang menunggu pembayaran, konfirmasi, atau sedang berjalan.</p>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="table-container">
     <table>
         <thead>
