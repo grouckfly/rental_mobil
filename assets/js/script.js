@@ -53,5 +53,5 @@ function showToast(message, type = 'success') {
         setTimeout(() => {
             toast.remove();
         }, 500); // Waktu ini harus cocok dengan durasi transisi di CSS
-    }, 5000); // 5000 milidetik = 5 detik
+    }, 2500);
 }

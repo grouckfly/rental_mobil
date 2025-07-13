@@ -1,5 +1,5 @@
 <?php
-// File: login.php (Versi Final)
+// File: login.php (Versi Final dengan Notifikasi Pendaftaran)
 
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
@@ -15,14 +15,28 @@ if (isset($_SESSION['id_pengguna'])) {
 $error_message = '';
 $notification_script = '';
 
-// Cek status dari URL (misalnya setelah logout)
-if (isset($_GET['status']) && $_GET['status'] === 'logout_success') {
-    // Siapkan script untuk memanggil notifikasi toast
-    $notification_script = "<script>document.addEventListener('DOMContentLoaded', () => { showToast('Anda telah berhasil logout.', 'success'); });</script>";
+// PERBAIKAN: Cek berbagai status dari URL
+if (isset($_GET['status'])) {
+    $message = '';
+    $type = 'success'; // Tipe default
+
+    if ($_GET['status'] === 'logout_success') {
+        $message = 'Anda telah berhasil logout.';
+    } elseif ($_GET['status'] === 'register_success') {
+        $message = 'Pendaftaran berhasil! Silakan login.';
+    }
+
+    // Jika ada pesan yang perlu ditampilkan, siapkan script-nya
+    if (!empty($message)) {
+        // addslashes untuk memastikan pesan aman disisipkan di dalam string JavaScript
+        $safe_message = addslashes($message);
+        $notification_script = "<script>document.addEventListener('DOMContentLoaded', () => { showToast('{$safe_message}', '{$type}'); });</script>";
+    }
 }
 
 // Proses form login jika metode request adalah POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // ... (Semua logika login Anda tetap di sini) ...
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
@@ -35,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
-                // Login Berhasil
                 $_SESSION['id_pengguna'] = $user['id_pengguna'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
@@ -46,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $error_message = 'Kombinasi username dan password salah.';
             }
         } catch (PDOException $e) {
-            $error_message = "Terjadi kesalahan pada sistem. Silakan coba lagi nanti.";
+            $error_message = "Terjadi kesalahan pada sistem.";
         }
     }
 }
@@ -61,13 +74,9 @@ require_once 'includes/header.php';
         <p>Silakan masuk untuk melanjutkan.</p>
         
         <?php 
-        // Menampilkan pesan error dari proses login
         if(!empty($error_message)) {
             echo "<div class='flash-message flash-error'>{$error_message}</div>";
         }
-        
-        // Menampilkan pesan flash dari aksi lain (misal: setelah registrasi)
-        display_flash_message(); 
         ?>
 
         <form action="login.php" method="POST">

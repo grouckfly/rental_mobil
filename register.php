@@ -36,9 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if(empty($errors)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         try {
-            $stmt = $pdo->prepare("INSERT INTO pengguna (username, password, nama_lengkap, email, no_telp, role) VALUES (?, ?, ?, ?, ?, 'Pelanggan')");
-            $stmt->execute([$username, $hashed_password, $nama_lengkap, $email, $no_telp]);
-            redirect_with_message('login.php', 'Pendaftaran berhasil! Silakan login.');
+            $stmt = $pdo->prepare("INSERT INTO pengguna (username, password, nama_lengkap, email, alamat, no_telp, role) VALUES (?, ?, ?, ?, ?, ?, 'Pelanggan')");
+            $stmt->execute([$username, $hashed_password, $nama_lengkap, $email, $alamat, $no_telp]);
+            // Mengarahkan ke login.php dengan status sukses di URL
+            header('Location: login.php?status=register_success');
+            exit;
         } catch (PDOException $e) {
             $errors[] = "Terjadi kesalahan pada database. Silakan coba lagi.";
         }
@@ -63,10 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <form action="register.php" method="POST">
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
-            </div>
-            <div class="form-group">
                 <label for="nama_lengkap">Nama Lengkap</label>
                 <input type="text" id="nama_lengkap" name="nama_lengkap" required value="<?= htmlspecialchars($_POST['nama_lengkap'] ?? '') ?>">
             </div>
@@ -77,6 +75,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-group">
                 <label for="no_telp">No. Telepon</label>
                 <input type="tel" id="no_telp" name="no_telp" required value="<?= htmlspecialchars($_POST['no_telp'] ?? '') ?>">
+            </div>
+            <div class="form-group">
+                <label for="alamat">Alamat</label>
+                <input type="text" id="alamat" name="alamat" required value="<?= htmlspecialchars($_POST['alamat'] ?? '') ?>">
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
