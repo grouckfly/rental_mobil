@@ -5,14 +5,14 @@ require_once '../includes/config.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
+// HAK AKSES: HANYA ADMIN
 check_auth('Admin');
 
 $page_title = 'Kelola Pengguna';
 require_once '../includes/header.php';
 
-// Mengambil semua data pengguna
 try {
-    $stmt = $pdo->query("SELECT id_pengguna, username, nama_lengkap, email, role, created_at FROM pengguna ORDER BY role, nama_lengkap");
+    $stmt = $pdo->query("SELECT id_pengguna, username, nama_lengkap, email, role FROM pengguna ORDER BY role, nama_lengkap");
     $users = $stmt->fetchAll();
 } catch (PDOException $e) {
     $users = [];
@@ -21,8 +21,10 @@ try {
 
 <div class="page-header with-action">
     <h1>Kelola Data Pengguna</h1>
-    <a href="tambah_user.php" class="btn btn-primary">Tambah Pengguna Baru</a>
+    <a href="../actions/pengguna/tambah.php" class="btn btn-primary">Tambah Pengguna Baru</a>
 </div>
+
+<?php display_flash_message(); ?>
 
 <div class="table-container">
     <table>
@@ -33,7 +35,6 @@ try {
                 <th>Nama Lengkap</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Tanggal Daftar</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -46,11 +47,12 @@ try {
                         <td><?= htmlspecialchars($user['nama_lengkap']) ?></td>
                         <td><?= htmlspecialchars($user['email']) ?></td>
                         <td><?= htmlspecialchars($user['role']) ?></td>
-                        <td><?= date('d M Y', strtotime($user['created_at'])) ?></td>
                         <td>
-                            <a href="edit_user.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-secondary btn-sm">Edit</a>
-                            <?php if ($user['id_pengguna'] !== $_SESSION['id_pengguna']): // Admin tidak bisa hapus diri sendiri ?>
-                                <form action="hapus_user.php" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus pengguna ini?');">
+                            <a href="../actions/pengguna/detail.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-info btn-sm">Detail</a>
+                            <a href="../actions/pengguna/edit.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-secondary btn-sm">Edit</a>
+                            
+                            <?php if ($user['id_pengguna'] !== $_SESSION['id_pengguna']): ?>
+                                <form action="../actions/pengguna/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Peringatan: Yakin ingin menghapus pengguna ini?');">
                                     <input type="hidden" name="id_pengguna" value="<?= $user['id_pengguna'] ?>">
                                     <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                 </form>
@@ -59,9 +61,7 @@ try {
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
-                <tr>
-                    <td colspan="7">Belum ada data pengguna.</td>
-                </tr>
+                <tr><td colspan="6">Tidak ada data pengguna.</td></tr>
             <?php endif; ?>
         </tbody>
     </table>
