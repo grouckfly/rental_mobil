@@ -107,17 +107,16 @@ function redirect_with_message($url, $message, $type = 'success') {
  * @return void
  */
 function display_flash_message() {
-    // Hanya jalankan jika session sudah ada
     if (isset($_SESSION['flash_message'])) {
-        
         $flash = $_SESSION['flash_message'];
-        $message = htmlspecialchars($flash['message']);
-        $type = $flash['type'] === 'success' ? 'flash-success' : 'flash-error';
+        // Membersihkan pesan agar aman disisipkan di dalam string JavaScript
+        $message = addslashes($flash['message']); 
+        $type = $flash['type'];
 
-        // Tampilkan pesan
-        echo "<div class='flash-message {$type}'>{$message}</div>";
-        
-        // Hapus pesan dari session
+        // Cetak script untuk memanggil fungsi JavaScript
+        echo "<script>showToast('{$message}', '{$type}');</script>";
+
+        // Hapus pesan dari session agar tidak tampil lagi
         unset($_SESSION['flash_message']);
     }
 }

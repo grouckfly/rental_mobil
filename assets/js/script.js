@@ -26,3 +26,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
+/**
+ * Fungsi untuk menampilkan notifikasi toast.
+ * @param {string} message - Pesan yang akan ditampilkan.
+ * @param {string} type - Tipe notifikasi ('success' atau 'error').
+ */
+function showToast(message, type = 'success') {
+    // 1. Buat elemen div baru untuk toast
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+
+    // 2. Tambahkan toast ke dalam body
+    document.body.appendChild(toast);
+
+    // 3. Tampilkan toast dengan animasi
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100); // Sedikit delay agar transisi CSS berjalan
+
+    // 4. Sembunyikan dan hapus toast setelah 5 detik
+    setTimeout(() => {
+        toast.classList.remove('show');
+        // Hapus elemen dari DOM setelah animasi fade out selesai
+        setTimeout(() => {
+            toast.remove();
+        }, 500); // Waktu ini harus cocok dengan durasi transisi di CSS
+    }, 5000); // 5000 milidetik = 5 detik
+}

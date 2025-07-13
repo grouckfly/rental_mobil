@@ -66,8 +66,6 @@ try {
     <p>Selamat datang, <?= htmlspecialchars($_SESSION['username']) ?>. Berikut ringkasan aktivitas rental mobil Anda.</p>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="dashboard-widgets">
     <div class="widget">
         <h3>Total Pengguna</h3>

@@ -41,10 +41,7 @@ try {
 
 <div class="page-header">
     <h1>Dashboard Saya</h1>
-    <p>Selamat datang kembali, <?= htmlspecialchars($_SESSION['username']) ?>!</p>
 </div>
-
-<?php display_flash_message(); ?>
 
 <div class="dashboard-widgets">
     <div class="widget">

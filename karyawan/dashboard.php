@@ -40,8 +40,6 @@ try {
     <p>Selamat datang, <?= htmlspecialchars($_SESSION['username']) ?>. Berikut adalah tugas operasional Anda.</p>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="dashboard-widgets">
     <div class="widget">
         <h3>Perlu Verifikasi</h3>

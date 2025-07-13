@@ -16,6 +16,7 @@
     if (file_exists($js_file_path)) {
         echo "<script src=\"{$js_file_path}\"></script>";
     }
+    display_flash_message();
     ?>
 </body>
 </html>

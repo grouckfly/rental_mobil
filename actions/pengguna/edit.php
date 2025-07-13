@@ -74,7 +74,6 @@ require_once '../../includes/header.php';
 ?>
 
 <div class="page-header"><h1>Edit Pengguna: <?= htmlspecialchars($user['username']) ?></h1></div>
-<?php display_flash_message(); ?>
 
 <div class="form-container admin-form">
     <div class="form-box">
