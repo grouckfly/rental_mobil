@@ -43,7 +43,7 @@ try {
                     <tr>
                         <td><?= htmlspecialchars($car['id_mobil']) ?></td>
                         <td>
-                            <img src="../uploads/mobil/<?= htmlspecialchars($car['gambar_mobil'] ?: 'default-car.png') ?>" alt="Gambar Mobil" width="80">
+                            <img src="../assets/img/mobil/<?= htmlspecialchars($car['gambar_mobil'] ?: 'default-car.png') ?>" alt="Gambar Mobil" width="80">
                         </td>
                         <td><?= htmlspecialchars($car['plat_nomor']) ?></td>
                         <td><?= htmlspecialchars($car['merk'] . ' ' . $car['model']) ?></td>
