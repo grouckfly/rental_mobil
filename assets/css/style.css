@@ -492,6 +492,14 @@ tbody tr:hover {
     font-weight: 500;
 }
 
+.btn-info {
+    background-color: var(--info-color);
+    color: #fff;
+}
+.btn-info:hover {
+    background-color: #138496;
+}
+
 /* 6. Responsive (Media Queries) */
 @media (max-width: 992px) {
     .sidebar {

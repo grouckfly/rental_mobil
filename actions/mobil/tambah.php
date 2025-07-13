@@ -36,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Jika tidak ada error, simpan ke database
     if (empty($errors)) {
         try {
-            $sql = "INSERT INTO mobil (merk, model, plat_nomor, tahun, harga_sewa_harian, denda_per_hari, spesifikasi, gambar_mobil) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO mobil (merk, model, jenis_mobil, plat_nomor, tahun, harga_sewa_harian, denda_per_hari, spesifikasi, gambar_mobil) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$_POST['merk'], $_POST['model'], $_POST['plat_nomor'], $_POST['tahun'], $_POST['harga_sewa_harian'], $_POST['denda_per_hari'], $_POST['spesifikasi'], $nama_file_gambar]);
+            $stmt->execute([$_POST['merk'], $_POST['model'], $_POST['jenis_mobil'], $_POST['plat_nomor'], $_POST['tahun'], $_POST['harga_sewa_harian'], $_POST['denda_per_hari'], $_POST['spesifikasi'], $nama_file_gambar]);
             redirect_with_message('../../admin/mobil.php', 'Mobil baru berhasil ditambahkan!');
         } catch (PDOException $e) {
             $errors[] = 'Gagal menyimpan data: ' . $e->getMessage();
@@ -72,6 +72,7 @@ require_once '../../includes/header.php';
             <div class="form-grid">
                 <div class="form-group"><label for="merk">Merk Mobil</label><input type="text" id="merk" name="merk" required></div>
                 <div class="form-group"><label for="model">Model Mobil</label><input type="text" id="model" name="model" required></div>
+                <div class="form-group"><label for="jenis_mobil">Jenis Mobil</label><input type="text" id="jenis_mobil" name="jenis_mobil" required></div>
                 <div class="form-group"><label for="plat_nomor">Plat Nomor</label><input type="text" id="plat_nomor" name="plat_nomor" required></div>
                 <div class="form-group"><label for="tahun">Tahun</label><input type="number" id="tahun" name="tahun" required min="1990" max="<?= date('Y') + 1 ?>"></div>
                 <div class="form-group"><label for="harga_sewa_harian">Harga Sewa / Hari</label><input type="number" id="harga_sewa_harian" name="harga_sewa_harian" required></div>

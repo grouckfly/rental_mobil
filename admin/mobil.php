@@ -50,6 +50,7 @@ try {
                         <td><?= format_rupiah($car['harga_sewa_harian']) ?></td>
                         <td><span class="status-badge status-<?= strtolower($car['status']) ?>"><?= htmlspecialchars($car['status']) ?></span></td>
                         <td>
+                            <a href="../actions/mobil/detail.php?id=<?= $car['id_mobil'] ?>" class="btn btn-info btn-sm">Detail</a>
                             <a href="../actions/mobil/edit.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary btn-sm">Edit</a>
                             <form action="../actions/mobil/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mobil ini?');">
                                 <input type="hidden" name="id_mobil" value="<?= $car['id_mobil'] ?>">
