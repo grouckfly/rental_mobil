@@ -28,28 +28,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_FILES['bukti_pembayaran']) && $_FILES['bukti_pembayaran']['error'] === UPLOAD_ERR_OK) {
         $upload_result = upload_file($_FILES['bukti_pembayaran'], '../uploads/bukti_pembayaran/');
 
-        if (is_array($upload_result) && isset($upload_result['error'])) {
+        if (is_array($upload_result)) {
             redirect_with_message("pembayaran.php?id=$id_pemesanan", $upload_result['error'], 'error');
         } else {
             $nama_file_bukti = $upload_result;
-            // Simpan data pembayaran dan update status pemesanan
             try {
-                $pdo->beginTransaction();
-
-                // 1. Insert ke tabel pembayaran
-                $stmt_pay = $pdo->prepare("INSERT INTO pembayaran (id_pemesanan, tanggal_bayar, jumlah_bayar, metode_pembayaran, bukti_pembayaran, status_pembayaran) VALUES (?, NOW(), ?, ?, ?, 'Lunas')");
+                // PERBAIKAN LOGIKA:
+                // 1. Masukkan data ke tabel pembayaran dengan status 'Menunggu Verifikasi'
+                $sql_pay = "INSERT INTO pembayaran (id_pemesanan, tanggal_bayar, jumlah_bayar, metode_pembayaran, bukti_pembayaran, status_pembayaran) 
+                            VALUES (?, NOW(), ?, ?, ?, 'Menunggu Verifikasi')";
+                $stmt_pay = $pdo->prepare($sql_pay);
                 $stmt_pay->execute([$id_pemesanan, $booking['total_biaya'], 'Transfer Bank', $nama_file_bukti]);
 
-                // 2. Update status di tabel pemesanan menjadi 'Dikonfirmasi' (menunggu verifikasi admin)
-                $stmt_update = $pdo->prepare("UPDATE pemesanan SET status_pemesanan = 'Dikonfirmasi' WHERE id_pemesanan = ?");
-                $stmt_update->execute([$id_pemesanan]);
+                // 2. Status pemesanan TIDAK diubah, tetap 'Menunggu Pembayaran'
+                // Admin/Karyawan yang akan mengubahnya setelah verifikasi.
 
-                $pdo->commit();
-                redirect_with_message('pemesanan.php', 'Terima kasih! Bukti pembayaran Anda telah diunggah dan sedang menunggu verifikasi.');
+                redirect_with_message(BASE_URL . "pelanggan/pemesanan.php", 'Terima kasih! Bukti pembayaran Anda telah diunggah dan sedang menunggu verifikasi.');
 
             } catch (PDOException $e) {
-                $pdo->rollBack();
-                redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Terjadi kesalahan saat menyimpan data pembayaran.', 'error');
+                redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Gagal menyimpan data pembayaran.', 'error');
             }
         }
     } else {

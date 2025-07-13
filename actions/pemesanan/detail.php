@@ -42,7 +42,6 @@ try {
     if (!$pemesanan) {
         redirect_with_message(BASE_URL, 'Pemesanan tidak ditemukan atau Anda tidak memiliki akses.', 'error');
     }
-
 } catch (PDOException $e) {
     die("Terjadi kesalahan pada database: " . $e->getMessage());
 }
@@ -87,7 +86,7 @@ require_once '../../includes/header.php';
             <span class="label">Status Pemesanan</span>
             <span class="value"><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $pemesanan['status_pemesanan'])) ?>"><?= htmlspecialchars($pemesanan['status_pemesanan']) ?></span></span>
         </div>
-         <div class="info-item">
+        <div class="info-item">
             <span class="label">Status Pembayaran</span>
             <span class="value"><?= htmlspecialchars($pemesanan['status_pembayaran'] ?: 'Belum Ada') ?></span>
         </div>
@@ -99,30 +98,48 @@ require_once '../../includes/header.php';
             <span class="label">Sewa</span>
             <span class="value"><?= date('d M Y', strtotime($pemesanan['tanggal_mulai'])) ?> s/d <?= date('d M Y', strtotime($pemesanan['tanggal_selesai'])) ?></span>
         </div>
-        <?php if ($pemesanan['tanggal_bayar']): // Tampilkan tanggal bayar jika sudah ada ?>
-        <div class="info-item">
-            <span class="label">Tanggal Bayar</span>
-            <span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['tanggal_bayar'])) ?></span>
-        </div>
+        <?php if ($pemesanan['tanggal_bayar']): // Tampilkan tanggal bayar jika sudah ada 
+        ?>
+            <div class="info-item">
+                <span class="label">Tanggal Bayar</span>
+                <span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['tanggal_bayar'])) ?></span>
+            </div>
         <?php endif; ?>
         <div class="info-item">
             <span class="label">Total Biaya</span>
             <span class="value price"><?= format_rupiah($pemesanan['total_biaya']) ?></span>
         </div>
         <?php if ($pemesanan['bukti_pembayaran']): ?>
-        <div class="info-item">
-            <span class="label">Bukti Pembayaran</span>
-            <span class="value"><a href="<?= BASE_URL ?>uploads/bukti_pembayaran/<?= htmlspecialchars($pemesanan['bukti_pembayaran']) ?>" target="_blank">Lihat Bukti</a></span>
-        </div>
+            <div class="info-item">
+                <span class="label">Bukti Pembayaran</span>
+                <span class="value"><a href="<?= BASE_URL ?>assets/img/bukti_pembayaran/<?= htmlspecialchars($pemesanan['bukti_pembayaran']) ?>" target="_blank">Lihat Bukti</a></span>
+            </div>
         <?php endif; ?>
-        
+
         <div class="detail-actions">
-            <?php if (in_array($role_session, ['Admin', 'Karyawan']) && $pemesanan['status_pemesanan'] === 'Dikonfirmasi' && $pemesanan['status_pembayaran'] === 'Diverifikasi'): ?>
-                <a href="#" class="btn btn-success">Mulai Penyewaan</a>
-            <?php elseif ($role_session === 'Pelanggan' && $pemesanan['status_pemesanan'] === 'Menunggu Pembayaran'): ?>
-                <a href="<?= BASE_URL ?>pelanggan/pembayaran.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Lakukan Pembayaran</a>
+            <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
+
+                <?php // Tampilkan tombol Verifikasi jika bukti sudah diunggah dan statusnya 'Menunggu Verifikasi'
+                if ($pemesanan['bukti_pembayaran'] && $pemesanan['status_pembayaran'] === 'Menunggu Verifikasi'): ?>
+                    <form action="<?= BASE_URL ?>actions/pembayaran/verifikasi.php" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memverifikasi pembayaran ini?');">
+                        <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
+                        <button type="submit" class="btn btn-primary">Verifikasi Pembayaran</button>
+                    </form>
+
+                <?php // Tombol lain untuk Admin/Karyawan
+                elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
+                    <a href="#" class="btn btn-success">Mulai Penyewaan</a>
+                <?php endif; ?>
+
+            <?php elseif ($role_session === 'Pelanggan'): ?>
+
+                <?php // Tombol untuk Pelanggan
+                if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && !$pemesanan['bukti_pembayaran']): ?>
+                    <a href="<?= BASE_URL ?>pelanggan/pembayaran.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Lakukan Pembayaran</a>
+                <?php endif; ?>
+
             <?php endif; ?>
-            
+
             <a href="<?= BASE_URL . strtolower($role_session) ?>/dashboard.php" class="btn btn-secondary">Kembali ke Dashboard</a>
         </div>
     </div>

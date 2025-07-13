@@ -79,7 +79,7 @@ try {
                         <td><?= htmlspecialchars($task['merk'] . ' ' . $task['model']) ?></td>
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $task['status_pemesanan'])) ?>"><?= htmlspecialchars($task['status_pemesanan']) ?></span></td>
                         <td>
-                           <a href="../actions/pemesanan/detail.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
+                           <a href="../actions/pemesanan/detail.php?id=<?= $task['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
