@@ -1,4 +1,7 @@
-/* File: assets/css/dark-mode.css */
+/*
+ * File: assets/css/dark-mode.css
+ * Deskripsi: Kumpulan style untuk tema gelap.
+*/
 
 body.dark-mode {
     /* Mendefinisikan ulang variabel warna untuk tema gelap */
@@ -8,11 +11,11 @@ body.dark-mode {
     --muted-text-color: #a0a0a0;
     --border-color: #333333;
 
-    --primary-color: #4a9eff;
+    --primary-color: #4a9eff; /* Biru yang lebih cerah untuk kontras */
     --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Override spesifik untuk elemen-elemen tertentu */
+/* Override global untuk tema gelap */
 body.dark-mode .main-header,
 body.dark-mode .main-footer {
     background-color: #1a1a1a;
@@ -20,7 +23,10 @@ body.dark-mode .main-footer {
 }
 
 body.dark-mode .logo-container a,
-body.dark-mode .main-nav a {
+body.dark-mode .main-nav a,
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3 {
     color: var(--text-color);
 }
 
@@ -74,10 +80,30 @@ body.dark-mode .hero-section {
     background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('../img/hero-bg.jpg') no-repeat center center/cover;
 }
 
-body.dark-mode .btn-secondary {
-    background-color: #4a4a4a;
-    border-color: #4a4a4a;
+
+/* ====================================================== */
+/* PERBAIKAN: Tambahan Style untuk Admin Panel di Dark Mode */
+/* ====================================================== */
+
+/* Mengganti warna background header tabel di admin */
+body.dark-mode .table-container th {
+    background-color: #2c2c2c;
+    color: var(--muted-text-color);
 }
-body.dark-mode .btn-secondary:hover {
-    background-color: #5a5a5a;
+
+/* Mengganti warna input pencarian tabel di admin */
+body.dark-mode .search-container #table-search {
+    background-color: #2c2c2c;
+    border-color: #444;
+    color: var(--text-color);
+}
+
+/* Memastikan border kiri widget menggunakan warna primer dark mode */
+body.dark-mode .dashboard-widgets .widget {
+    border-left-color: var(--primary-color);
+}
+
+/* Mengganti warna background kontainer grafik */
+body.dark-mode .chart-container {
+    background-color: var(--surface-color);
 }
