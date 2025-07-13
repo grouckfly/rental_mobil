@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Jika tidak ada error, simpan ke database
     if (empty($errors)) {
         try {
-            $sql = "INSERT INTO mobil (merk, model, jenis_mobil, plat_nomor, tahun, harga_sewa_harian, denda_per_hari, spesifikasi, gambar_mobil) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO mobil (merk, model, jenis_mobil, plat_nomor, tahun, harga_sewa_harian, denda_per_hari, spesifikasi, gambar_mobil) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$_POST['merk'], $_POST['model'], $_POST['jenis_mobil'], $_POST['plat_nomor'], $_POST['tahun'], $_POST['harga_sewa_harian'], $_POST['denda_per_hari'], $_POST['spesifikasi'], $nama_file_gambar]);
             redirect_with_message('../../admin/mobil.php', 'Mobil baru berhasil ditambahkan!');
