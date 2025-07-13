@@ -41,7 +41,7 @@ $cars = $stmt->fetchAll();
                 <?php foreach ($cars as $car): ?>
                     <div class="car-card">
                         <div class="car-card-image">
-                            <img src="uploads/mobil/<?= htmlspecialchars($car['gambar_mobil'] ?: 'default-car.png') ?>" alt="<?= htmlspecialchars($car['merk'] . ' ' . $car['model']) ?>">
+                            <img src="assets/img/mobil/<?= htmlspecialchars($car['gambar_mobil'] ?: 'default-car.png') ?>" alt="<?= htmlspecialchars($car['merk'] . ' ' . $car['model']) ?>">
                         </div>
                         <div class="car-card-content">
                             <h3><?= htmlspecialchars($car['merk'] . ' ' . $car['model']) ?></h3>
