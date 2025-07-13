@@ -794,3 +794,32 @@ tbody tr:hover {
             letter-spacing: 2px !important;
         }
 }
+
+/* Ganti style .qr-code-container yang lama dengan ini */
+
+.qr-code-container {
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.qr-code-container h4 {
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: var(--muted-text-color);
+}
+
+/* Style untuk div #qrcode itu sendiri dan gambar di dalamnya */
+#qrcode {
+    padding: 10px;
+    background: white;
+    display: inline-block;
+}
+#qrcode img {
+    margin: auto;
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan QR Code Pemesanan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #f4f4f4; }
+        .scanner-container { background-color: #fff; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow); text-align: center; width: 90%; max-width: 500px; }
+        #qr-reader { border: 1px solid #ccc; border-radius: var(--border-radius); overflow: hidden; }
+        #qr-reader-results { margin-top: 20px; font-size: 1.2rem; font-weight: bold; word-wrap: break-word; }
+        .back-link { margin-top: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="scanner-container">
+        <h1>Arahkan Kamera ke QR Code</h1>
+        <div id="qr-reader"></div>
+        <div id="qr-reader-results"></div>
+        <a href="dashboard.php" class="btn btn-secondary back-link">Kembali ke Dashboard</a>
+    </div>
+
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultContainer = document.getElementById('qr-reader-results');
+            let processing = false;
+
+            function onScanSuccess(decodedText, decodedResult) {
+                if (processing) return;
+                
+                processing = true;
+                html5QrcodeScanner.clear();
+                resultContainer.innerHTML = `Memproses kode: <strong>${decodedText}</strong>...`;
+
+                fetch('../proses_scan.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `kode=${decodedText}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const color = data.success ? 'green' : 'red';
+                    resultContainer.innerHTML = `Status: <strong style="color:${color};">${data.message}</strong>`;
+                })
+                .catch(error => {
+                    resultContainer.innerHTML = `Status: <strong style="color:red;">Gagal terhubung ke server.</strong>`;
+                });
+            }
+
+            let html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false);
+            html5QrcodeScanner.render(onScanSuccess);
+        });
+    </script>
+</body>
+</html>

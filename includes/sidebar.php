@@ -15,6 +15,9 @@ function is_active($page_name, $current_page_name) {
     <nav class="sidebar-nav">
         <ul>
             <?php if ($_SESSION['role'] === 'Admin'): ?>
+                <li>
+                    <a href="<?= BASE_URL ?>karyawan/scan_qr.html">Scan QR Code</a>
+                </li>
                 <li <?= is_active('dashboard.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>admin/dashboard.php">Dashboard</a>
                 </li>
@@ -32,6 +35,9 @@ function is_active($page_name, $current_page_name) {
                 </li>
 
             <?php elseif ($_SESSION['role'] === 'Karyawan'): ?>
+                <li>
+                    <a href="<?= BASE_URL ?>karyawan/scan_qr.html">Scan QR Code</a>
+                </li>
                  <li <?= is_active('dashboard.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>karyawan/dashboard.php">Dashboard</a>
                 </li>
