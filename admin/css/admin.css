@@ -86,3 +86,14 @@ body.dark-mode .search-container #table-search {
     border-color: #444;
     color: var(--text-color);
 }
+
+.cancellation-info {
+    border: 1px solid var(--danger-color);
+    background-color: #fef2f2;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-top: 20px;
+}
+body.dark-mode .cancellation-info {
+    background-color: #2d1c1c;
+}

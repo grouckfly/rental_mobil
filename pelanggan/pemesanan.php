@@ -54,11 +54,10 @@ try {
                         <td><?= format_rupiah($booking['total_biaya']) ?></td>
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $booking['status_pemesanan'])) ?>"><?= htmlspecialchars($booking['status_pemesanan']) ?></span></td>
                         <td>
-                            <?php if ($booking['status_pemesanan'] == 'Menunggu Pembayaran'): ?>
-                                <a href="../actions/pemesanan/detail.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
-                            <?php else: ?>
-                                <a href="../actions/pemesanan/detail.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
+                            <?php if ($booking['status_pemesanan'] == 'Dikonfirmasi'): ?>
+                                <a href="ajukan_pembatalan.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-danger btn-sm">Batalkan</a>
                             <?php endif; ?>
+                            <a href="<?= BASE_URL ?>actions/pemesanan/detail.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-info btn-sm">Detail</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
