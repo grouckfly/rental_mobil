@@ -176,9 +176,16 @@ img {
 }
 
 .sidebar {
+    /* Properti Kunci */
+    position: sticky;
+    top: var(--header-height); /* Menempel persis di bawah header */
+    
+    /* Properti Pendukung */
+    height: calc(100vh - var(--header-height)); /* Mengatur tinggi sidebar agar penuh sesuai layar */
+    overflow-y: auto; /* Menambahkan scrollbar jika menu di sidebar sangat panjang */
+    align-self: flex-start; /* Mencegah sidebar meregang jika konten utama pendek */
     width: var(--sidebar-width);
     background-color: var(--surface-color);
-    min-height: calc(100vh - var(--header-height));
     padding: 20px;
     border-right: 1px solid var(--border-color);
 }
