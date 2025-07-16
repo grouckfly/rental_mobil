@@ -121,13 +121,6 @@ if ($pemesanan['status_pemesanan'] === 'Berjalan') {
             </div>
         </div>
 
-        <?php if ($pemesanan['status_pemesanan'] === 'Dikonfirmasi' && $role_session === 'Pelanggan'): ?>
-            <div class="qr-code-container">
-                <h4>Tunjukkan QR Code ini Saat Pengambilan Mobil</h4>
-                <div id="qrcode" data-kode="<?= htmlspecialchars($pemesanan['kode_pemesanan']) ?>"></div>
-            </div>
-        <?php endif; ?>
-
         <?php if ($pemesanan['status_pemesanan'] === 'Berjalan'): ?>
             <div class="timer-container">
                 <h4>Sisa Waktu Sewa</h4>
@@ -141,6 +134,31 @@ if ($pemesanan['status_pemesanan'] === 'Berjalan') {
                     <p>Total Denda: <strong><?= format_rupiah($denda) ?></strong></p>
                 </div>
             <?php endif; ?>
+
+            <?php
+            // ==========================================================
+            // Tampilkan QR Code untuk Pengambilan ATAU Pengembalian
+            // ==========================================================
+            if ($role_session === 'Pelanggan'):
+                // Tentukan judul berdasarkan status
+                $qr_title = '';
+                if ($pemesanan['status_pemesanan'] === 'Dikonfirmasi') {
+                    $qr_title = 'Tunjukkan QR Code ini Saat Pengambilan Mobil';
+                } elseif ($pemesanan['status_pemesanan'] === 'Berjalan') {
+                    $qr_title = 'Tunjukkan QR Code ini Saat Pengembalian Mobil';
+                }
+
+                // Tampilkan container QR Code jika judulnya sudah di-set
+                if (!empty($qr_title)):
+            ?>
+                    <div class="qr-code-container">
+                        <h4><?= $qr_title ?></h4>
+                        <div id="qrcode" data-kode="<?= htmlspecialchars($pemesanan['kode_pemesanan']) ?>"></div>
+                    </div>
+            <?php
+                endif;
+            endif;
+            ?>
 
             <?php if ($show_reminder && $_SESSION['role'] === 'Pelanggan'): ?>
                 <div class="reminder-box">
