@@ -129,27 +129,53 @@ if ($pemesanan['status_pemesanan'] === 'Berjalan') {
         <?php endif; ?>
 
         <?php if ($pemesanan['status_pemesanan'] === 'Berjalan'): ?>
-        <div class="timer-container">
-            <h4>Sisa Waktu Sewa</h4>
-            <div id="countdown-timer" data-end-time="<?= $pemesanan['tanggal_selesai'] ?>"></div>
-        </div>
+            <div class="timer-container">
+                <h4>Sisa Waktu Sewa</h4>
+                <div id="countdown-timer" data-end-time="<?= $pemesanan['tanggal_selesai'] ?>"></div>
+            </div>
 
-        <?php if ($hari_terlambat > 0): ?>
-        <div class="denda-info">
-            <h4>Denda Keterlambatan</h4>
-            <p>Terlambat: <strong><?= $hari_terlambat ?> hari</strong></p>
-            <p>Total Denda: <strong><?= format_rupiah($denda) ?></strong></p>
-        </div>
-        <?php endif; ?>
+            <?php if ($hari_terlambat > 0): ?>
+                <div class="denda-info">
+                    <h4>Denda Keterlambatan</h4>
+                    <p>Terlambat: <strong><?= $hari_terlambat ?> hari</strong></p>
+                    <p>Total Denda: <strong><?= format_rupiah($denda) ?></strong></p>
+                </div>
+            <?php endif; ?>
 
-        <?php if ($show_reminder && $_SESSION['role'] === 'Pelanggan'): ?>
-        <div class="reminder-box">
-            <p>Masa sewa Anda akan segera berakhir. Apakah Anda ingin memperpanjang?</p>
-            <a href="#" class="btn btn-primary btn-sm">Perpanjang Sewa</a>
-        </div>
+            <?php if ($show_reminder && $_SESSION['role'] === 'Pelanggan'): ?>
+                <div class="reminder-box">
+                    <p>Masa sewa Anda akan segera berakhir. Apakah Anda ingin memperpanjang?</p>
+                    <a href="#" class="btn btn-primary btn-sm">Perpanjang Sewa</a>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
-    <?php endif; ?>
     </div>
+
+    <?php if ($pemesanan['status_pemesanan'] === 'Pengajuan Ambil Cepat' && in_array($role_session, ['Admin', 'Karyawan'])): ?>
+        <div class="cancellation-info">
+            <h4>Pengajuan Pengambilan Lebih Cepat</h4>
+            <div class="info-item">
+                <span class="label">Jadwal Awal</span>
+                <div class="value"><?= date('d M Y, H:i', strtotime($pemesanan['tanggal_mulai'])) ?></div>
+            </div>
+            <div class="info-item">
+                <span class="label">Jadwal Baru yang Diajukan</span>
+                <div class="value" style="font-weight:bold; color:var(--success-color);"><?= date('d M Y, H:i', strtotime($pemesanan['tgl_mulai_diajukan'])) ?></div>
+            </div>
+            <div class="detail-actions">
+                <form action="<?= BASE_URL ?>actions/pemesanan/proses_pengajuan.php" method="POST" style="display:inline-block;">
+                    <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
+                    <input type="hidden" name="keputusan" value="setuju">
+                    <button type="submit" class="btn btn-success">Setujui</button>
+                </form>
+                <form action="<?= BASE_URL ?>actions/pemesanan/proses_pengajuan.php" method="POST" style="display:inline-block;">
+                    <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
+                    <input type="hidden" name="keputusan" value="tolak">
+                    <button type="submit" class="btn btn-danger">Tolak</button>
+                </form>
+            </div>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php if ($pemesanan['status_pemesanan'] === 'Pengajuan Pembatalan'): ?>
@@ -183,6 +209,9 @@ if ($pemesanan['status_pemesanan'] === 'Berjalan') {
         <?php if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && !$pemesanan['bukti_pembayaran']): ?>
             <a href="<?= BASE_URL ?>pelanggan/pembayaran.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Bayar</a>
         <?php elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
+            <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
+        <?php elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
+            <a href="<?= BASE_URL ?>pelanggan/ajukan_ambil_cepat.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-info">Ambil Lebih Cepat</a>
             <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
         <?php endif; ?>
     <?php endif; ?>
