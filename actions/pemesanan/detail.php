@@ -20,7 +20,7 @@ $role_session = $_SESSION['role'];
 try {
     $sql = "SELECT p.*, 
                    u.nama_lengkap AS nama_pelanggan, u.email AS email_pelanggan, u.no_telp AS telp_pelanggan,
-                   m.merk, m.model, m.plat_nomor, m.gambar_mobil,
+                   m.merk, m.model, m.plat_nomor, m.gambar_mobil, m.denda_per_hari,
                    pay.metode_pembayaran, pay.status_pembayaran, pay.bukti_pembayaran, pay.tanggal_bayar
             FROM pemesanan p
             JOIN pengguna u ON p.id_pengguna = u.id_pengguna
@@ -48,6 +48,31 @@ try {
 
 $page_title = 'Detail Pemesanan #' . htmlspecialchars($pemesanan['kode_pemesanan']);
 require_once '../../includes/header.php';
+
+// Logika PHP untuk pengingat dan denda
+$show_reminder = false;
+$denda = 0;
+$hari_terlambat = 0;
+$waktu_sekarang = new DateTime();
+$jadwal_selesai = new DateTime($pemesanan['tanggal_selesai']);
+
+if ($pemesanan['status_pemesanan'] === 'Berjalan') {
+    // Cek untuk pengingat perpanjangan (Rule 4)
+    $diff = $waktu_sekarang->diff($jadwal_selesai);
+    if ($diff->days <= 1 && !$diff->invert) { // Jika sisa sewa <= 1 hari
+        $show_reminder = true;
+    }
+
+    // Cek untuk denda (Rule 5)
+    if ($waktu_sekarang > $jadwal_selesai) {
+        $selisih_terlambat = $jadwal_selesai->diff($waktu_sekarang);
+        $hari_terlambat = $selisih_terlambat->days;
+        if ($selisih_terlambat->h > 2 || $selisih_terlambat->i > 0) { // Toleransi 2 jam
+            $hari_terlambat += 1;
+        }
+        $denda = $hari_terlambat * $pemesanan['denda_per_hari'];
+    }
+}
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -68,7 +93,7 @@ require_once '../../includes/header.php';
         <?php if ($pemesanan['waktu_pengambilan']): ?>
             <div class="info-item"><span class="label">Waktu Aktual Pengambilan</span><span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['waktu_pengambilan'])) ?></span></div>
         <?php endif; ?>
-        
+
         <hr>
         <h3>Informasi Pembayaran</h3>
         <div class="info-item"><span class="label">Total Biaya</span><span class="value price"><?= format_rupiah($pemesanan['total_biaya']) ?></span></div>
@@ -95,22 +120,48 @@ require_once '../../includes/header.php';
                 Plat: <?= htmlspecialchars($pemesanan['plat_nomor']) ?>
             </div>
         </div>
-        
+
         <?php if ($pemesanan['status_pemesanan'] === 'Dikonfirmasi' && $role_session === 'Pelanggan'): ?>
             <div class="qr-code-container">
                 <h4>Tunjukkan QR Code ini Saat Pengambilan Mobil</h4>
                 <div id="qrcode" data-kode="<?= htmlspecialchars($pemesanan['kode_pemesanan']) ?>"></div>
             </div>
         <?php endif; ?>
+
+        <?php if ($pemesanan['status_pemesanan'] === 'Berjalan'): ?>
+        <div class="timer-container">
+            <h4>Sisa Waktu Sewa</h4>
+            <div id="countdown-timer" data-end-time="<?= $pemesanan['tanggal_selesai'] ?>"></div>
+        </div>
+
+        <?php if ($hari_terlambat > 0): ?>
+        <div class="denda-info">
+            <h4>Denda Keterlambatan</h4>
+            <p>Terlambat: <strong><?= $hari_terlambat ?> hari</strong></p>
+            <p>Total Denda: <strong><?= format_rupiah($denda) ?></strong></p>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($show_reminder && $_SESSION['role'] === 'Pelanggan'): ?>
+        <div class="reminder-box">
+            <p>Masa sewa Anda akan segera berakhir. Apakah Anda ingin memperpanjang?</p>
+            <a href="#" class="btn btn-primary btn-sm">Perpanjang Sewa</a>
+        </div>
+        <?php endif; ?>
+    <?php endif; ?>
     </div>
 </div>
 
 <?php if ($pemesanan['status_pemesanan'] === 'Pengajuan Pembatalan'): ?>
-<div class="cancellation-info">
-    <h4>Informasi Pengajuan Pembatalan</h4>
-    <div class="info-item"><span class="label">Alasan Pelanggan</span><div class="value description"><?= htmlspecialchars($pemesanan['alasan_pembatalan']) ?></div></div>
-    <div class="info-item"><span class="label">No. Rekening Refund</span><div class="value"><?= htmlspecialchars($pemesanan['rekening_pembatalan']) ?></div></div>
-</div>
+    <div class="cancellation-info">
+        <h4>Informasi Pengajuan Pembatalan</h4>
+        <div class="info-item"><span class="label">Alasan Pelanggan</span>
+            <div class="value description"><?= htmlspecialchars($pemesanan['alasan_pembatalan']) ?></div>
+        </div>
+        <div class="info-item"><span class="label">No. Rekening Refund</span>
+            <div class="value"><?= htmlspecialchars($pemesanan['rekening_pembatalan']) ?></div>
+        </div>
+    </div>
 <?php endif; ?>
 
 <div class="detail-actions">
@@ -123,7 +174,7 @@ require_once '../../includes/header.php';
                 <button type="submit" class="btn btn-primary">Verifikasi</button>
             </form>
         <?php elseif ($pemesanan['status_pemesanan'] === 'Pengajuan Pembatalan'): ?>
-             <form action="<?= BASE_URL ?>actions/pemesanan/proses_pembatalan.php" method="POST" onsubmit="return confirm('Anda akan membatalkan pesanan ini. Lanjutkan?');" style="display:inline-block;">
+            <form action="<?= BASE_URL ?>actions/pemesanan/proses_pembatalan.php" method="POST" onsubmit="return confirm('Anda akan membatalkan pesanan ini. Lanjutkan?');" style="display:inline-block;">
                 <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>">
                 <button type="submit" class="btn btn-danger">Proses Pembatalan</button>
             </form>
@@ -132,7 +183,7 @@ require_once '../../includes/header.php';
         <?php if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && !$pemesanan['bukti_pembayaran']): ?>
             <a href="<?= BASE_URL ?>pelanggan/pembayaran.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Bayar</a>
         <?php elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
-             <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
+            <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
         <?php endif; ?>
     <?php endif; ?>
 
@@ -144,3 +195,4 @@ require_once '../../includes/footer.php';
 ?>
 
 <script src="<?= BASE_URL ?>assets/js/qr-generator.js"></script>
+<script src="<?= BASE_URL ?>assets/js/rental-timer.js"></script>
