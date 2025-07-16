@@ -2,8 +2,12 @@
 // File: includes/config.php
 
 // ====================================================================
-// PERBAIKAN FINAL: Tentukan Base URL Anda secara manual di sini.
-// Ini adalah satu-satunya tempat yang perlu Anda ubah.
+// Atur zona waktu default untuk semua fungsi tanggal di PHP
+// ====================================================================
+date_default_timezone_set('Asia/Jakarta');
+
+// ====================================================================
+// Tentukan Base URL Anda secara manual di sini.
 // Pastikan ada tanda '/' di akhir.
 // ====================================================================
 define('BASE_URL', 'http://localhost/rental_mobil/');
