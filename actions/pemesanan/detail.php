@@ -129,6 +129,28 @@ require_once '../../includes/header.php';
 </div>
 <?php endif; ?>
 
+<?php if ($pemesanan['status_pemesanan'] === 'Pengajuan Ambil Cepat' && in_array($role_session, ['Admin', 'Karyawan'])): ?>
+<div class="cancellation-info">
+    <h4>Pengajuan Perubahan Jadwal</h4>
+    <div class="info-item"><span class="label">Jadwal Awal</span><div class="value"><?= date('d M Y, H:i', strtotime($pemesanan['tanggal_mulai'])) ?></div></div>
+    <div class="info-item"><span class="label">Jadwal Diajukan</span><div class="value" style="color:var(--success-color); font-weight:bold;"><?= date('d M Y, H:i', strtotime($pemesanan['tgl_mulai_diajukan'])) ?></div></div>
+    <div class="info-item"><span class="label">Biaya Awal</span><div class="value"><?= format_rupiah($pemesanan['total_biaya']) ?></div></div>
+    <div class="info-item"><span class="label">Estimasi Biaya Baru</span><div class="value price"><?= format_rupiah($pemesanan['total_biaya_diajukan']) ?></div></div>
+    <div class="detail-actions">
+        <form action="<?= BASE_URL ?>actions/pemesanan/proses_pengajuan.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="keputusan" value="setuju"><button type="submit" class="btn btn-success">Setujui</button></form>
+        <form action="<?= BASE_URL ?>actions/pemesanan/proses_pengajuan.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="keputusan" value="tolak"><button type="submit" class="btn btn-danger">Tolak</button></form>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if ($pemesanan['status_pemesanan'] === 'Pengajuan Ditolak' && $role_session === 'Pelanggan'): ?>
+    <div class="flash-message flash-error">Pengajuan perubahan jadwal Anda sebelumnya telah ditolak. Jadwal kembali ke semula.</div>
+<?php endif; ?>
+<?php if ($pemesanan['status_pemesanan'] === 'Pengajuan Ambil Cepat' && $role_session === 'Pelanggan'): ?>
+    <div class="flash-message flash-info">Pengajuan perubahan jadwal Anda sedang diproses oleh admin.</div>
+<?php endif; ?>
+
+
 <div class="detail-actions">
     <button onclick="window.print();" class="btn btn-info">Cetak</button>
 
@@ -140,6 +162,7 @@ require_once '../../includes/header.php';
         <?php elseif ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda'): ?>
              <form action="<?= BASE_URL ?>actions/pemesanan/proses_penyelesaian.php" method="POST" onsubmit="return confirm('Konfirmasi denda telah dibayar dan selesaikan penyewaan?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-success">Selesaikan Sewa</button></form>
         <?php endif; ?>
+    
     <?php elseif ($role_session === 'Pelanggan'): ?>
         <?php if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && !$pemesanan['bukti_pembayaran']): ?>
             <a href="<?= BASE_URL ?>pelanggan/pembayaran.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Bayar Sekarang</a>

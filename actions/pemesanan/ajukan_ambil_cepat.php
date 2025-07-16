@@ -36,8 +36,8 @@ if ($tgl_mulai_baru_obj < $hari_ini_obj) {
 }
 
 try {
-    // Ambil data pemesanan untuk validasi lebih lanjut
-    $stmt_check = $pdo->prepare("SELECT tanggal_mulai, tanggal_selesai FROM pemesanan WHERE id_pemesanan = ?");
+    // Ambil data pemesanan untuk menghitung biaya baru
+    $stmt_check = $pdo->prepare("SELECT p.tanggal_selesai, m.harga_sewa_harian FROM pemesanan p JOIN mobil m ON p.id_mobil = m.id_mobil WHERE p.id_pemesanan = ?");
     $stmt_check->execute([$id_pemesanan]);
     $pemesanan = $stmt_check->fetch();
 
@@ -48,11 +48,18 @@ try {
         redirect_with_error($id_pemesanan, 'Tanggal baru harus lebih awal dari jadwal pengambilan semula.');
     }
 
-    // Jika semua validasi lolos, update database
-    $sql = "UPDATE pemesanan SET status_pemesanan = 'Pengajuan Ambil Cepat', tgl_mulai_diajukan = ? WHERE id_pemesanan = ? AND id_pengguna = ?";
+    // Hitung durasi dan biaya baru
+    $durasi_baru = hitung_durasi_sewa($tanggal_baru_input, $pemesanan['tanggal_selesai']);
+    $biaya_baru = ($durasi_baru < 1 ? 1 : $durasi_baru) * $pemesanan['harga_sewa_harian'];
+
+    // Update database dengan status dan data pengajuan
+    $sql = "UPDATE pemesanan SET 
+                status_pemesanan = 'Pengajuan Ambil Cepat', 
+                tgl_mulai_diajukan = ?, 
+                total_biaya_diajukan = ? 
+            WHERE id_pemesanan = ? AND id_pengguna = ?";
     $stmt = $pdo->prepare($sql);
-    // Langsung gunakan input tanggal, database akan menyimpannya sebagai Y-m-d 00:00:00
-    $stmt->execute([$tanggal_baru_input, $id_pemesanan, $_SESSION['id_pengguna']]);
+    $stmt->execute([$tanggal_baru_input, $biaya_baru, $id_pemesanan, $_SESSION['id_pengguna']]);
 
     header('Location: ' . BASE_URL . "actions/pemesanan/detail.php?id=$id_pemesanan&status=pengajuan_sukses");
     exit;

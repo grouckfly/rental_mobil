@@ -13,25 +13,52 @@ $id_pemesanan = (int)$_POST['id_pemesanan'];
 $keputusan = $_POST['keputusan'];
 
 try {
-    // Ambil data pemesanan saat ini
-    $stmt = $pdo->prepare("SELECT * FROM pemesanan p JOIN mobil m ON p.id_mobil = m.id_mobil WHERE p.id_pemesanan = ?");
+    // Ambil data pengajuan
+    $stmt = $pdo->prepare("SELECT * FROM pemesanan WHERE id_pemesanan = ?");
     $stmt->execute([$id_pemesanan]);
     $pemesanan = $stmt->fetch();
+    if (!$pemesanan) { redirect_with_message("detail.php?id=$id_pemesanan", 'Pemesanan tidak ditemukan.', 'error'); }
 
-    if ($keputusan === 'setuju') {
-        // Kalkulasi ulang biaya
-        $durasi_baru = hitung_durasi_sewa($pemesanan['tgl_mulai_diajukan'], $pemesanan['tanggal_selesai']);
-        $biaya_baru = $durasi_baru * $pemesanan['harga_sewa_harian'];
-
-        $sql = "UPDATE pemesanan SET tanggal_mulai = tgl_mulai_diajukan, total_biaya = ?, status_pemesanan = 'Dikonfirmasi', tgl_mulai_diajukan = NULL WHERE id_pemesanan = ?";
-        $params = [$biaya_baru, $id_pemesanan];
-        $pesan = 'Pengajuan disetujui. Jadwal dan biaya telah diperbarui.';
-    } else { // Jika ditolak
-        $sql = "UPDATE pemesanan SET status_pemesanan = 'Dikonfirmasi', tgl_mulai_diajukan = NULL WHERE id_pemesanan = ?";
+    // Jika KEPUTUSAN DITOLAK
+    if ($keputusan === 'tolak') {
+        $sql = "UPDATE pemesanan SET status_pemesanan = 'Pengajuan Ditolak', tgl_mulai_diajukan = NULL, total_biaya_diajukan = NULL WHERE id_pemesanan = ?";
         $params = [$id_pemesanan];
-        $pesan = 'Pengajuan telah ditolak. Jadwal kembali seperti semula.';
+        $pesan = 'Pengajuan telah ditolak.';
+    } 
+    // Jika KEPUTUSAN DISETUJUI
+    elseif ($keputusan === 'setuju') {
+        $id_mobil = $pemesanan['id_mobil'];
+        $waktu_mulai_baru = $pemesanan['tgl_mulai_diajukan'];
+        $waktu_selesai_lama = $pemesanan['tanggal_selesai'];
+
+        // RULE 4: Lakukan pengecekan jadwal bentrok
+        $stmt_konflik = $pdo->prepare(
+            "SELECT id_pemesanan FROM pemesanan 
+             WHERE id_mobil = ? 
+             AND id_pemesanan != ? 
+             AND status_pemesanan IN ('Dikonfirmasi', 'Berjalan')
+             AND ? < tanggal_selesai AND ? > tanggal_mulai"
+        );
+        $stmt_konflik->execute([$id_mobil, $id_pemesanan, $waktu_mulai_baru, $waktu_selesai_lama]);
+        
+        if ($stmt_konflik->fetch()) {
+            // JIKA ADA JADWAL BENTROK
+            redirect_with_message("detail.php?id=$id_pemesanan", 'Gagal! Jadwal yang diajukan bentrok dengan pemesanan lain.', 'error');
+        }
+
+        // JIKA AMAN, LANJUTKAN PERSETUJUAN
+        $sql = "UPDATE pemesanan SET 
+                    tanggal_mulai = ?, 
+                    total_biaya = ?, 
+                    status_pemesanan = 'Dikonfirmasi', 
+                    tgl_mulai_diajukan = NULL, 
+                    total_biaya_diajukan = NULL 
+                WHERE id_pemesanan = ?";
+        $params = [$pemesanan['tgl_mulai_diajukan'], $pemesanan['total_biaya_diajukan'], $id_pemesanan];
+        $pesan = 'Pengajuan disetujui. Jadwal dan biaya telah diperbarui.';
     }
 
+    // Eksekusi query update
     $stmt_update = $pdo->prepare($sql);
     $stmt_update->execute($params);
     redirect_with_message("detail.php?id=$id_pemesanan", $pesan);
