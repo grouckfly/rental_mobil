@@ -7,64 +7,49 @@ require_once '../includes/functions.php';
 
 check_auth('Pelanggan');
 
+// Mengambil data pemesanan yang akan diubah
 $id_pemesanan = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$id_pengguna = $_SESSION['id_pengguna'];
-
-// Jika ID tidak valid, kembalikan ke halaman sebelumnya
 if ($id_pemesanan === 0) {
     redirect_with_message('pemesanan.php', 'ID Pemesanan tidak valid.', 'error');
 }
 
 try {
-    // Siapkan query untuk mengambil data pemesanan DAN harga sewa harian dari tabel mobil
-    $sql = "SELECT p.*, m.harga_sewa_harian 
-            FROM pemesanan p 
-            JOIN mobil m ON p.id_mobil = m.id_mobil 
-            WHERE p.id_pemesanan = ? AND p.id_pengguna = ?";
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$id_pemesanan, $id_pengguna]);
+    $stmt = $pdo->prepare("SELECT * FROM pemesanan WHERE id_pemesanan = ? AND id_pengguna = ?");
+    $stmt->execute([$id_pemesanan, $_SESSION['id_pengguna']]);
     $pemesanan = $stmt->fetch();
-
-    // Pastikan pesanan ditemukan dan statusnya 'Dikonfirmasi'
-    // Jika tidak, pelanggan tidak boleh mengajukan perubahan
     if (!$pemesanan || $pemesanan['status_pemesanan'] !== 'Dikonfirmasi') {
-        redirect_with_message('pemesanan.php', 'Pemesanan ini tidak ditemukan atau tidak dapat diubah saat ini.', 'error');
+        redirect_with_message('pemesanan.php', 'Pemesanan ini tidak dapat diubah.', 'error');
     }
-
 } catch (PDOException $e) {
-    // Tangani jika ada error saat koneksi atau query ke database
     redirect_with_message('pemesanan.php', 'Terjadi kesalahan pada database.', 'error');
 }
 
+// Menangkap pesan error dari URL (jika ada)
+$error_message = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : '';
 
 $page_title = 'Ajukan Pengambilan Lebih Cepat';
 require_once '../includes/header.php';
 ?>
 
-<div class="page-header">
-    <h1>Ajukan Pengambilan Lebih Cepat</h1>
-</div>
-<?php display_flash_message(); ?>
+<div class="page-header"><h1>Ajukan Pengambilan Lebih Cepat</h1></div>
 
 <div class="form-container">
     <div class="form-box">
-        <p>Jadwal Awal: <strong><?= date('d M Y, H:i', strtotime($pemesanan['tanggal_mulai'])) ?></strong></p>
-        <p>Total Biaya Awal: <strong><?= format_rupiah($pemesanan['total_biaya']) ?></strong></p>
+        <?php if (!empty($error_message)): ?>
+            <div class="flash-message flash-error"><?= $error_message ?></div>
+        <?php endif; ?>
+
+        <p>Jadwal Pengambilan Awal Anda:</p>
+        <h3 style="text-align:center; margin-bottom: 20px;"><?= date('d F Y', strtotime($pemesanan['tanggal_mulai'])) ?></h3>
+        <p>Pilih tanggal baru untuk pengambilan.</p>
         <hr>
+        
         <form action="<?= BASE_URL ?>actions/pemesanan/ajukan_ambil_cepat.php" method="POST">
             <input type="hidden" name="id_pemesanan" value="<?= $id_pemesanan ?>">
-            <input type="hidden" id="harga_harian" value="<?= $pemesanan['harga_sewa_harian'] ?>">
-            <input type="hidden" id="tgl_selesai" value="<?= $pemesanan['tanggal_selesai'] ?>">
-
+            
             <div class="form-group">
-                <label for="tgl_mulai_baru">Pilih Waktu Pengambilan Baru</label>
-                <input type="datetime-local" id="tgl_mulai_baru" name="tgl_mulai_baru" required>
-            </div>
-
-            <div id="kalkulasi-biaya" style="display:none;">
-                <p>Estimasi Biaya Baru: <strong id="biaya-baru" class="price"></strong></p>
-                <small>Biaya tambahan akan ditagihkan saat pengambilan mobil.</small>
+                <label for="tgl_mulai_baru">Pilih Tanggal Pengambilan Baru</label>
+                <input type="date" id="tgl_mulai_baru" name="tgl_mulai_baru" required>
             </div>
 
             <button type="submit" class="btn btn-primary">Kirim Pengajuan</button>
@@ -74,5 +59,3 @@ require_once '../includes/header.php';
 </div>
 
 <?php require_once '../includes/footer.php'; ?>
-
-<script src="<?= BASE_URL ?>assets/js/early-pickup-calculator.js"></script>
