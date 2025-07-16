@@ -1,5 +1,5 @@
 <?php
-// File: proses_scan.php (Versi Final dengan Logika Pengambilan & Pengembalian)
+// File: proses_scan.php (Versi Final dengan Logika Denda & Redirect)
 
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
@@ -22,7 +22,7 @@ if (empty($kode)) {
 }
 
 try {
-    // Mulai transaksi database untuk memastikan semua query berhasil
+    // Mulai transaksi database
     $pdo->beginTransaction();
 
     // 1. Cari pemesanan berdasarkan kode, gabungkan dengan tabel mobil untuk dapat data denda
@@ -50,7 +50,8 @@ try {
         
         $waktu_sekarang = new DateTime();
         $jadwal_mulai = new DateTime($pemesanan['tanggal_mulai']);
-        $jadwal_mulai->modify('-1 hour'); // Toleransi 1 jam
+        $jadwal_mulai->modify('-1 hour'); // Toleransi pengambilan 1 jam lebih awal
+
         if ($waktu_sekarang < $jadwal_mulai) {
             $pdo->rollBack();
             die(json_encode(['success' => false, 'message' => 'Gagal: Belum waktunya pengambilan mobil.']));
@@ -71,6 +72,7 @@ try {
         $denda = 0;
         $waktu_sekarang = new DateTime();
         $jadwal_selesai = new DateTime($pemesanan['tanggal_selesai']);
+
         if ($waktu_sekarang > $jadwal_selesai) {
             $selisih_terlambat = $jadwal_selesai->diff($waktu_sekarang);
             $hari_terlambat = (int)$selisih_terlambat->days;
@@ -78,27 +80,34 @@ try {
             if ($selisih_terlambat->h >= 2) { 
                 $hari_terlambat += 1; 
             }
-            $denda = $hari_terlambat * $pemesanan['denda_per_hari'];
+            if ($hari_terlambat > 0) {
+                 $denda = $hari_terlambat * $pemesanan['denda_per_hari'];
+            }
         }
-        
-        // b. Update status pemesanan menjadi 'Selesai' dan catat denda
-        $stmt_order = $pdo->prepare("UPDATE pemesanan SET status_pemesanan = 'Selesai', waktu_pengembalian = NOW(), total_denda = ? WHERE id_pemesanan = ?");
-        $stmt_order->execute([$denda, $pemesanan['id_pemesanan']]);
-        
-        // c. Update status mobil kembali menjadi 'Tersedia'
-        $stmt_car = $pdo->prepare("UPDATE mobil SET status = 'Tersedia' WHERE id_mobil = ?");
-        $stmt_car->execute([$pemesanan['id_mobil']]);
-        
-        $pdo->commit();
 
-        // Siapkan pesan balasan
-        $pesan_balasan = 'Mobil berhasil dikembalikan';
+        // b. Cek apakah ada denda untuk menentukan alur
         if ($denda > 0) {
-            $pesan_balasan .= ' dengan denda keterlambatan ' . format_rupiah($denda) . '.';
+            // JIKA ADA DENDA: Update status ke 'Menunggu Pembayaran Denda' dan arahkan ke halaman konfirmasi
+            $stmt_denda = $pdo->prepare("UPDATE pemesanan SET status_pemesanan = 'Menunggu Pembayaran Denda', total_denda = ? WHERE id_pemesanan = ?");
+            $stmt_denda->execute([$denda, $pemesanan['id_pemesanan']]);
+
+            $pdo->commit();
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Mobil dikembalikan terlambat! Mengarahkan ke halaman konfirmasi denda.',
+                'redirect_url' => BASE_URL . 'karyawan/konfirmasi_pengembalian.php?id=' . $pemesanan['id_pemesanan']
+            ]);
+
         } else {
-            $pesan_balasan .= ' tepat waktu.';
+            // JIKA TIDAK ADA DENDA: Langsung selesaikan sewa
+            $stmt_order = $pdo->prepare("UPDATE pemesanan SET status_pemesanan = 'Selesai', waktu_pengembalian = NOW(), total_denda = 0 WHERE id_pemesanan = ?");
+            $stmt_order->execute([$pemesanan['id_pemesanan']]);
+            $stmt_car = $pdo->prepare("UPDATE mobil SET status = 'Tersedia' WHERE id_mobil = ?");
+            $stmt_car->execute([$pemesanan['id_mobil']]);
+            
+            $pdo->commit();
+            echo json_encode(['success' => true, 'message' => 'Mobil berhasil dikembalikan tepat waktu. Proses selesai.']);
         }
-        echo json_encode(['success' => true, 'message' => $pesan_balasan]);
         exit;
 
     } else {
@@ -111,6 +120,6 @@ try {
 } catch (Exception $e) {
     // Jika terjadi error di tengah proses, batalkan semua query
     $pdo->rollBack();
-    die(json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]));
+    die(json_encode(['success' => false, 'message' => 'Error Server: ' . $e->getMessage()]));
 }
 ?>
