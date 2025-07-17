@@ -179,6 +179,18 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         <?php elseif ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda'): ?>
              <form action="<?= BASE_URL ?>actions/pemesanan/proses_penyelesaian.php" method="POST" onsubmit="return confirm('Konfirmasi denda telah dibayar dan selesaikan penyewaan?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-success">Selesaikan Sewa</button></form>
         <?php endif; ?>
+
+        <?php
+        // --- TOMBOL BATALKAN DITAMBAHKAN DI SINI ---
+        // Tombol ini muncul jika statusnya memungkinkan untuk dibatalkan
+        $cancellable_statuses = ['Menunggu Pembayaran', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Pengajuan Pembatalan', 'Menunggu Pembayaran Denda', 'Pengajuan Ditolak'];
+        if (in_array($pemesanan['status_pemesanan'], $cancellable_statuses)):
+        ?>
+            <form action="<?= BASE_URL ?>actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini secara permanen?');">
+                <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
+                <button type="submit" class="btn btn-danger">Batalkan Pesanan</button>
+            </form>
+        <?php endif; ?>
     
     <?php elseif ($role_session === 'Pelanggan'): ?>
         <?php if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && !$pemesanan['bukti_pembayaran']): ?>

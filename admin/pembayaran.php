@@ -56,6 +56,19 @@ try {
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $booking['status_pemesanan'])) ?>"><?= htmlspecialchars($booking['status_pemesanan']) ?></span></td>
                         <td>
                             <a href="../actions/pemesanan/detail.php?id=<?= $booking['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
+
+                            <?php
+                            // Tombol Batalkan hanya muncul jika statusnya memungkinkan untuk dibatalkan
+                            // (misalnya, belum 'Selesai' atau sudah 'Dibatalkan')
+                            $cancellable_statuses = ['Menunggu Pembayaran', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Pengajuan Pembatalan', 'Menunggu Pembayaran Denda', 'Pengajuan Ditolak'];
+                            if (in_array($booking['status_pemesanan'], $cancellable_statuses)):
+                            ?>
+                                <form action="../actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                                    <input type="hidden" name="id_pemesanan" value="<?= $booking['id_pemesanan'] ?>">
+                                    <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
+                                </form>
+                            <?php endif; ?>
+
                         </td>
                     </tr>
                 <?php endforeach; ?>
