@@ -322,6 +322,7 @@ tbody tr:hover {
 }
 
 /* Status Badges */
+
 .status-badge {
     padding: 4px 10px;
     border-radius: 12px;
@@ -329,29 +330,41 @@ tbody tr:hover {
     font-weight: 600;
     color: #fff;
     text-transform: capitalize;
+    white-space: nowrap;
 }
 
+/* Status Positif (Hijau) */
 .status-tersedia,
 .status-dikonfirmasi,
-.status-selesai {
+.status-selesai,
+.status-diverifikasi {
     background-color: var(--success-color);
 }
 
+/* Status Peringatan (Kuning/Oranye) */
 .status-disewa,
-.status-berjalan {
+.status-berjalan,
+.status-menunggu-verifikasi {
     background-color: var(--warning-color);
     color: var(--text-color);
 }
 
-.status-perawatan {
-    background-color: var(--info-color);
-}
-
-.status-dibatalkan {
+/* Status Negatif (Merah) */
+.status-dibatalkan,
+.status-pengajuan-ditolak,
+.status-pengajuan-pembatalan {
     background-color: var(--danger-color);
 }
 
-.status-menunggu-pembayaran {
+/* Status Informasi (Biru) */
+.status-perawatan,
+.status-pengajuan-ambil-cepat {
+    background-color: var(--info-color);
+}
+
+/* Status Netral (Abu-abu) */
+.status-menunggu-pembayaran,
+.status-menunggu-pembayaran-denda {
     background-color: var(--secondary-color);
 }
 
