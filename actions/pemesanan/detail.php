@@ -181,8 +181,6 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         <?php endif; ?>
 
         <?php
-        // --- TOMBOL BATALKAN DITAMBAHKAN DI SINI ---
-        // Tombol ini muncul jika statusnya memungkinkan untuk dibatalkan
         $cancellable_statuses = ['Menunggu Pembayaran', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Pengajuan Pembatalan', 'Menunggu Pembayaran Denda', 'Pengajuan Ditolak'];
         if (in_array($pemesanan['status_pemesanan'], $cancellable_statuses)):
         ?>
@@ -198,6 +196,8 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         <?php elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
              <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
              <a href="<?= BASE_URL ?>pelanggan/ajukan_ambil_cepat.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-info">Ambil Lebih Cepat</a>
+        <?php elseif ($pemesanan['status_pemesanan'] === 'Selesai'): ?>
+            <a href="<?= BASE_URL ?>pelanggan/berikan_ulasan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-warning">Berikan Ulasan</a>
         <?php endif; ?>
     <?php endif; ?>
 
