@@ -1,0 +1,35 @@
+/* ========================================= */
+/* Style untuk Rating Bintang pada Form Ulasan */
+/* ========================================= */
+.rating {
+    display: inline-block;
+    border: none;
+    font-size: 2rem;
+    /* Balik urutan bintang agar bisa menggunakan ~ selector */
+    unicode-bidi: bidi-override;
+    direction: rtl;
+}
+
+.rating > input { 
+    display: none; 
+} 
+
+.rating > label {
+    display: inline-block;
+    position: relative;
+    width: 1.1em;
+    cursor: pointer;
+}
+
+.rating > label:before { 
+    content: '★';
+    position: absolute;
+    color: #ddd;
+}
+
+/* Style untuk bintang yang dipilih dan saat hover */
+.rating > input:checked ~ label:before,
+.rating:not(:checked) > label:hover:before,
+.rating:not(:checked) > label:hover ~ label:before {
+    color: #ffc107;
+}

@@ -197,7 +197,7 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
              <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
              <a href="<?= BASE_URL ?>pelanggan/ajukan_ambil_cepat.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-info">Ambil Lebih Cepat</a>
         <?php elseif ($pemesanan['status_pemesanan'] === 'Selesai'): ?>
-            <a href="<?= BASE_URL ?>pelanggan/berikan_ulasan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-warning">Berikan Ulasan</a>
+            <a href="<?= BASE_URL ?>pelanggan/beri_ulasan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Beri Review</a>
         <?php endif; ?>
     <?php endif; ?>
 
