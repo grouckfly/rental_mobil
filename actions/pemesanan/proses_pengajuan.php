@@ -21,9 +21,16 @@ try {
 
     // Jika KEPUTUSAN DITOLAK
     if ($keputusan === 'tolak') {
-        $sql = "UPDATE pemesanan SET status_pemesanan = 'Pengajuan Ditolak', tgl_mulai_diajukan = NULL, total_biaya_diajukan = NULL WHERE id_pemesanan = ?";
-        $params = [$id_pemesanan];
-        $pesan = 'Pengajuan telah ditolak.';
+        $pesan_penolakan = "Maaf, pengajuan pengambilan lebih cepat Anda tidak dapat disetujui saat ini.";
+        $sql = "UPDATE pemesanan SET 
+                    status_pemesanan = 'Dikonfirmasi', 
+                    tgl_mulai_diajukan = NULL, 
+                    total_biaya_diajukan = NULL,
+                    catatan_admin = ? 
+                WHERE id_pemesanan = ?";
+        $params = [$pesan_penolakan, $id_pemesanan];
+        $pesan_sukses = 'Pengajuan telah ditolak dan notifikasi telah dikirim ke pelanggan.';
+
     } 
     // Jika KEPUTUSAN DISETUJUI
     elseif ($keputusan === 'setuju') {

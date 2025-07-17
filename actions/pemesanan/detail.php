@@ -59,6 +59,23 @@ require_once '../../includes/header.php';
     <h1>Detail Pemesanan</h1>
 </div>
 
+<?php 
+// ==========================================================
+// BLOK INI UNTUK MENAMPILKAN NOTIFIKASI PENOLAKAN
+// ==========================================================
+if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])): 
+?>
+    <div class="flash-message flash-error">
+        <strong>Pemberitahuan dari Admin:</strong><br>
+        <?= htmlspecialchars($pemesanan['catatan_admin']) ?>
+        
+        <form action="<?= BASE_URL ?>actions/pemesanan/hapus_catatan.php" method="POST" style="margin-top:10px;">
+            <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
+            <button type="submit" class="btn btn-sm btn-light">Saya Mengerti</button>
+        </form>
+    </div>
+<?php endif; ?>
+
 <div class="detail-container">
     <div class="detail-main">
         <div class="info-item booking-code-item">
