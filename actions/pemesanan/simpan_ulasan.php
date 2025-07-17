@@ -1,5 +1,5 @@
 <?php
-// File: actions/pemesanan/simpan_ulasan.php
+// File: actions/pemesanan/simpan_ulasan.php (Versi Perbaikan)
 
 require_once '../../includes/config.php';
 require_once '../../includes/auth.php';
@@ -25,8 +25,8 @@ if ($rating < 1 || $rating > 5) {
 }
 
 try {
-    // Update tabel pemesanan dengan rating dan review baru
-    $sql = "UPDATE pemesanan SET rating = ?, review_pelanggan = ? WHERE id_pemesanan = ? AND id_pengguna = ?";
+    // PERBAIKAN: Menggunakan nama kolom 'rating_pengguna' yang benar sesuai database
+    $sql = "UPDATE pemesanan SET rating_pengguna = ?, review_pelanggan = ? WHERE id_pemesanan = ? AND id_pengguna = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$rating, $review, $id_pemesanan, $id_pengguna]);
 
