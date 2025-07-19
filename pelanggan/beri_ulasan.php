@@ -1,5 +1,5 @@
 <?php
-// File: pelanggan/beri_ulasan.php
+// File: pelanggan/beri_ulasan.php (Versi Final)
 
 require_once '../includes/config.php';
 require_once '../includes/auth.php';
@@ -35,7 +35,7 @@ try {
     }
 
 } catch (PDOException $e) {
-    redirect_with_message('history.php', 'Error database.', 'error');
+    redirect_with_message('history.php', 'Terjadi kesalahan pada database.', 'error');
 }
 
 $page_title = 'Beri Ulasan';
