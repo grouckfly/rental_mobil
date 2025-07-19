@@ -56,6 +56,9 @@ function is_active($page_name, $current_page_name)
                 <li <?= is_active('dashboard.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>pelanggan/dashboard.php">Dashboard</a>
                 </li>
+                <li <?= is_active('mobil.php', $current_page) ?>>
+                    <a href="<?= BASE_URL ?>mobil.php">Mobil Tersedia</a>
+                </li>
                 <li <?= is_active('pemesanan.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>pelanggan/pemesanan.php">Pemesanan Saya</a>
                 </li>

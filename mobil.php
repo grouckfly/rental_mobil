@@ -70,6 +70,15 @@ try {
             <input type="text" name="q" placeholder="Ketik Merk atau Model..." value="<?= htmlspecialchars($search_query) ?>">
         </div>
         <div class="form-group">
+            <label>Jenis</label>
+            <select name="jenis" class="form-control">
+                <option value="">Semua</option>
+                <?php foreach($daftar_jenis as $jenis): ?>
+                    <option value="<?= htmlspecialchars($jenis) ?>" <?= ($jenis_filter === $jenis) ? 'selected' : '' ?>><?= htmlspecialchars($jenis) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group">
             <label>Kelas</label>
             <select name="kelas">
                 <option value="">Semua Kelas</option>
