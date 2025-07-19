@@ -1,28 +1,83 @@
 <?php
-// File: karyawan/mobil.php
+// File: admin/mobil.php (Versi dengan Filter Lanjutan & Sembunyikan Mobil Tidak Aktif)
 
 require_once '../includes/config.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 check_auth(['Admin', 'Karyawan']);
-
-$page_title = 'Data Mobil';
+$page_title = 'Kelola Mobil';
 require_once '../includes/header.php';
 
-// Mengambil semua data mobil
+// Ambil parameter filter dari URL
+$search_query = $_GET['q'] ?? '';
+$status_filter = $_GET['status'] ?? '';
+
+// ==========================================================
+// LOGIKA QUERY DINAMIS
+// ==========================================================
+$sql = "SELECT * FROM mobil WHERE 1=1";
+$params = [];
+
+// Terapkan filter pencarian teks (untuk merk, model, jenis, plat)
+if (!empty($search_query)) {
+    $sql .= " AND (merk LIKE :q OR model LIKE :q OR jenis_mobil LIKE :q OR plat_nomor LIKE :q)";
+    $params[':q'] = "%$search_query%";
+}
+
+// Terapkan filter status
+if (!empty($status_filter)) {
+    // Jika user secara spesifik mencari status, gunakan itu
+    $sql .= " AND status = :status";
+    $params[':status'] = $status_filter;
+}
+
+if (empty($status_filter)) {
+    // Jika filter status "Semua", gunakan urutan custom
+    $sql .= " ORDER BY FIELD(status, 'Tersedia', 'Disewa', 'Perawatan', 'Tidak Aktif'), id_mobil DESC";
+} else {
+    // Jika memfilter status tertentu, urutkan biasa
+    $sql .= " ORDER BY id_mobil DESC";
+}
+
 try {
-    $stmt = $pdo->query("SELECT * FROM mobil ORDER BY id_mobil DESC");
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $cars = $stmt->fetchAll();
 } catch (PDOException $e) {
     $cars = [];
 }
+
+// Daftar status untuk dropdown filter
+$status_list = ['Tersedia', 'Disewa', 'Perawatan', 'Tidak Aktif'];
 ?>
 
-<div class="page-header">
-    <h1>Data Armada Mobil</h1>
-    <p>Lihat dan kelola status ketersediaan armada mobil.</p>
+<div class="page-header with-action">
+    <h1>Kelola Data Mobil</h1>
+    <a href="../actions/mobil/tambah.php" class="btn btn-primary">Tambah Mobil Baru</a>
 </div>
+
+<div class="filter-container">
+    <form action="" method="GET" class="filter-form">
+        <div class="form-group" style="flex-grow: 1;">
+            <label>Cari Mobil</label>
+            <input type="text" name="q" placeholder="Ketik Merk, Model, Jenis, atau Plat Nomor..." value="<?= htmlspecialchars($search_query) ?>" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status" class="form-control">
+                <option value="">Semua</option>
+                <?php foreach($status_list as $s): ?>
+                    <option value="<?= $s ?>" <?= ($status_filter === $s) ? 'selected' : '' ?>><?= $s ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Cari</button>
+        <a href="mobil.php" class="btn btn-secondary">Reset</a>
+    </form>
+</div>
+
+<?php display_flash_message(); ?>
 
 <div class="table-container">
     <table>
@@ -42,23 +97,25 @@ try {
                 <?php foreach ($cars as $car): ?>
                     <tr>
                         <td><?= htmlspecialchars($car['id_mobil']) ?></td>
-                        <td>
-                            <img src="../assets/img/mobil/<?= htmlspecialchars($car['gambar_mobil'] ?: 'default-car.png') ?>" alt="Gambar Mobil" width="80">
-                        </td>
+                        <td><img src="<?= BASE_URL ?>assets/img/mobil/<?= htmlspecialchars($car['gambar_mobil'] ?: 'default-car.png') ?>" alt="Gambar Mobil" width="80"></td>
                         <td><?= htmlspecialchars($car['plat_nomor']) ?></td>
                         <td><?= htmlspecialchars($car['merk'] . ' ' . $car['model']) ?></td>
                         <td><?= format_rupiah($car['harga_sewa_harian']) ?></td>
-                        <td><span class="status-badge status-<?= strtolower($car['status']) ?>"><?= htmlspecialchars($car['status']) ?></span></td>
+                        <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $car['status'])) ?>"><?= htmlspecialchars($car['status']) ?></span></td>
                         <td>
-                            <a href="../actions/mobil/detail.php?id=<?= $car['id_mobil'] ?>" class="btn btn-info btn-sm">Detail</a>
-                            <a href="../actions/mobil/edit.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="<?= BASE_URL ?>actions/mobil/detail.php?id=<?= $car['id_mobil'] ?>" class="btn btn-info btn-sm">Detail</a>
+                            <a href="<?= BASE_URL ?>actions/mobil/edit.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary btn-sm">Edit</a>
+                            <?php if ($_SESSION['role'] === 'Admin'): ?>
+                                <form action="<?= BASE_URL ?>actions/mobil/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus mobil ini?');">
+                                    <input type="hidden" name="id_mobil" value="<?= $car['id_mobil'] ?>">
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                </form>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
-                <tr>
-                    <td colspan="7">Belum ada data mobil.</td>
-                </tr>
+                <tr><td colspan="7">Tidak ada mobil yang ditemukan sesuai kriteria.</td></tr>
             <?php endif; ?>
         </tbody>
     </table>
