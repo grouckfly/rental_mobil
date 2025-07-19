@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initializeStarRatings();
+    initializeSearchableSelect();
 
 });
 
@@ -77,4 +78,19 @@ function initializeStarRatings() {
         // Set variabel CSS --rating-percent pada elemen
         starElement.style.setProperty('--rating-percent', percentage + '%');
     });
+}
+
+function initializeSearchableSelect() {
+    // Cari elemen select dengan ID yang sudah kita buat
+    const selectElement = document.getElementById('filter-mobil');
+    
+    // Jika elemennya ada di halaman ini, inisialisasi Choices.js
+    if (selectElement) {
+        const choices = new Choices(selectElement, {
+            searchEnabled: true,
+            itemSelectText: 'Pilih',
+            removeItemButton: true, // Memunculkan tombol (x) untuk menghapus pilihan
+            placeholder: true
+        });
+    }
 }

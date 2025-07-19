@@ -11,16 +11,23 @@
     
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dark-mode.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
     
     <?php
     // ==========================================================
     // Memuat CSS Role berdasarkan SESSION, bukan folder
     // ==========================================================
     if (isset($_SESSION['role'])) {
+        // 2. Jika sudah login, muat CSS umum untuk dashboard
+        echo "<link rel=\"stylesheet\" href=\"" . BASE_URL . "assets/css/dashboard.css\">";
+
+        // 3. Muat CSS spesifik untuk role tersebut (jika ada)
         $role_folder = strtolower($_SESSION['role']);
         $role_css_path = $role_folder . '/css/' . $role_folder . '.css';
-        // Langsung cetak link, browser yang akan menangani jika file tidak ada (404)
-        echo "<link rel=\"stylesheet\" href=\"" . BASE_URL . $role_css_path . "\">";
+        if (file_exists(dirname(__DIR__) . '/' . $role_css_path)) {
+            echo "<link rel=\"stylesheet\" href=\"" . BASE_URL . $role_css_path . "\">";
+        }
     }
     ?>
 

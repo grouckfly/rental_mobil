@@ -7,12 +7,27 @@ require_once '../../includes/functions.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+// Ambil semua parameter filter dari URL
 $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-01');
 $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-t');
+$status = $_GET['status'] ?? '';
+$nama_pelanggan = $_GET['nama_pelanggan'] ?? '';
+$kode_pesanan = $_GET['kode_pesanan'] ?? '';
+$mobil = $_GET['mobil'] ?? '';
 
-$sql = "SELECT p.*, pg.nama_lengkap, m.merk, m.model FROM pemesanan p JOIN pengguna pg ON p.id_pengguna = pg.id_pengguna JOIN mobil m ON p.id_mobil = m.id_mobil WHERE DATE(p.tanggal_pemesanan) BETWEEN ? AND ? ORDER BY p.tanggal_pemesanan DESC";
+// Bangun query dinamis (SAMA PERSIS SEPERTI DI history.php ADMIN)
+$sql = "SELECT p.*, pg.nama_lengkap, m.merk, m.model FROM pemesanan p JOIN pengguna pg ON p.id_pengguna = pg.id_pengguna JOIN mobil m ON p.id_mobil = m.id_mobil WHERE 1=1";
+$params = [];
+$sql .= " AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?";
+$params[] = $tgl_awal; $params[] = $tgl_akhir;
+if (!empty($status)) { $sql .= " AND p.status_pemesanan = ?"; $params[] = $status; }
+if (!empty($nama_pelanggan)) { $sql .= " AND pg.nama_lengkap LIKE ?"; $params[] = "%$nama_pelanggan%"; }
+if (!empty($kode_pesanan)) { $sql .= " AND p.kode_pemesanan LIKE ?"; $params[] = "%$kode_pesanan%"; }
+if (!empty($mobil)) { $sql .= " AND (m.merk LIKE ? OR m.model LIKE ?)"; $params[] = "%$mobil%"; $params[] = "%$mobil%"; }
+$sql .= " ORDER BY p.tanggal_pemesanan DESC";
+
 $stmt = $pdo->prepare($sql);
-$stmt->execute([$tgl_awal, $tgl_akhir]);
+$stmt->execute($params);
 $data = $stmt->fetchAll();
 
 $spreadsheet = new Spreadsheet();

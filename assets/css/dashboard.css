@@ -1,0 +1,135 @@
+/* File: assets/css/dashboard.css */
+/* Berisi semua style umum untuk halaman setelah login */
+
+/* Layout Utama Dashboard */
+.page-wrapper {
+    display: flex;
+}
+
+.sidebar {
+    position: sticky;
+    top: var(--header-height);
+    width: var(--sidebar-width);
+    height: calc(100vh - var(--header-height));
+    background-color: var(--surface-color);
+    padding: 20px;
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    align-self: flex-start;
+}
+
+.sidebar-header h3 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav li a {
+    display: block;
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    color: var(--muted-text-color);
+}
+
+.sidebar-nav li a:hover {
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.sidebar-nav li.active a {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+    min-width: 0;
+    /* Mencegah konten merusak layout */
+}
+
+/* Komponen Umum Dashboard */
+.page-header {
+    margin-bottom: 20px;
+}
+
+.page-header.with-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-container {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--muted-text-color);
+}
+
+tbody tr:hover {
+    background-color: var(--bg-color);
+}
+
+.filter-container {
+    background-color: var(--surface-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    box-shadow: var(--box-shadow);
+}
+
+.filter-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-form .form-group {
+    margin-bottom: 0;
+}
+
+.export-buttons {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-widgets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.widget {
+    background-color: var(--surface-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}

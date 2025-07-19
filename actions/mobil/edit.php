@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama_file_gambar = $gambar_lama; // Defaultnya adalah gambar lama
     if (isset($_FILES['gambar_mobil']) && $_FILES['gambar_mobil']['error'] === UPLOAD_ERR_OK) {
         // Jika ada file baru yang diunggah, proses
-        $upload_result = upload_file($_FILES['gambar_mobil'], '../../uploads/mobil/');
+        $upload_result = upload_file($_FILES['gambar_mobil'], '../../assets/img/mobil/');
         if (is_array($upload_result)) {
             // Jika upload gagal, tambahkan error
             $errors[] = $upload_result['error'];

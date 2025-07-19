@@ -1,73 +1,122 @@
 <?php
-// File: admin/history.php
+// File: admin/history.php (Versi Universal untuk Semua Role)
 
 require_once '../includes/config.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-check_auth(['Admin', 'Karyawan']);
+// Hak akses untuk semua role yang sudah login
+check_auth(['Admin', 'Karyawan', 'Pelanggan']);
 
 $page_title = 'Riwayat Transaksi';
 require_once '../includes/header.php';
 
-// Ambil tanggal dari parameter GET, atau set default ke bulan ini
-$tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-01');
-$tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-t');
+// Ambil role dan id pengguna dari session
+$role_session = $_SESSION['role'];
+$id_pengguna_session = $_SESSION['id_pengguna'];
 
-// Siapkan query untuk mengambil data sesuai filter tanggal
-$sql = "SELECT p.*, pg.nama_lengkap, m.merk, m.model
+// Ambil semua parameter filter dari URL
+$tgl_awal = $_GET['tgl_awal'] ?? '';
+$tgl_akhir = $_GET['tgl_akhir'] ?? '';
+$status = $_GET['status'] ?? '';
+$kode_pesanan = $_GET['kode_pesanan'] ?? '';
+$mobil = $_GET['mobil'] ?? '';
+$nama_pelanggan = $_GET['nama_pelanggan'] ?? ''; // Hanya untuk admin/karyawan
+
+// ==========================================================
+// LOGIKA QUERY DINAMIS BERDASARKAN ROLE
+// ==========================================================
+$sql = "SELECT p.*, pg.nama_lengkap, m.merk, m.model, m.gambar_mobil
         FROM pemesanan p
         JOIN pengguna pg ON p.id_pengguna = pg.id_pengguna
         JOIN mobil m ON p.id_mobil = m.id_mobil
-        WHERE DATE(p.tanggal_pemesanan) BETWEEN ? AND ?
-        ORDER BY p.tanggal_pemesanan DESC";
+        WHERE 1=1";
+$params = [];
+
+// Jika yang login adalah Pelanggan, WAJIB filter berdasarkan ID mereka
+if ($role_session === 'Pelanggan') {
+    $sql .= " AND p.id_pengguna = ?";
+    $params[] = $id_pengguna_session;
+}
+
+// Terapkan filter lainnya
+if (!empty($tgl_awal) && !empty($tgl_akhir)) { $sql .= " AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?"; $params[] = $tgl_awal; $params[] = $tgl_akhir; }
+if (!empty($status)) { $sql .= " AND p.status_pemesanan = ?"; $params[] = $status; }
+if (!empty($kode_pesanan)) { $sql .= " AND p.kode_pemesanan LIKE ?"; $params[] = "%$kode_pesanan%"; }
+if (!empty($mobil)) { $sql .= " AND (m.merk LIKE ? OR m.model LIKE ?)"; $params[] = "%$mobil%"; $params[] = "%$mobil%"; }
+
+// Terapkan filter nama pelanggan HANYA untuk Admin/Karyawan
+if (in_array($role_session, ['Admin', 'Karyawan']) && !empty($nama_pelanggan)) {
+    $sql .= " AND pg.nama_lengkap LIKE ?";
+    $params[] = "%$nama_pelanggan%";
+}
+$sql .= " ORDER BY p.tanggal_pemesanan DESC";
 
 try {
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$tgl_awal, $tgl_akhir]);
+    $stmt->execute($params);
     $histories = $stmt->fetchAll();
-} catch (PDOException $e) {
-    $histories = [];
-}
+} catch (PDOException $e) { $histories = []; }
+
+// Daftar status untuk dropdown
+$status_list = ['Selesai', 'Dibatalkan', 'Berjalan', 'Dikonfirmasi', 'Menunggu Pembayaran', 'Pengajuan Ditolak'];
 ?>
 
-<div class="page-header">
-    <h1>Riwayat Transaksi</h1>
-    <p>Daftar semua transaksi yang telah selesai atau dibatalkan.</p>
-</div>
+<div class="page-header"><h1>Riwayat Transaksi</h1></div>
 
 <div class="filter-container">
     <form action="" method="GET" class="filter-form">
-        <div class="form-group">
-            <label for="tgl_awal">Dari Tanggal</label>
-            <input type="date" id="tgl_awal" name="tgl_awal" value="<?= htmlspecialchars($tgl_awal) ?>" class="form-control">
+        <div class="form-group"><label>Dari Tgl</label><input type="date" name="tgl_awal" value="<?= htmlspecialchars($tgl_awal) ?>"></div>
+        <div class="form-group"><label>Sampai Tgl</label><input type="date" name="tgl_akhir" value="<?= htmlspecialchars($tgl_akhir) ?>"></div>
+        <div class="form-group"><label>Status</label>
+            <select name="status"><option value="">Semua</option>
+                <?php foreach($status_list as $s): ?><option value="<?= $s ?>" <?= ($status === $s) ? 'selected' : '' ?>><?= $s ?></option><?php endforeach; ?>
+            </select>
         </div>
+        <div class="form-group"><label>Kode</label><input type="text" name="kode_pesanan" placeholder="Kode Pesanan..." value="<?= htmlspecialchars($kode_pesanan) ?>"></div>
+        
         <div class="form-group">
-            <label for="tgl_akhir">Sampai Tanggal</label>
-            <input type="date" id="tgl_akhir" name="tgl_akhir" value="<?= htmlspecialchars($tgl_akhir) ?>" class="form-control">
+            <label>Mobil</label>
+            <select name="id_mobil" id="filter-mobil">
+                <option value="">Ketik untuk mencari mobil...</option>
+                <?php foreach($daftar_mobil as $mobil_item): ?>
+                    <option value="<?= $mobil_item['id_mobil'] ?>" <?= ($id_mobil === $mobil_item['id_mobil']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($mobil_item['merk'] . ' ' . $mobil_item['model']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
         </div>
+
+        <?php // Tampilkan filter nama pelanggan HANYA untuk Admin/Karyawan
+        if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
+            <div class="form-group"><label>Pelanggan</label><input type="text" name="nama_pelanggan" placeholder="Nama Pelanggan..." value="<?= htmlspecialchars($nama_pelanggan) ?>"></div>
+        <?php endif; ?>
+
         <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="history.php" class="btn btn-secondary">Reset</a>
     </form>
 </div>
 
+<?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
 <div class="export-buttons">
     <p>Total ditemukan: <strong><?= count($histories) ?></strong> transaksi.</p>
-    <?php if (!empty($histories)): ?>
-        <a href="../actions/export/excel.php?tgl_awal=<?= $tgl_awal ?>&tgl_akhir=<?= $tgl_akhir ?>" class="btn btn-success">Export ke Excel</a>
-        <a href="../actions/export/pdf.php?tgl_awal=<?= $tgl_awal ?>&tgl_akhir=<?= $tgl_akhir ?>" class="btn btn-danger" target="_blank">Export ke PDF</a>
+    <?php if (!empty($histories)): 
+        $export_params = http_build_query($_GET);
+    ?>
+        <a href="../actions/export/excel.php?<?= $export_params ?>" class="btn btn-success">Export ke Excel</a>
+        <a href="../actions/export/pdf.php?<?= $export_params ?>" class="btn btn-danger" target="_blank">Export ke PDF</a>
     <?php endif; ?>
 </div>
-
+<?php endif; ?>
 
 <div class="table-container">
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Pelanggan</th>
+                <th>Kode</th>
+                <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?><th>Pelanggan</th><?php endif; ?>
                 <th>Mobil</th>
-                <th>Total Biaya</th>
-                <th>Tgl Selesai</th>
+                <th>Tanggal</th>
                 <th>Status</th>
                 <th>Aksi</th>
             </tr>
@@ -76,26 +125,24 @@ try {
             <?php if (!empty($histories)): ?>
                 <?php foreach ($histories as $history): ?>
                     <tr>
-                        <td>#<?= htmlspecialchars($history['id_pemesanan']) ?></td>
-                        <td><?= htmlspecialchars($history['nama_lengkap']) ?></td>
+                        <td><strong><?= htmlspecialchars($history['kode_pemesanan']) ?></strong></td>
+                        <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?><td><?= htmlspecialchars($history['nama_lengkap']) ?></td><?php endif; ?>
                         <td><?= htmlspecialchars($history['merk'] . ' ' . $history['model']) ?></td>
-                        <td><?= format_rupiah($history['total_biaya']) ?></td>
-                        <td><?= date('d M Y, H:i', strtotime($history['tanggal_selesai'])) ?></td>
+                        <td><?= date('d M Y', strtotime($history['tanggal_pemesanan'])) ?></td>
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $history['status_pemesanan'])) ?>"><?= htmlspecialchars($history['status_pemesanan']) ?></span></td>
                         <td>
                             <a href="<?= BASE_URL ?>actions/pemesanan/detail.php?id=<?= $history['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
+                            <?php if ($role_session === 'Pelanggan' && $history['status_pemesanan'] === 'Selesai' && empty($history['review_pelanggan'])): ?>
+                                <a href="<?= BASE_URL ?>pelanggan/beri_ulasan.php?id=<?= $history['id_pemesanan'] ?>" class="btn btn-primary btn-sm">Beri Review</a>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
-                <tr>
-                    <td colspan="7">Belum ada riwayat transaksi.</td>
-                </tr>
+                <tr><td colspan="7">Tidak ada riwayat yang ditemukan sesuai kriteria.</td></tr>
             <?php endif; ?>
         </tbody>
     </table>
 </div>
 
-<?php
-require_once '../includes/footer.php';
-?>
+<?php require_once '../includes/footer.php'; ?>

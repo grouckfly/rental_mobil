@@ -7,6 +7,8 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
     <script src="<?= BASE_URL ?>assets/js/script.js"></script>
     <script src="<?= BASE_URL ?>assets/js/dark-mode.js"></script>
 
