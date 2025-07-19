@@ -55,7 +55,7 @@ require_once '../includes/header.php';
             </div>
             
             <button type="submit" class="btn btn-primary"><?= ($mode === 'tambah') ? 'Kirim Ulasan' : 'Simpan Perubahan' ?></button>
-            <a href="<?= BASE_URL ?>pelanggan/history.php" class="btn btn-secondary">Batal</a>
+            <a href="<?= BASE_URL ?>admin/history.php" class="btn btn-secondary">Batal</a>
         </form>
     </div>
 </div>

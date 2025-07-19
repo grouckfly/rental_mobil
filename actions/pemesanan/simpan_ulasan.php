@@ -31,7 +31,7 @@ try {
     $stmt->execute($params);
 
     // Jika berhasil, redirect seperti biasa
-    redirect_with_message(BASE_URL . 'pelanggan/history.php', 'Terima kasih! Ulasan Anda telah berhasil disimpan.');
+    redirect_with_message(BASE_URL . 'admin/history.php', 'Terima kasih! Ulasan Anda telah berhasil disimpan.');
 
 } catch (PDOException $e) {
     // ========================================================
