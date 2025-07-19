@@ -59,15 +59,6 @@ try {
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $history['status_pemesanan'])) ?>"><?= htmlspecialchars($history['status_pemesanan']) ?></span></td>
                         <td>
                             <a href="<?= BASE_URL ?>actions/pemesanan/detail.php?id=<?= $history['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
-                            <?php 
-                            // PERBAIKAN: Logika untuk menampilkan tombol yang sesuai
-                            if ($history['status_pemesanan'] === 'Selesai'):
-                                if (empty($history['review_pelanggan'])): ?>
-                                    <a href="<?= BASE_URL ?>pelanggan/beri_ulasan.php?id=<?= $history['id_pemesanan'] ?>" class="btn btn-primary btn-sm">Beri Review</a>
-                                <?php else: ?>
-                                    <a href="<?= BASE_URL ?>pelanggan/beri_ulasan.php?id=<?= $history['id_pemesanan'] ?>" class="btn btn-secondary btn-sm">Edit Ulasan</a>
-                                <?php endif;
-                            endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

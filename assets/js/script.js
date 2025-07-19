@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    initializeStarRatings();
+
 });
 
 /**
@@ -54,4 +56,25 @@ function showToast(message, type = 'success') {
             toast.remove();
         }, 500); // Waktu ini harus cocok dengan durasi transisi di CSS
     }, 2500);
+}
+
+
+/**
+ * Fungsi baru untuk menampilkan rating bintang secara dinamis.
+ */
+function initializeStarRatings() {
+    // Cari semua elemen dengan class .star-rating
+    const starRatingElements = document.querySelectorAll('.star-rating');
+    
+    // Lakukan loop untuk setiap elemen yang ditemukan
+    starRatingElements.forEach(starElement => {
+        // Ambil nilai rating dari atribut data-rating
+        const rating = parseFloat(starElement.dataset.rating) || 0;
+        
+        // Hitung persentase lebar bintang kuning
+        const percentage = (rating / 5) * 100;
+
+        // Set variabel CSS --rating-percent pada elemen
+        starElement.style.setProperty('--rating-percent', percentage + '%');
+    });
 }
