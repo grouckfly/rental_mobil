@@ -81,16 +81,24 @@ function initializeStarRatings() {
 }
 
 function initializeSearchableSelect() {
-    // Cari elemen select dengan ID yang sudah kita buat
-    const selectElement = document.getElementById('filter-mobil');
+    // Gunakan jQuery untuk menargetkan elemen
+    const $selectElement = $('#filter-mobil');
     
-    // Jika elemennya ada di halaman ini, inisialisasi Choices.js
-    if (selectElement) {
-        const choices = new Choices(selectElement, {
-            searchEnabled: true,
-            itemSelectText: 'Pilih',
-            removeItemButton: true, // Memunculkan tombol (x) untuk menghapus pilihan
-            placeholder: true
+    if ($selectElement.length) {
+        $selectElement.select2({
+            placeholder: 'Ketik untuk mencari mobil...',
+            allowClear: true,
+            ajax: {
+                url: '../actions/mobil/cari_mobil.php', // Arahkan ke endpoint PHP kita
+                dataType: 'json',
+                delay: 250, // Tunggu 250ms setelah user berhenti mengetik
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true
+            }
         });
     }
 }

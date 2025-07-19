@@ -77,13 +77,18 @@ $status_list = ['Selesai', 'Dibatalkan', 'Berjalan', 'Dikonfirmasi', 'Menunggu P
         
         <div class="form-group">
             <label>Mobil</label>
-            <select name="id_mobil" id="filter-mobil">
-                <option value="">Ketik untuk mencari mobil...</option>
-                <?php foreach($daftar_mobil as $mobil_item): ?>
-                    <option value="<?= $mobil_item['id_mobil'] ?>" <?= ($id_mobil === $mobil_item['id_mobil']) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($mobil_item['merk'] . ' ' . $mobil_item['model']) ?>
-                    </option>
-                <?php endforeach; ?>
+            <select name="id_mobil" id="filter-mobil" style="width: 250px;">
+                <?php
+                // Jika ada mobil yang sudah dipilih sebelumnya, tampilkan sebagai opsi awal
+                if ($id_mobil > 0) {
+                    $stmt_mobil_pilihan = $pdo->prepare("SELECT id_mobil, merk, model FROM mobil WHERE id_mobil = ?");
+                    $stmt_mobil_pilihan->execute([$id_mobil]);
+                    $mobil_pilihan = $stmt_mobil_pilihan->fetch();
+                    if ($mobil_pilihan) {
+                        echo '<option value="' . $mobil_pilihan['id_mobil'] . '" selected>' . htmlspecialchars($mobil_pilihan['merk'] . ' ' . $mobil_pilihan['model']) . '</option>';
+                    }
+                }
+                ?>
             </select>
         </div>
 
