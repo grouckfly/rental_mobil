@@ -33,3 +33,30 @@
 .rating:not(:checked) > label:hover ~ label:before {
     color: #ffc107;
 }
+
+/* ========================================= */
+/* Style untuk Halaman Pembayaran            */
+/* ========================================= */
+.payment-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    background: var(--surface-color);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.total-amount {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+/* Responsiveness untuk layar kecil */
+@media (max-width: 800px) {
+    .payment-container {
+        grid-template-columns: 1fr;
+    }
+}
