@@ -228,9 +228,21 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
             <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
             <a href="<?= BASE_URL ?>pelanggan/ajukan_ambil_cepat.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-info">Ambil Lebih Cepat</a>
         <?php elseif ($pemesanan['status_pemesanan'] === 'Selesai'): ?>
-            <a href="<?= BASE_URL ?>pelanggan/beri_ulasan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Beri Review</a>
+            <?php 
+        // PERBAIKAN: Logika untuk tombol ulasan
+        if ($pemesanan['status_pemesanan'] === 'Selesai'):
+            if (empty($pemesanan['review_pelanggan'])): ?>
+                <a href="<?= BASE_URL ?>pelanggan/beri_ulasan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Beri Review</a>
+            <?php else: ?>
+                <a href="<?= BASE_URL ?>pelanggan/beri_ulasan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-secondary">Edit Ulasan</a>
+            <?php endif;
+        // Tombol lain untuk pelanggan
+        elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
+             <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
+             <a href="<?= BASE_URL ?>pelanggan/ajukan_ambil_cepat.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-info">Ambil Lebih Cepat</a>
         <?php endif; ?>
     <?php endif; ?>
+<?php endif; ?>
 
     <a href="<?= BASE_URL . strtolower($role_session) ?>/dashboard.php" class="btn btn-secondary">Kembali</a>
 </div>
