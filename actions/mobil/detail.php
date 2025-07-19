@@ -15,7 +15,7 @@ if ($id_mobil === 0) {
 
 // Ambil data lengkap mobil dari database
 try {
-    $stmt = $pdo->prepare("SELECT * FROM mobil WHERE id_mobil = ? AND status = 'Tersedia'");
+    $stmt = $pdo->prepare("SELECT * FROM mobil WHERE id_mobil = ?");
     $stmt->execute([$id_mobil]);
     $mobil = $stmt->fetch();
     // Jika mobil tidak ditemukan atau tidak tersedia, arahkan kembali
@@ -42,7 +42,7 @@ require_once '../../includes/header.php';
     </div>
     <div class="detail-info">
         <h2><?= htmlspecialchars($mobil['merk'] . ' ' . $mobil['model']) ?></h2>
-        <span class="status-badge status-<?= strtolower($mobil['status']) ?>"><?= htmlspecialchars($mobil['status']) ?></span>
+        <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $mobil['status'])) ?>"><?= htmlspecialchars($mobil['status']) ?></span>
 
         <div class="info-grid">
             <div class="info-item">

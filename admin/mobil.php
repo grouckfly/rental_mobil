@@ -48,7 +48,7 @@ try {
                         <td><?= htmlspecialchars($car['plat_nomor']) ?></td>
                         <td><?= htmlspecialchars($car['merk'] . ' ' . $car['model']) ?></td>
                         <td><?= format_rupiah($car['harga_sewa_harian']) ?></td>
-                        <td><span class="status-badge status-<?= strtolower($car['status']) ?>"><?= htmlspecialchars($car['status']) ?></span></td>
+                        <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $car['status'])) ?>"><?= htmlspecialchars($car['status']) ?></span></td>
                         <td>
                             <a href="../actions/mobil/detail.php?id=<?= $car['id_mobil'] ?>" class="btn btn-info btn-sm">Detail</a>
                             <a href="../actions/mobil/edit.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary btn-sm">Edit</a>

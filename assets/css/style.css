@@ -367,7 +367,6 @@ tbody tr:hover {
 .status-menunggu-pembayaran-denda,
 .status-tidak-aktif {
     background-color: var(--secondary-color);
-    color: var(--text-color); /* PERBAIKAN: Teks diubah menjadi gelap */
 }
 
 /* Flash Messages */
