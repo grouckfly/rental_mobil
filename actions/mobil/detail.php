@@ -1,65 +1,71 @@
 <?php
-// File: actions/mobil/detail.php
+// File: actions/mobil/detail.php (Versi Lengkap)
 
-// Memanggil file konfigurasi dan fungsi, tidak memanggil auth.php di awal agar bisa diakses publik
 require_once '../../includes/config.php';
+require_once '../../includes/auth.php';
 require_once '../../includes/functions.php';
 
-// Ambil dan validasi ID mobil dari URL
+// Hak akses untuk Admin dan Karyawan
+check_auth(['Admin', 'Karyawan']);
+
 $id_mobil = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id_mobil === 0) {
-    // Jika tidak ada ID, arahkan kembali ke halaman daftar mobil
-    header("Location: " . BASE_URL . "mobil.php");
-    exit;
+    redirect_with_message('../../admin/mobil.php', 'ID Mobil tidak valid.', 'error');
 }
 
-// Ambil data lengkap mobil dari database
+// Ambil semua data mobil dari database
 try {
     $stmt = $pdo->prepare("SELECT * FROM mobil WHERE id_mobil = ?");
     $stmt->execute([$id_mobil]);
     $mobil = $stmt->fetch();
-    // Jika mobil tidak ditemukan atau tidak tersedia, arahkan kembali
     if (!$mobil) {
-        header("Location: " . BASE_URL . "mobil.php?status=not_found");
-        exit;
+        redirect_with_message('../../admin/mobil.php', 'Mobil dengan ID tersebut tidak ditemukan.', 'error');
     }
 } catch (PDOException $e) {
-    // Tangani error database
-    die("Terjadi kesalahan pada database.");
+    redirect_with_message('../../admin/mobil.php', 'Terjadi kesalahan pada database.', 'error');
 }
 
 $page_title = 'Detail Mobil: ' . htmlspecialchars($mobil['merk'] . ' ' . $mobil['model']);
 require_once '../../includes/header.php';
 ?>
 
-<div class="page-header">
-    <h1>Detail Mobil</h1>
+<div class="page-top-bar">
+    <div class="page-header">
+        <h1>Detail Mobil</h1>
+    </div>
+    <div class="detail-actions">
+        <a href="../../admin/mobil.php" class="btn btn-secondary">Kembali</a>
+        <a href="edit.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Edit</a>
+        <?php if ($_SESSION['role'] === 'Admin'): ?>
+            <form action="hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus mobil ini?');">
+                <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
+                <button type="submit" class="btn btn-danger">Hapus</button>
+            </form>
+        <?php endif; ?>
+    </div>
 </div>
 
 <div class="detail-container">
     <div class="detail-image">
         <img src="<?= BASE_URL ?>assets/img/mobil/<?= htmlspecialchars($mobil['gambar_mobil'] ?: 'default-car.png') ?>" alt="Gambar <?= htmlspecialchars($mobil['merk']) ?>">
     </div>
+
     <div class="detail-info">
         <h2><?= htmlspecialchars($mobil['merk'] . ' ' . $mobil['model']) ?></h2>
         <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $mobil['status'])) ?>"><?= htmlspecialchars($mobil['status']) ?></span>
 
         <div class="info-grid">
-            <div class="info-item">
-                <span class="label">Plat Nomor</span>
-                <span class="value"><?= htmlspecialchars($mobil['plat_nomor']) ?></span>
-            </div>
-            <div class="info-item">
-                <span class="label">Tahun</span>
-                <span class="value"><?= htmlspecialchars($mobil['tahun']) ?></span>
-            </div>
-            <div class="info-item">
-                <span class="label">Harga Sewa / Hari</span>
-                <span class="value price"><?= format_rupiah($mobil['harga_sewa_harian']) ?></span>
-            </div>
+            <div class="info-item"><span class="label">Plat Nomor</span><span class="value"><?= htmlspecialchars($mobil['plat_nomor']) ?></span></div>
+            <div class="info-item"><span class="label">Tahun</span><span class="value"><?= htmlspecialchars($mobil['tahun']) ?></span></div>
+            <div class="info-item"><span class="label">Jenis Mobil</span><span class="value"><?= htmlspecialchars($mobil['jenis_mobil']) ?></span></div>
+            <div class="info-item"><span class="label">Kelas Mobil</span><span class="value"><?= htmlspecialchars($mobil['kelas_mobil']) ?></span></div>
+            <div class="info-item"><span class="label">Harga Sewa / Hari</span><span class="value price"><?= format_rupiah($mobil['harga_sewa_harian']) ?></span></div>
+            <div class="info-item"><span class="label">Denda / Hari</span><span class="value price"><?= format_rupiah($mobil['denda_per_hari']) ?></span></div>
         </div>
+    </div>
 
-        <div class="info-item full-width">
+    <div class="detail-full-width">
+        <div class="info-item">
             <span class="label">Spesifikasi & Fitur</span>
             <div class="value description">
                 <?= nl2br(htmlspecialchars($mobil['spesifikasi'])) ?>
@@ -67,56 +73,6 @@ require_once '../../includes/header.php';
         </div>
     </div>
 </div>
-
-<div class="booking-section">
-    <?php if (isset($_SESSION['id_pengguna']) && $_SESSION['role'] === 'Pelanggan'): ?>
-        <div class="form-container">
-            <div class="form-box">
-                <h3>Formulir Pemesanan</h3>
-                <form action="<?= BASE_URL ?>actions/pemesanan/proses.php" method="POST">
-                    <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
-                    <input type="hidden" name="id_pengguna" value="<?= $_SESSION['id_pengguna'] ?>">
-                    <input type="hidden" name="harga_sewa_harian" value="<?= $mobil['harga_sewa_harian'] ?>">
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="tanggal_mulai">Tanggal Mulai Sewa</label>
-                            <input type="date" id="tanggal_mulai" name="tanggal_mulai" required min="<?= date('Y-m-d') ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="tanggal_selesai">Tanggal Selesai Sewa</label>
-                            <input type="date" id="tanggal_selesai" name="tanggal_selesai" required min="<?= date('Y-m-d') ?>">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Sewa Sekarang</button>
-                </form>
-            </div>
-        </div>
-
-    <?php elseif (isset($_SESSION['id_pengguna']) && in_array($_SESSION['role'], ['Admin', 'Karyawan'])): ?>
-        <div class="info-box">
-            <a href="<?= BASE_URL . strtolower($_SESSION['role']) ?>/mobil.php" class="btn btn-secondary">Kembali</a>
-            <a href="edit.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Edit Mobil</a>
-            <?php
-            // Tombol Hapus (Hanya untuk Admin)
-            if ($_SESSION['role'] === 'Admin'):
-            ?>
-                <form action="hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mobil ini?');">
-                    <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
-                    <button type="submit" class="btn btn-danger">Hapus Mobil</button>
-                </form>
-            <?php endif; ?>
-        </div>
-
-    <?php else: ?>
-        <div class="info-box">
-            <h3>Ingin Menyewa Mobil Ini?</h3>
-            <p>Silakan login terlebih dahulu untuk melanjutkan proses pemesanan.</p>
-            <a href="<?= BASE_URL ?>login.php" class="btn btn-primary">Login untuk Memesan</a>
-        </div>
-    <?php endif; ?>
-</div>
-
 
 <?php
 require_once '../../includes/footer.php';

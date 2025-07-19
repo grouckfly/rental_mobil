@@ -129,3 +129,30 @@ body.dark-mode .cancellation-info {
     flex-wrap: wrap;
     gap: 10px;
 }
+
+/* Detail spesifikasi fitur mobil */
+.detail-full-width {
+    grid-column: 1 / -1;
+}
+
+/* ========================================= */
+/* Style untuk Baris Atas (Judul & Tombol Aksi) */
+/* ========================================= */
+.page-top-bar {
+    display: flex;
+    justify-content: space-between; /* Mendorong judul ke kiri dan tombol ke kanan */
+    align-items: center; /* Menyejajarkan secara vertikal */
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Agar responsif di layar kecil */
+    gap: 15px;
+}
+
+/* Hapus margin bawah dari judul halaman jika berada di dalam baris atas */
+.page-top-bar .page-header {
+    margin-bottom: 0;
+}
+
+/* Atur agar tombol aksi tidak memiliki margin atas */
+.page-top-bar .detail-actions {
+    margin-top: 0;
+}
