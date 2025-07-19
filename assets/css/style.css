@@ -426,16 +426,75 @@ tbody tr:hover {
     box-shadow: var(--box-shadow);
 }
 
-/* Car Card */
+/* ========================================= */
+/* Style untuk Halaman Daftar Mobil Publik   */
+/* ========================================= */
+
+/* 1. Header Halaman */
+.page-header {
+    background-color: var(--surface-color);
+    padding: 2rem 0;
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.page-header h1 {
+    margin-bottom: 5px;
+}
+
+.page-header p {
+    color: var(--muted-text-color);
+    font-size: 1.1rem;
+}
+
+
+/* 2. Kontainer Filter Pencarian */
+.filter-container {
+    background-color: var(--surface-color);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    margin-bottom: 40px;
+    box-shadow: var(--box-shadow);
+}
+
+.filter-form {
+    display: flex;
+    align-items: flex-end; /* Membuat tombol dan input sejajar di bagian bawah */
+    gap: 20px;
+    flex-wrap: wrap; /* Agar responsif di layar kecil */
+}
+
+.filter-form .form-group {
+    margin-bottom: 0;
+    flex: 1 1 180px; /* Fleksibel, basis 180px per item */
+}
+
+.filter-form .form-group label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.filter-form input,
+.filter-form select {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+/* 3. Kartu Mobil (Car Card) */
 .featured-cars-section {
     padding: 60px 0;
 }
 
 .car-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, 320px);
     gap: 30px;
-    margin-bottom: 40px;
+    justify-content: center; 
 }
 
 .car-card {
@@ -445,30 +504,63 @@ tbody tr:hover {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.car-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .car-card-image img {
     width: 100%;
     height: 200px;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .car-card-content {
     padding: 20px;
-    flex: 1;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
 .car-card-content h3 {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     margin-bottom: 10px;
 }
 
 .car-card-content .car-price {
-    margin-bottom: 20px;
-    margin-top: auto;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
+    margin-top: auto; /* Mendorong harga dan tombol ke bawah */
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.car-card-content .car-price strong {
+    color: var(--primary-color);
+}
+
+.car-card .btn {
+    margin-top: 15px;
+    width: 100%;
+}
+
+/* 4. Tampilan Jika Hasil Kosong */
+.empty-state {
+    grid-column: 1 / -1; /* Mengisi seluruh lebar grid */
+    text-align: center;
+    padding: 40px;
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+}
+
+/* 5. Responsiveness */
+@media (max-width: 768px) {
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
 
 .section-cta {
