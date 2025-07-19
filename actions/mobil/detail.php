@@ -77,7 +77,7 @@ require_once '../../includes/header.php';
                     <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
                     <input type="hidden" name="id_pengguna" value="<?= $_SESSION['id_pengguna'] ?>">
                     <input type="hidden" name="harga_sewa_harian" value="<?= $mobil['harga_sewa_harian'] ?>">
-                    
+
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="tanggal_mulai">Tanggal Mulai Sewa</label>
@@ -95,8 +95,17 @@ require_once '../../includes/header.php';
 
     <?php elseif (isset($_SESSION['id_pengguna']) && in_array($_SESSION['role'], ['Admin', 'Karyawan'])): ?>
         <div class="info-box">
-            <p>Anda login sebagai <?= $_SESSION['role'] ?>. Tombol pemesanan hanya tersedia untuk pelanggan.</p>
-            <a href="<?= BASE_URL . strtolower($_SESSION['role']) ?>/dashboard.php" class="btn btn-secondary">Kembali ke Dashboard</a>
+            <a href="<?= BASE_URL . strtolower($_SESSION['role']) ?>/mobil.php" class="btn btn-secondary">Kembali</a>
+            <a href="edit.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Edit Mobil</a>
+            <?php
+            // Tombol Hapus (Hanya untuk Admin)
+            if ($_SESSION['role'] === 'Admin'):
+            ?>
+                <form action="hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mobil ini?');">
+                    <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
+                    <button type="submit" class="btn btn-danger">Hapus Mobil</button>
+                </form>
+            <?php endif; ?>
         </div>
 
     <?php else: ?>

@@ -151,16 +151,7 @@ $kelas_list = ['Low Level', 'Mid Level', 'High Level', 'Luxury'];
                         <td><?= htmlspecialchars($car['kelas_mobil']) ?></td>
                         <td><?= format_rupiah($car['harga_sewa_harian']) ?></td>
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $car['status'])) ?>"><?= htmlspecialchars($car['status']) ?></span></td>
-                        <td>
-                            <a href="<?= BASE_URL ?>actions/mobil/detail.php?id=<?= $car['id_mobil'] ?>" class="btn btn-info btn-sm">Detail</a>
-                            <a href="<?= BASE_URL ?>actions/mobil/edit.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary btn-sm">Edit</a>
-                            <?php if ($_SESSION['role'] === 'Admin'): ?>
-                                <form action="<?= BASE_URL ?>actions/mobil/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus mobil ini?');">
-                                    <input type="hidden" name="id_mobil" value="<?= $car['id_mobil'] ?>">
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
-                            <?php endif; ?>
-                        </td>
+                        <td><a href="<?= BASE_URL ?>actions/mobil/detail.php?id=<?= $car['id_mobil'] ?>" class="btn btn-info btn-sm">Detail</a></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
