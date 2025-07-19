@@ -11,12 +11,18 @@
     <script src="<?= BASE_URL ?>assets/js/dark-mode.js"></script>
 
     <?php
-    $current_dir = basename(dirname($_SERVER['PHP_SELF']));
-    $js_file_path = "js/{$current_dir}.js";
-    if (file_exists($js_file_path)) {
-        echo "<script src=\"{$js_file_path}\"></script>";
+    // ================================================
+    // Memuat JS Role berdasarkan SESSION, bukan folder
+    // ================================================
+    if (isset($_SESSION['role'])) {
+        $role_folder = strtolower($_SESSION['role']);
+        $role_js_path = $role_folder . '/js/' . $role_folder . '.js';
+        // Langsung cetak script, browser yang akan menangani jika file tidak ada (404)
+        echo "<script src=\"" . BASE_URL . $role_js_path . "\"></script>";
     }
-    display_flash_message();
+    
+    // Menampilkan notifikasi toast jika ada
+    display_flash_message(); 
     ?>
 </body>
 </html>

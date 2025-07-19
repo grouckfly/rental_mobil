@@ -13,12 +13,17 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dark-mode.css">
     
     <?php
-    $current_dir = basename(dirname($_SERVER['PHP_SELF']));
-    if (in_array($current_dir, ['admin', 'karyawan', 'pelanggan'])) {
-        // Path ke CSS role akan relatif dari halaman yang memanggilnya, ini sudah benar
-        echo "<link rel=\"stylesheet\" href=\"css/{$current_dir}.css\">";
+    // ==========================================================
+    // Memuat CSS Role berdasarkan SESSION, bukan folder
+    // ==========================================================
+    if (isset($_SESSION['role'])) {
+        $role_folder = strtolower($_SESSION['role']);
+        $role_css_path = $role_folder . '/css/' . $role_folder . '.css';
+        // Langsung cetak link, browser yang akan menangani jika file tidak ada (404)
+        echo "<link rel=\"stylesheet\" href=\"" . BASE_URL . $role_css_path . "\">";
     }
     ?>
+
 </head>
 <body>
 

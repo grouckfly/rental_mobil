@@ -83,7 +83,7 @@ try {
                         <td><?= date('d M Y, H:i', strtotime($history['tanggal_selesai'])) ?></td>
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $history['status_pemesanan'])) ?>"><?= htmlspecialchars($history['status_pemesanan']) ?></span></td>
                         <td>
-                            <a href="detail_pemesanan.php?id=<?= $history['id_pemesanan'] ?>" class="btn btn-secondary btn-sm">Lihat Detail</a>
+                            <a href="<?= BASE_URL ?>actions/pemesanan/detail.php?id=<?= $history['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

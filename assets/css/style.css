@@ -711,9 +711,9 @@ tbody tr:hover {
     display: block;
 }
 
-/* ======================================================== */
-/* Style Khusus untuk Mencetak (Print) - VERSI PERBAIKAN    */
-/* ======================================================== */
+/* ====================================== */
+/* Style Khusus untuk Mencetak (Print)    */
+/* ====================================== */
 @media print {
     /* 1. Sembunyikan semua elemen yang tidak perlu dicetak */
     .main-header,

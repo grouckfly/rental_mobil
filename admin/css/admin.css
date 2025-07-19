@@ -129,3 +129,31 @@ body.dark-mode .cancellation-info {
     flex-wrap: wrap;
     gap: 10px;
 }
+
+/* ========================================= */
+/* Style untuk Tampilan Rating Bintang       */
+/* ========================================= */
+.star-rating {
+    display: inline-block;
+    position: relative;
+    font-size: 1.5rem; /* Ukuran bintang */
+    color: #ddd; /* Warna bintang latar belakang (abu-abu) */
+    letter-spacing: 3px;
+}
+
+.star-rating::before {
+    /* Tampilkan 5 bintang solid sesuai warna di atas */
+    content: '★★★★★';
+}
+
+.star-rating::after {
+    /* Tampilkan bintang kuning di atasnya sesuai persentase rating */
+    content: '★★★★★';
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #ffc107; /* Warna bintang aktif (kuning) */
+    overflow: hidden;
+    /* Lebar bintang kuning ini diatur oleh variabel --rating-percent dari JS */
+    width: var(--rating-percent);
+}
