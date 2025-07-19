@@ -89,9 +89,9 @@ function initializeSearchableSelect() {
             placeholder: 'Ketik untuk mencari mobil...',
             allowClear: true,
             ajax: {
-                url: '../actions/mobil/cari_mobil.php', // Arahkan ke endpoint PHP kita
+                url: BASE_URL + 'actions/mobil/cari_mobil.php',
                 dataType: 'json',
-                delay: 250, // Tunggu 250ms setelah user berhenti mengetik
+                delay: 50,
                 processResults: function (data) {
                     return {
                         results: data.results

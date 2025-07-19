@@ -1,6 +1,6 @@
 <?php
 // File: actions/cari_mobil.php
-require_once '../includes/config.php';
+require_once '../../includes/config.php';
 header('Content-Type: application/json');
 
 // Ambil kata kunci pencarian dari Select2
