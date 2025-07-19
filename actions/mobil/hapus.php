@@ -1,64 +1,61 @@
 <?php
-// File: actions/mobil/hapus.php
+// File: actions/mobil/hapus.php (Versi dengan Pengecekan Riwayat)
 
 require_once '../../includes/config.php';
 require_once '../../includes/auth.php';
 require_once '../../includes/functions.php';
 
-// -----------------------------------------------------------------------------
-// HAK AKSES
-// Sangat disarankan agar hanya 'Admin' yang dapat menghapus data aset utama.
-// Jika Anda ingin Karyawan juga bisa menghapus, ubah menjadi: check_auth(['Admin', 'Karyawan']);
-// -----------------------------------------------------------------------------
+// Disarankan hanya untuk Admin
 check_auth('Admin');
 
-// 1. Pastikan permintaan menggunakan metode POST untuk keamanan
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    // Jika bukan POST, alihkan ke halaman utama mobil dengan pesan error
     redirect_with_message('../../admin/mobil.php', 'Akses tidak sah.', 'error');
 }
 
-// 2. Validasi ID Mobil yang dikirim dari form
 $id_mobil = isset($_POST['id_mobil']) ? (int)$_POST['id_mobil'] : 0;
 if ($id_mobil === 0) {
-    redirect_with_message('../../admin/mobil.php', 'ID Mobil tidak valid atau tidak ditemukan.', 'error');
+    redirect_with_message('../../admin/mobil.php', 'ID Mobil tidak valid.', 'error');
 }
 
 try {
-    // 3. Ambil nama file gambar dari database SEBELUM record dihapus
+    // ==========================================================
+    // LANGKAH BARU: Cek apakah mobil ini pernah ada di tabel pemesanan
+    // ==========================================================
+    $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM pemesanan WHERE id_mobil = ?");
+    $stmt_check->execute([$id_mobil]);
+    $booking_count = $stmt_check->fetchColumn();
+
+    if ($booking_count > 0) {
+        // JIKA SUDAH ADA RIWAYAT, TOLAK PENGHAPUSAN dan beri pesan jelas
+        redirect_with_message('../../admin/mobil.php', 'Gagal menghapus! Mobil ini sudah memiliki riwayat pemesanan. Ubah statusnya jika sudah tidak ingin disewakan.', 'error');
+    }
+
+    // --- JIKA TIDAK ADA RIWAYAT, LANJUTKAN PROSES PENGHAPUSAN ---
+
+    // 1. Ambil nama file gambar sebelum menghapus record
     $stmt_select = $pdo->prepare("SELECT gambar_mobil FROM mobil WHERE id_mobil = ?");
     $stmt_select->execute([$id_mobil]);
     $mobil = $stmt_select->fetch();
 
     if (!$mobil) {
-        // Jika mobil dengan ID tersebut tidak ada
         redirect_with_message('../../admin/mobil.php', 'Mobil tidak ditemukan.', 'error');
     }
-
     $nama_file_gambar = $mobil['gambar_mobil'];
 
-    // 4. Hapus record mobil dari tabel 'mobil' di database
+    // 2. Hapus record mobil dari database
     $stmt_delete = $pdo->prepare("DELETE FROM mobil WHERE id_mobil = ?");
     $stmt_delete->execute([$id_mobil]);
 
-    // 5. Hapus file gambar terkait dari folder 'uploads/mobil/'
-    if ($nama_file_gambar && file_exists('../../assets/img/mobil/' . $nama_file_gambar)) {
-        unlink('../../assets/img/mobil/' . $nama_file_gambar);
+    // 3. Hapus file gambar dari server
+    if ($nama_file_gambar && file_exists('../../uploads/mobil/' . $nama_file_gambar)) {
+        unlink('../../uploads/mobil/' . $nama_file_gambar);
     }
 
-    // 6. Alihkan kembali ke halaman daftar mobil dengan pesan sukses
-    $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
-    redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Mobil berhasil dihapus.');
+    // 4. Redirect dengan pesan sukses
+    redirect_with_message('../../admin/mobil.php', 'Mobil yang belum memiliki riwayat berhasil dihapus.');
 
 } catch (PDOException $e) {
-    // Tangani error jika mobil tidak bisa dihapus (misalnya: karena terkait dengan data pemesanan)
-    // Kode error '23000' menandakan adanya pelanggaran foreign key constraint
-    if ($e->getCode() == '23000') {
-        $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
-        redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Gagal menghapus! Mobil ini masih terikat dengan riwayat pemesanan.', 'error');
-    } else {
-        $role_folder = strtolower($_SESSION['role']); // Hasilnya 'admin' atau 'karyawan'
-        redirect_with_message(BASE_URL . $role_folder . '/mobil.php', 'Terjadi kesalahan pada database: ' . $e->getMessage(), 'error');
-    }
+    // Catch block ini sebagai pengaman tambahan
+    redirect_with_message('../../admin/mobil.php', 'Terjadi kesalahan pada database: ' . $e->getMessage(), 'error');
 }
 ?>

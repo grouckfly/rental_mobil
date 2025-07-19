@@ -66,8 +66,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     WHERE id_mobil = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
-                $merk, $model, $plat_nomor, $tahun, $jenis_mobil,
-                $harga_sewa_harian, $denda_per_hari, $status, $spesifikasi, $nama_file_gambar,
+                $merk,
+                $model,
+                $plat_nomor,
+                $tahun,
+                $jenis_mobil,
+                $harga_sewa_harian,
+                $denda_per_hari,
+                $status,
+                $spesifikasi,
+                $nama_file_gambar,
                 $id_mobil
             ]);
 
@@ -100,7 +108,9 @@ $page_title = 'Edit Mobil';
 require_once '../../includes/header.php';
 ?>
 
-<div class="page-header"><h1>Edit Mobil: <?= htmlspecialchars($mobil['merk'] . ' ' . $mobil['model']) ?></h1></div>
+<div class="page-header">
+    <h1>Edit Mobil: <?= htmlspecialchars($mobil['merk'] . ' ' . $mobil['model']) ?></h1>
+</div>
 
 <div class="form-container admin-form">
     <div class="form-box">
@@ -113,7 +123,8 @@ require_once '../../includes/header.php';
                 </ul>
             </div>
         <?php endif; ?>
-        <?php display_flash_message(); // Untuk menampilkan pesan dari redirect ?>
+        <?php display_flash_message(); // Untuk menampilkan pesan dari redirect 
+        ?>
 
         <form action="" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?= $mobil['id_mobil'] ?>">
@@ -146,6 +157,7 @@ require_once '../../includes/header.php';
                         <option value="Tersedia" <?= ($mobil['status'] == 'Tersedia') ? 'selected' : '' ?>>Tersedia</option>
                         <option value="Disewa" <?= ($mobil['status'] == 'Disewa') ? 'selected' : '' ?>>Disewa</option>
                         <option value="Perawatan" <?= ($mobil['status'] == 'Perawatan') ? 'selected' : '' ?>>Perawatan</option>
+                        <option value="Tidak Aktif" <?= ($mobil['status'] == 'Tidak Aktif') ? 'selected' : '' ?>>Tidak Aktif</option>
                     </select>
                 </div>
                 <div class="form-group">

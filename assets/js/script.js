@@ -98,7 +98,8 @@ function initializeSearchableSelect() {
                     };
                 },
                 cache: true
-            }
+            },
+            dropdownCssClass: "select2-dropdown-scrollable"
         });
     }
 }

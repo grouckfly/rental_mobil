@@ -328,7 +328,7 @@ tbody tr:hover {
     border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #fff;
+    color: #fff; /* Teks default putih */
     text-transform: capitalize;
     white-space: nowrap;
 }
@@ -341,12 +341,12 @@ tbody tr:hover {
     background-color: var(--success-color);
 }
 
-/* Status Peringatan (Kuning/Oranye) */
+/* Status Peringatan (Kuning) - Teks Gelap */
 .status-disewa,
 .status-berjalan,
 .status-menunggu-verifikasi {
     background-color: var(--warning-color);
-    color: var(--text-color);
+    color: var(--text-color); /* Teks diubah menjadi gelap */
 }
 
 /* Status Negatif (Merah) */
@@ -362,10 +362,12 @@ tbody tr:hover {
     background-color: var(--info-color);
 }
 
-/* Status Netral (Abu-abu) */
+/* Status Netral (Abu-abu) - Teks Gelap */
 .status-menunggu-pembayaran,
-.status-menunggu-pembayaran-denda {
+.status-menunggu-pembayaran-denda,
+.status-tidak-aktif {
     background-color: var(--secondary-color);
+    color: var(--text-color); /* PERBAIKAN: Teks diubah menjadi gelap */
 }
 
 /* Flash Messages */

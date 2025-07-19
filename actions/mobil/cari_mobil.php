@@ -11,8 +11,7 @@ try {
     $sql = "SELECT id_mobil as id, CONCAT(merk, ' ', model) as text 
             FROM mobil 
             WHERE merk LIKE :term OR model LIKE :term 
-            ORDER BY merk, model 
-            LIMIT 20";
+            ORDER BY merk, model";
             
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':term' => "%$searchTerm%"]);
