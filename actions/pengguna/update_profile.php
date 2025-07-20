@@ -70,10 +70,13 @@ $sql = "UPDATE pengguna SET " . implode(', ', $sql_parts) . " WHERE id_pengguna 
 try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
-    // Update session username jika berubah
+    
     $_SESSION['username'] = $username;
+    $_SESSION['nama_lengkap'] = $_POST['nama_lengkap'];
+
     redirect_with_message(BASE_URL . 'pelanggan/profile.php', 'Profil berhasil diperbarui.');
+
 } catch (PDOException $e) {
-    redirect_with_message(BASE_URL . 'pelanggan/profile.php', 'Gagal memperbarui profil.', 'error');
+    redirect_with_message(BASE_URL . 'pelanggan/profile.php', 'Gagal memperbarui profil: Username atau Email mungkin sudah digunakan.', 'error');
 }
 ?>

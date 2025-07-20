@@ -1,57 +1,77 @@
 <?php
-// File: register.php (Versi Simple)
+// File: register.php (Versi Final dengan Peningkatan Keamanan)
 
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
 
 // Jika sudah login, alihkan ke dashboard
 if (isset($_SESSION['id_pengguna'])) {
-    header("Location: pelanggan/dashboard.php");
+    header("Location: " . BASE_URL . "pelanggan/dashboard.php");
     exit();
 }
 
+// ==========================================================
+// LAPISAN KEAMANAN 1: Proteksi CSRF (Cross-Site Request Forgery)
+// ==========================================================
+// Buat token jika belum ada
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['csrf_token'];
+
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Ambil data yang dibutuhkan
-    $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
-    $password_confirm = $_POST['password_confirm'];
+    // 1. Validasi Token CSRF
+    if (!isset($_POST['csrf_token']) || !hash_equals($csrf_token, $_POST['csrf_token'])) {
+        $errors[] = "Sesi tidak valid. Silakan coba lagi.";
+    } else {
+        // Ambil data yang dibutuhkan
+        $username = trim($_POST['username']);
+        $email = trim($_POST['email']);
+        $password = $_POST['password'];
+        $password_confirm = $_POST['password_confirm'];
 
-    // Validasi
-    if (empty($username) || empty($email) || empty($password)) {
-        $errors[] = "Semua field wajib diisi.";
+        // ==========================================================
+        // LAPISAN KEAMANAN 2: Validasi Input Lebih Ketat
+        // ==========================================================
+        if (empty($username) || empty($email) || empty($password)) {
+            $errors[] = "Semua field wajib diisi.";
+        }
+        if (!preg_match('/^[a-zA-Z0-9_]{4,20}$/', $username)) {
+            $errors[] = "Username hanya boleh berisi huruf, angka, dan underscore, dengan panjang 4-20 karakter.";
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Format email tidak valid.";
+        }
+        if ($password !== $password_confirm) {
+            $errors[] = "Konfirmasi password tidak cocok.";
+        }
+        if (strlen($password) < 8) {
+            $errors[] = "Password minimal 8 karakter.";
+        }
     }
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Format email tidak valid.";
-    }
-    if ($password !== $password_confirm) {
-        $errors[] = "Konfirmasi password tidak cocok.";
-    }
-    if (strlen($password) < 6) {
-        $errors[] = "Password minimal 6 karakter.";
-    }
-
+    
     // Jika tidak ada error, proses pendaftaran
-    if(empty($errors)) {
+    if (empty($errors)) {
         try {
-            // Cek apakah username atau email sudah ada
             $stmt_check = $pdo->prepare("SELECT id_pengguna FROM pengguna WHERE username = ? OR email = ?");
             $stmt_check->execute([$username, $email]);
             if ($stmt_check->fetch()) {
                 $errors[] = "Username atau email sudah terdaftar.";
             } else {
-                // Hash password dan simpan pengguna baru
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 $stmt_insert = $pdo->prepare("INSERT INTO pengguna (username, email, password, role) VALUES (?, ?, ?, 'Pelanggan')");
                 $stmt_insert->execute([$username, $email, $hashed_password]);
                 
-                // Redirect ke halaman login dengan notifikasi sukses
+                // Hapus token setelah berhasil digunakan untuk mencegah replay attack
+                unset($_SESSION['csrf_token']);
+
                 header('Location: login.php?status=register_success');
                 exit;
             }
         } catch (PDOException $e) {
-            $errors[] = "Terjadi kesalahan pada database.";
+            error_log("Register error: " . $e->getMessage());
+            $errors[] = "Terjadi kesalahan pada database. Silakan coba lagi.";
         }
     }
 }
@@ -68,14 +88,14 @@ require_once 'includes/header.php';
         <?php if(!empty($errors)): ?>
             <div class="flash-message flash-error">
                 <ul>
-                    <?php foreach($errors as $error): ?>
-                        <li><?= $error ?></li>
-                    <?php endforeach; ?>
+                    <?php foreach($errors as $error): ?><li><?= $error ?></li><?php endforeach; ?>
                 </ul>
             </div>
         <?php endif; ?>
 
         <form action="register.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
@@ -92,6 +112,7 @@ require_once 'includes/header.php';
                 <label for="password_confirm">Konfirmasi Password</label>
                 <input type="password" id="password_confirm" name="password_confirm" required>
             </div>
+            
             <button type="submit" class="btn btn-primary">Daftar</button>
         </form>
         <div class="form-footer">
