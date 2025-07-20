@@ -66,7 +66,7 @@ try {
     data-live-total="<?= $pdo->query("SELECT COUNT(*) FROM pemesanan")->fetchColumn() ?>"
     data-live-last-update="<?= $pdo->query("SELECT MAX(tanggal_pemesanan) FROM pemesanan")->fetchColumn() ?>">
     <h1>Dashboard Administrator</h1>
-    <p>Selamat datang, <?= htmlspecialchars($_SESSION['username']) ?>. Berikut ringkasan aktivitas rental mobil Anda.</p>
+    <p>Selamat datang, <?= htmlspecialchars($_SESSION['nama_lengkap']) ?>. Berikut ringkasan aktivitas rental mobil Anda.</p>
 </div>
 
 <div class="dashboard-widgets">

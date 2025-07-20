@@ -38,6 +38,9 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                 <li>
                     <a href="<?= BASE_URL ?>karyawan/scan_qr.html">Scan QR Code</a>
                 </li>
+                <li <?= is_active('profile.php', $current_page) ?>>
+                    <a href="<?= BASE_URL ?>pelanggan/profile.php">Profil Saya</a>
+                </li>
                 <li <?= is_active('dashboard.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>admin/dashboard.php">Dashboard</a>
                 </li>
@@ -58,6 +61,9 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                 <li>
                     <a href="<?= BASE_URL ?>karyawan/scan_qr.html">Scan QR Code</a>
                 </li>
+                <li <?= is_active('profile.php', $current_page) ?>>
+                    <a href="<?= BASE_URL ?>pelanggan/profile.php">Profil Saya</a>
+                </li>
                 <li <?= is_active('dashboard.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>karyawan/dashboard.php">Dashboard</a>
                 </li>
@@ -72,6 +78,9 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                 </li>
 
             <?php elseif ($_SESSION['role'] === 'Pelanggan'): ?>
+                <li <?= is_active('profile.php', $current_page) ?>>
+                    <a href="<?= BASE_URL ?>pelanggan/profile.php">Profil Saya</a>
+                </li>
                 <li <?= is_active('dashboard.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>pelanggan/dashboard.php">Dashboard</a>
                 </li>
@@ -81,11 +90,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                 <li <?= is_active('pemesanan.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>pelanggan/pemesanan.php">Pemesanan Saya</a>
                 </li>
-                <?php 
+                <?php
                 // ================================================
                 // Tampilkan menu pembayaran hanya jika ada tagihan
                 // ================================================
-                if ($id_pembayaran_tertunda): 
+                if ($id_pembayaran_tertunda):
                 ?>
                     <li <?= is_active('pembayaran.php', $current_page) ?>>
                         <a href="<?= BASE_URL ?>pelanggan/pembayaran.php?id=<?= $id_pembayaran_tertunda ?>">

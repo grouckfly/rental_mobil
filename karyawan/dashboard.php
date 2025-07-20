@@ -39,7 +39,7 @@ try {
     data-live-total="<?= $pdo->query("SELECT COUNT(*) FROM pemesanan")->fetchColumn() ?>"
     data-live-last-update="<?= $pdo->query("SELECT MAX(tanggal_pemesanan) FROM pemesanan")->fetchColumn() ?>">
     <h1>Dashboard Operasional</h1>
-    <p>Selamat datang, <?= htmlspecialchars($_SESSION['username']) ?>. Berikut adalah tugas operasional Anda.</p>
+    <p>Selamat datang, <?= htmlspecialchars($_SESSION['nama_lengkap']) ?>. Berikut adalah tugas operasional Anda.</p>
 </div>
 
 <div class="dashboard-widgets">

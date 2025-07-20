@@ -58,7 +58,7 @@ require_once __DIR__ . '/../actions/pemesanan/cek_kedaluwarsa.php';
             
             <div class="user-actions">
                 <?php if (isset($_SESSION['id_pengguna'])): ?>
-                    <span>Halo, <?= htmlspecialchars($_SESSION['username']) ?></span>
+                    <span>Halo, <?= htmlspecialchars($_SESSION['nama_lengkap']) ?></span>
                     <a href="<?= BASE_URL ?>logout.php" class="btn btn-secondary">Logout</a>
                 <?php else: ?>
                     <a href="<?= BASE_URL ?>login.php" class="btn">Login</a>
