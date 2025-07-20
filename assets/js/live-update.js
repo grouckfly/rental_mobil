@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentTotal = liveUpdateElement.dataset.liveTotal;
         let lastUpdate = liveUpdateElement.dataset.liveLastUpdate;
 
-        // Lakukan pengecekan setiap 10 detik (10000 milidetik)
+        // Lakukan pengecekan setiap 5 detik (5000 milidetik)
         setInterval(() => {
             // Pastikan BASE_URL sudah didefinisikan (dari footer.php)
             if (typeof BASE_URL === 'undefined') {
@@ -41,6 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 })
                 .catch(error => console.error('Gagal memeriksa update:', error));
-        }, 10000);
+        }, 3000);
     }
 });

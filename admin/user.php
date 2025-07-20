@@ -24,7 +24,7 @@ try {
     <a href="../actions/pengguna/tambah.php" class="btn btn-primary">Tambah Pengguna Baru</a>
 </div>
 
-<div class="table-container">
+<div class="table-container"
     data-live-context="admin_user"
     data-live-total="<?= count($users) ?>"
     data-live-last-update="<?= $pdo->query("SELECT MAX(created_at) FROM pengguna")->fetchColumn() ?>">

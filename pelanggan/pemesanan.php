@@ -37,7 +37,7 @@ try {
     <p>Daftar pemesanan yang sedang berjalan atau menunggu pembayaran.</p>
 </div>
 
-<div class="table-container">
+<div class="table-container"
     data-live-context="pelanggan_pemesanan"
     data-live-total="<?= count($bookings) ?>"
     data-live-last-update="<?= $last_update ?>">
