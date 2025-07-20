@@ -34,6 +34,19 @@ try {
         <h3>Ubah Informasi Profil</h3>
         <form action="<?= BASE_URL ?>actions/pengguna/update_profile.php" method="POST">
             <div class="form-group">
+                <label for="nik">Nomor Induk Kependudukan (NIK)</label>
+                <input type="text" id="nik" name="nik" value="<?= htmlspecialchars($user['nik'] ?? '') ?>" required minlength="16" maxlength="16">
+            </div>
+            <div class="form-group">
+                <label for="foto_ktp">Upload Foto KTP</label>
+                <input type="file" id="foto_ktp" name="foto_ktp" accept="image/jpeg, image/png">
+                <?php if (!empty($user['foto_ktp'])): ?>
+                    <small>KTP sudah diunggah. <a href="<?= BASE_URL ?>uploads/ktp/<?= $user['foto_ktp'] ?>" target="_blank">Lihat KTP</a>. Ganti file jika ingin memperbarui.</small>
+                <?php else: ?>
+                    <small style="color:red;">Anda wajib mengunggah foto KTP.</small>
+                <?php endif; ?>
+            </div>
+            <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" value="<?= htmlspecialchars($user['username']) ?>" required>
             </div>
@@ -65,14 +78,13 @@ try {
             </div>
             <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
         </form>
-    </div>
-
-    <div class="form-box danger-zone">
-        <h3>Zona Berbahaya</h3>
-        <p>Tindakan ini tidak dapat dibatalkan. Menghapus akun akan menghilangkan semua riwayat pemesanan Anda secara permanen.</p>
-        <form action="<?= BASE_URL ?>actions/pengguna/hapus_akun.php" method="POST" onsubmit="return confirm('PERINGATAN: Anda akan menghapus akun Anda secara permanen. Tindakan ini tidak bisa dibatalkan. Lanjutkan?');">
-            <button type="submit" class="btn btn-danger">Hapus Akun Saya</button>
-        </form>
+        <div class="form-box danger-zone">
+            <h3>Zona Berbahaya</h3>
+            <p>Tindakan ini tidak dapat dibatalkan. Menghapus akun akan menghilangkan semua riwayat pemesanan Anda secara permanen.</p>
+            <form action="<?= BASE_URL ?>actions/pengguna/hapus_akun.php" method="POST" onsubmit="return confirm('PERINGATAN: Anda akan menghapus akun Anda secara permanen. Tindakan ini tidak bisa dibatalkan. Lanjutkan?');">
+                <button type="submit" class="btn btn-danger">Hapus Akun Saya</button>
+            </form>
+        </div>
     </div>
 </div>
 

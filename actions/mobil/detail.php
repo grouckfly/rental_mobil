@@ -10,8 +10,16 @@ if ($id_mobil === 0) {
     redirect_with_message('../../admin/mobil.php', 'ID Mobil tidak valid.', 'error');
 }
 
-// Hak akses
+// Ambil role session dengan aman
 $role_session = $_SESSION['role'] ?? null;
+$user_data = null;
+
+// Jika yang melihat pelanggan, ambil data profilnya
+if ($role_session === 'Pelanggan') {
+    $stmt_user = $pdo->prepare("SELECT nik, foto_ktp FROM pengguna WHERE id_pengguna = ?");
+    $stmt_user->execute([$_SESSION['id_pengguna']]);
+    $user_data = $stmt_user->fetch();
+}
 
 // Ambil semua data mobil dari database
 try {
@@ -34,16 +42,16 @@ require_once '../../includes/header.php';
         <h1>Detail Mobil</h1>
     </div>
     <div class="detail-actions">
-         <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
-        <a href="<?= BASE_URL . strtolower($role_session) ?>/mobil.php" class="btn btn-secondary">Kembali</a>
-        <a href="edit.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Edit</a>
-        <?php if ($role_session === 'Admin'): ?>
-            <form action="hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus mobil ini?');">
-                <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
-                <button type="submit" class="btn btn-danger">Hapus</button>
-            </form>
+        <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
+            <a href="<?= BASE_URL . strtolower($role_session) ?>/mobil.php" class="btn btn-secondary">Kembali</a>
+            <a href="edit.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Edit</a>
+            <?php if ($role_session === 'Admin'): ?>
+                <form action="hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus mobil ini?');">
+                    <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
+                    <button type="submit" class="btn btn-danger">Hapus</button>
+                </form>
+            <?php endif; ?>
         <?php endif; ?>
-    <?php endif; ?>
     </div>
 </div>
 
@@ -78,24 +86,35 @@ require_once '../../includes/header.php';
 
 <div class="booking-section">
     <?php // --- Jika yang melihat adalah PELANGGAN dan mobil TERSEDIA ---
-    if ($role_session === 'Pelanggan' && $mobil['status'] === 'Tersedia'): ?>
-        <div class="form-container">
-            <div class="form-box">
-                <h3>Formulir Pemesanan</h3>
-                <form action="<?= BASE_URL ?>actions/pemesanan/proses.php" method="POST">
-                    <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
-                    <input type="hidden" name="id_pengguna" value="<?= $_SESSION['id_pengguna'] ?>">
-                    <input type="hidden" name="harga_sewa_harian" value="<?= $mobil['harga_sewa_harian'] ?>">
-                    <div class="form-grid">
-                        <div class="form-group"><label for="tanggal_mulai">Tanggal Mulai</label><input type="date" id="tanggal_mulai" name="tanggal_mulai" required min="<?= date('Y-m-d') ?>"></div>
-                        <div class="form-group"><label for="tanggal_selesai">Tanggal Selesai</label><input type="date" id="tanggal_selesai" name="tanggal_selesai" required min="<?= date('Y-m-d') ?>"></div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Sewa Sekarang</button>
-                </form>
-            </div>
-        </div>
+    if ($role_session === 'Pelanggan' && $mobil['status'] === 'Tersedia'):
 
-    <?php // --- Jika yang melihat adalah PENGUNJUNG (belum login) dan mobil TERSEDIA ---
+        // Cek kelengkapan profil di sini
+        if (!empty($user_data['nik']) && !empty($user_data['foto_ktp'])):?>
+            <div class="form-container">
+                <div class="form-box">
+                    <h3>Formulir Pemesanan</h3>
+                    <form action="<?= BASE_URL ?>actions/pemesanan/proses.php" method="POST">
+                        <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
+                        <input type="hidden" name="id_pengguna" value="<?= $_SESSION['id_pengguna'] ?>">
+                        <input type="hidden" name="harga_sewa_harian" value="<?= $mobil['harga_sewa_harian'] ?>">
+                        <div class="form-grid">
+                            <div class="form-group"><label for="tanggal_mulai">Tanggal Mulai</label><input type="date" id="tanggal_mulai" name="tanggal_mulai" required min="<?= date('Y-m-d') ?>"></div>
+                            <div class="form-group"><label for="tanggal_selesai">Tanggal Selesai</label><input type="date" id="tanggal_selesai" name="tanggal_selesai" required min="<?= date('Y-m-d') ?>"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Sewa Sekarang</button>
+                    </form>
+                </div>
+            </div>
+
+        <?php else: ?>
+            <div class="info-box" style="border-color: var(--warning-color);">
+                <h3>Profil Belum Lengkap</h3>
+                <p>Anda harus melengkapi NIK dan Foto KTP di profil Anda sebelum dapat melakukan pemesanan.</p>
+                <a href="<?= BASE_URL ?>pelanggan/profile.php" class="btn btn-primary">Lengkapi Profil Sekarang</a>
+            </div>
+
+        <?php // --- Jika yang melihat adalah PENGUNJUNG (belum login) dan mobil TERSEDIA ---
+        endif;
     elseif ($role_session === null && $mobil['status'] === 'Tersedia'): ?>
         <div class="info-box">
             <h3>Ingin Menyewa Mobil Ini?</h3>
