@@ -10,27 +10,27 @@
     direction: rtl;
 }
 
-.rating > input { 
-    display: none; 
-} 
+.rating>input {
+    display: none;
+}
 
-.rating > label {
+.rating>label {
     display: inline-block;
     position: relative;
     width: 1.1em;
     cursor: pointer;
 }
 
-.rating > label:before { 
+.rating>label:before {
     content: '★';
     position: absolute;
     color: #ddd;
 }
 
 /* Style untuk bintang yang dipilih dan saat hover */
-.rating > input:checked ~ label:before,
-.rating:not(:checked) > label:hover:before,
-.rating:not(:checked) > label:hover ~ label:before {
+.rating>input:checked~label:before,
+.rating:not(:checked)>label:hover:before,
+.rating:not(:checked)>label:hover~label:before {
     color: #ffc107;
 }
 
@@ -59,4 +59,17 @@
     .payment-container {
         grid-template-columns: 1fr;
     }
+}
+
+.payment-timer {
+    text-align: center;
+    padding: 15px;
+    background: #fff3cd;
+    border-radius: 5px;
+}
+
+.payment-timer #countdown-timer {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--danger-color);
 }

@@ -11,6 +11,16 @@ check_auth('Pelanggan');
 $page_title = 'Dashboard Pelanggan';
 require_once '../includes/header.php';
 
+// ========================================================
+// PERBAIKAN: Tangkap status dari URL
+// ========================================================
+$notification_script = '';
+if (isset($_GET['status']) && $_GET['status'] === 'payment_expired') {
+    $message = addslashes('Waktu pembayaran telah habis. Pesanan Anda mungkin telah dibatalkan secara otomatis.');
+    // Siapkan script untuk memanggil notifikasi toast dengan tipe error
+    $notification_script = "<script>document.addEventListener('DOMContentLoaded', () => { showToast('{$message}', 'error'); });</script>";
+}
+
 $id_pengguna = $_SESSION['id_pengguna'];
 
 // Mengambil data statistik pelanggan
@@ -42,6 +52,8 @@ try {
 <div class="page-header">
     <h1>Dashboard Saya</h1>
 </div>
+
+<?php display_flash_message(); ?>
 
 <div class="dashboard-widgets">
     <div class="widget">

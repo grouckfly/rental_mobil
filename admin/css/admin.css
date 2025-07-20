@@ -156,3 +156,12 @@ body.dark-mode .cancellation-info {
 .page-top-bar .detail-actions {
     margin-top: 0;
 }
+
+/* Status badge */
+.status-badge.status-dipesan {
+    background-color: #795548; /* Warna oranye muda */
+    padding: 0.3em 0.6em;
+    border-radius: 0.8em;
+    font-size: 0.8rem;
+    font-weight: bold;
+}

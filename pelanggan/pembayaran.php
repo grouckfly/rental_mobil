@@ -44,13 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             VALUES (?, NOW(), ?, ?, ?, 'Menunggu Verifikasi')";
                 $stmt_pay = $pdo->prepare($sql_pay);
                 $stmt_pay->execute([$id_pemesanan, $booking['total_biaya'], 'Transfer Bank', $nama_file_bukti]);
-                
-                redirect_with_message(BASE_URL . "pelanggan/pemesanan.php", 'Terima kasih! Bukti pembayaran Anda telah diunggah dan sedang menunggu verifikasi.');
 
+                redirect_with_message(BASE_URL . "pelanggan/pemesanan.php", 'Terima kasih! Bukti pembayaran Anda telah diunggah dan sedang menunggu verifikasi.');
             } catch (PDOException $e) {
                 // Jika sudah ada pembayaran untuk ID pesanan ini, beri pesan error
                 if ($e->getCode() == '23000') {
-                     redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Anda sudah pernah mengunggah bukti untuk pesanan ini.', 'error');
+                    redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Anda sudah pernah mengunggah bukti untuk pesanan ini.', 'error');
                 }
                 redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Gagal menyimpan data pembayaran.', 'error');
             }
@@ -96,9 +95,14 @@ require_once '../includes/header.php';
             <button type="submit" class="btn btn-primary">Konfirmasi Pembayaran</button>
             <a href="pemesanan.php" class="btn btn-secondary">Kembali</a>
         </form>
+        <div class="timer-container payment-timer">
+            <h4>Sisa Waktu Pembayaran</h4>
+            <div id="countdown-timer" data-end-time="<?= $booking['batas_pembayaran'] ?>" data-action-on-expire="redirect"></div>
+        </div>
     </div>
 </div>
 
 <?php
 require_once '../includes/footer.php';
+echo '<script src="' . BASE_URL . 'assets/js/rental-timer.js"></script>';
 ?>

@@ -1,6 +1,11 @@
 <?php
 // File: includes/header.php
 // File ini tidak lagi menebak-nebak base url, tapi menggunakan konstanta dari config.php
+
+// ===============================
+// MENJALANKAN PEMBATALAN OTOMATIS
+// ===============================
+require_once __DIR__ . '/../actions/pemesanan/cek_kedaluwarsa.php';
 ?>
 <!DOCTYPE html>
 <html lang="id">
