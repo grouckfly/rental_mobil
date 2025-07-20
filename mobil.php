@@ -1,5 +1,5 @@
 <?php
-// File: mobil.php (Versi Publik dengan Filter Lanjutan)
+// File: mobil.php (Versi Final dengan Filter & Pagination)
 
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
@@ -7,12 +7,17 @@ require_once 'includes/functions.php';
 $page_title = 'Daftar Mobil Tersedia';
 require_once 'includes/header.php';
 
-// Ambil parameter filter dari URL
+// --- BAGIAN LOGIKA ---
+
+// 1. Ambil semua parameter filter dari URL
 $search_query = $_GET['q'] ?? '';
 $kelas_filter = $_GET['kelas'] ?? '';
 $jenis_filter = $_GET['jenis'] ?? '';
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 6; // Menampilkan 6 mobil per halaman
+$offset = ($page - 1) * $limit;
 
-// Ambil daftar unik untuk dropdown filter
+// 2. Ambil daftar unik untuk dropdown filter
 try {
     $stmt_jenis = $pdo->query("SELECT DISTINCT jenis_mobil FROM mobil WHERE jenis_mobil IS NOT NULL AND jenis_mobil != '' ORDER BY jenis_mobil ASC");
     $daftar_jenis = $stmt_jenis->fetchAll(PDO::FETCH_COLUMN);
@@ -22,40 +27,35 @@ try {
     $kelas_list = [];
 }
 
-// ==========================================================
-// LOGIKA QUERY DINAMIS
-// ==========================================================
+// 3. Bangun query SQL secara dinamis
 // Query dasar HANYA mengambil mobil yang statusnya 'Tersedia'
-$sql = "SELECT * FROM mobil WHERE status = 'Tersedia'";
+$sql_base = "FROM mobil WHERE status = 'Tersedia'";
 $params = [];
 
-// Terapkan filter pencarian teks (merk, model)
-if (!empty($search_query)) {
-    $sql .= " AND (merk LIKE :q OR model LIKE :q)";
-    $params[':q'] = "%$search_query%";
-}
+// Terapkan filter
+if (!empty($search_query)) { $sql_base .= " AND (merk LIKE :q OR model LIKE :q)"; $params[':q'] = "%$search_query%"; }
+if (!empty($kelas_filter)) { $sql_base .= " AND kelas_mobil = :kelas"; $params[':kelas'] = $kelas_filter; }
+if (!empty($jenis_filter)) { $sql_base .= " AND jenis_mobil = :jenis"; $params[':jenis'] = $jenis_filter; }
 
-// Terapkan filter kelas mobil
-if (!empty($kelas_filter)) {
-    $sql .= " AND kelas_mobil = :kelas";
-    $params[':kelas'] = $kelas_filter;
-}
+// 4. Query untuk MENGHITUNG TOTAL DATA (untuk pagination)
+$sql_count = "SELECT COUNT(*) " . $sql_base;
+$stmt_count = $pdo->prepare($sql_count);
+$stmt_count->execute($params);
+$total_cars = $stmt_count->fetchColumn();
+$total_pages = ceil($total_cars / $limit);
 
-// Terapkan filter jenis mobil
-if (!empty($jenis_filter)) {
-    $sql .= " AND jenis_mobil = :jenis";
-    $params[':jenis'] = $jenis_filter;
+// 5. Query UTAMA untuk MENGAMBIL DATA sesuai halaman
+$sql_data = "SELECT * " . $sql_base . " ORDER BY merk ASC, model ASC LIMIT :limit OFFSET :offset";
+$stmt_data = $pdo->prepare($sql_data);
+// Bind parameter filter dan pagination
+foreach ($params as $key => &$val) {
+    $stmt_data->bindParam($key, $val);
 }
+$stmt_data->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt_data->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt_data->execute();
+$cars = $stmt_data->fetchAll();
 
-$sql .= " ORDER BY merk ASC, model ASC";
-
-try {
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-    $cars = $stmt->fetchAll();
-} catch (PDOException $e) {
-    $cars = [];
-}
 ?>
 
 <div class="page-header">
@@ -71,8 +71,8 @@ try {
         </div>
         <div class="form-group">
             <label>Jenis</label>
-            <select name="jenis" class="form-control">
-                <option value="">Semua</option>
+            <select name="jenis">
+                <option value="">Semua Jenis</option>
                 <?php foreach($daftar_jenis as $jenis): ?>
                     <option value="<?= htmlspecialchars($jenis) ?>" <?= ($jenis_filter === $jenis) ? 'selected' : '' ?>><?= htmlspecialchars($jenis) ?></option>
                 <?php endforeach; ?>
@@ -116,6 +116,23 @@ try {
                 </div>
             <?php endif; ?>
         </div>
+
+        <nav class="pagination-container">
+            <ul class="pagination">
+                <?php if ($total_pages > 1): ?>
+                    <?php for ($i = 1; $i <= $total_pages; $i++): 
+                        // Pertahankan filter saat berpindah halaman
+                        $query_params = $_GET;
+                        $query_params['page'] = $i;
+                    ?>
+                        <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                            <a class="page-link" href="?<?= http_build_query($query_params) ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+                <?php endif; ?>
+            </ul>
+        </nav>
+
     </div>
 </section>
 

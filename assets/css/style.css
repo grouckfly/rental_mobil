@@ -492,12 +492,38 @@ tbody tr:hover {
 
 .car-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, 320px);
+    /* Membuat 3 kolom yang sama lebarnya di layar besar */
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
-    justify-content: center; 
+}
+
+/* Penyesuaian untuk layar lebih kecil (tablet & hp) */
+@media (max-width: 992px) {
+    .car-grid {
+        grid-template-columns: repeat(2, 1fr); /* Jadi 2 kolom */
+    }
+}
+@media (max-width: 576px) {
+    .car-grid {
+        grid-template-columns: 1fr; /* Jadi 1 kolom */
+    }
+}
+
+/* Membuat scrollbar lebih custom (opsional, tapi disarankan) */
+.car-grid::-webkit-scrollbar {
+    height: 8px;
+}
+.car-grid::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+}
+.car-grid::-webkit-scrollbar-track {
+    background: var(--border-color);
 }
 
 .car-card {
+    /* Memberikan setiap kartu lebar yang tetap dan mencegahnya menyusut */
+    flex: 0 0 320px; 
     background: var(--surface-color);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
@@ -507,8 +533,9 @@ tbody tr:hover {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
+/* Sisa dari style .car-card tetap sama */
 .car-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
@@ -958,4 +985,37 @@ tbody tr:hover {
     overflow: hidden;
     /* Lebar bintang kuning ini diatur oleh variabel --rating-percent dari JS */
     width: var(--rating-percent);
+}
+
+/* ========================================= */
+/* Style untuk Pagination                      */
+/* ========================================= */
+.pagination-container {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+.pagination {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    gap: 5px;
+}
+.page-item .page-link {
+    display: block;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--primary-color);
+    background-color: var(--surface-color);
+    transition: all 0.2s;
+}
+.page-item .page-link:hover {
+    background-color: var(--bg-color);
+    text-decoration: none;
+}
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
 }
