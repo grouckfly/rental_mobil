@@ -33,43 +33,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    // ==========================================================
-    // PERBAIKAN 1: Validasi Input Lebih Ketat
-    // ==========================================================
-    if (empty($username) || empty($password)) {
-        $error_message = 'Username dan password tidak boleh kosong.';
+    // --- PENAMBAHAN: LOGIKA RATE LIMITING ---
+    $max_attempts = 5;
+    $lockout_time = 15; // dalam menit
+    $ip_address = $_SERVER['REMOTE_ADDR'];
+
+    // Cek percobaan gagal dari IP ini dalam 15 menit terakhir
+    $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM login_attempts WHERE ip_address = ? AND attempt_time > DATE_SUB(NOW(), INTERVAL ? MINUTE)");
+    $stmt_check->execute([$ip_address, $lockout_time]);
+    $attempts_count = $stmt_check->fetchColumn();
+
+    if ($attempts_count >= $max_attempts) {
+        $error_message = "Anda telah gagal login terlalu banyak. Silakan coba lagi dalam $lockout_time menit.";
     } else {
-        try {
-            $stmt = $pdo->prepare("SELECT id_pengguna, username, password, role, nama_lengkap FROM pengguna WHERE username = ?");
-            $stmt->execute([$username]);
-            $user = $stmt->fetch();
+        // Lanjutkan proses login jika belum diblokir
+        if (empty($username) || empty($password)) {
+            $error_message = 'Username dan password tidak boleh kosong.';
+        } else {
+            try {
+                $stmt = $pdo->prepare("SELECT id_pengguna, username, password, role, nama_lengkap FROM pengguna WHERE username = ?");
+                $stmt->execute([$username]);
+                $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password'])) {
-                // Login Berhasil
-                
-                // ==========================================================
-                // PERBAIKAN 2: Regenerasi Session ID untuk Keamanan
-                // ==========================================================
-                // Ini mencegah serangan session fixation.
-                session_regenerate_id(true);
+                if ($user && password_verify($password, $user['password'])) {
+                    // Login Berhasil
+                    session_regenerate_id(true);
+                    $_SESSION['id_pengguna'] = $user['id_pengguna'];
+                    // ... (set session lainnya) ...
 
-                $_SESSION['id_pengguna'] = $user['id_pengguna'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
-                $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
-                
-                $role_dashboard = strtolower($user['role']);
-                $welcome_message = empty($user['nama_lengkap']) ? $user['username'] : $user['nama_lengkap'];
-                
-                redirect_with_message("{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($welcome_message) . "!");
-            } else {
-                // Pesan error dibuat generik untuk keamanan (tidak memberitahu mana yang salah)
-                $error_message = 'Kombinasi username dan password salah.';
+                    // Hapus catatan percobaan gagal untuk IP ini karena sudah berhasil login
+                    $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$ip_address]);
+
+                    redirect_with_message("{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($welcome_message) . "!");
+                } else {
+                    // JIKA LOGIN GAGAL: Catat percobaan
+                    $pdo->prepare("INSERT INTO login_attempts (username, ip_address) VALUES (?, ?)")->execute([$username, $ip_address]);
+                    $error_message = 'Kombinasi username dan password salah.';
+                }
+            } catch (PDOException $e) {
+                // Catat error ke log server, jangan tampilkan ke pengguna
+                error_log("Login error: " . $e->getMessage());
+                $error_message = "Terjadi kesalahan pada sistem. Silakan coba lagi nanti.";
             }
-        } catch (PDOException $e) {
-            // Catat error ke log server, jangan tampilkan ke pengguna
-            error_log("Login error: " . $e->getMessage());
-            $error_message = "Terjadi kesalahan pada sistem. Silakan coba lagi nanti.";
         }
     }
 }
@@ -82,10 +87,10 @@ require_once 'includes/header.php';
     <div class="form-box">
         <h2>Login Akun</h2>
         <p>Silakan masuk untuk melanjutkan.</p>
-        
-        <?php 
+
+        <?php
         // Menampilkan pesan error dari proses login
-        if(!empty($error_message)) {
+        if (!empty($error_message)) {
             echo "<div class='flash-message flash-error'>{$error_message}</div>";
         }
         ?>
