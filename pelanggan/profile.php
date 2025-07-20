@@ -1,91 +1,63 @@
 <?php
-// File: pelanggan/profile.php (Universal untuk Semua Role)
+// File: pelanggan/profile.php (Tampilan Baru)
 
 require_once '../includes/config.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Cek apakah pengguna sudah login (berlaku untuk semua role)
-check_auth();
+check_auth(); // Berlaku untuk semua role
 
 $id_pengguna = $_SESSION['id_pengguna'];
 $page_title = 'Profil Saya';
 require_once '../includes/header.php';
 
-// Ambil data pengguna saat ini dari database
 try {
     $stmt = $pdo->prepare("SELECT * FROM pengguna WHERE id_pengguna = ?");
     $stmt->execute([$id_pengguna]);
     $user = $stmt->fetch();
-} catch (PDOException $e) {
-    die("Gagal mengambil data profil.");
-}
+} catch (PDOException $e) { die("Gagal mengambil data profil."); }
 ?>
 
-<div class="page-header">
+<div class="page-header with-action">
     <h1>Profil Saya</h1>
-    <p>Kelola informasi akun dan data pribadi Anda.</p>
+    <a href="edit_profile.php" class="btn btn-primary">Edit Profil</a>
 </div>
 
 <?php display_flash_message(); ?>
 
-<div class="form-container">
-    <div class="form-box">
-        <h3>Ubah Informasi Profil</h3>
-        <form action="<?= BASE_URL ?>actions/pengguna/update_profile.php" method="POST">
-            <div class="form-group">
-                <label for="nik">Nomor Induk Kependudukan (NIK)</label>
-                <input type="text" id="nik" name="nik" value="<?= htmlspecialchars($user['nik'] ?? '') ?>" required minlength="16" maxlength="16">
+<div class="detail-container single-column">
+    <div class="detail-main">
+        <h3>Informasi Akun</h3>
+        <div class="info-grid">
+            <div class="info-item"><span class="label">ID Pengguna</span><span class="value"><?= htmlspecialchars($user['id_pengguna']) ?></span></div>
+            <div class="info-item"><span class="label">Username</span><span class="value"><?= htmlspecialchars($user['username']) ?></span></div>
+            <div class="info-item"><span class="label">Role</span><span class="value"><span class="status-badge status-<?= strtolower($user['role']) ?>"><?= htmlspecialchars($user['role']) ?></span></span></div>
+        </div>
+        <hr>
+        <h3>Data Pribadi</h3>
+        <div class="info-grid">
+            <div class="info-item"><span class="label">Nama Lengkap</span><span class="value"><?= htmlspecialchars($user['nama_lengkap']) ?></span></div>
+            <div class="info-item"><span class="label">NIK</span><span class="value"><?= htmlspecialchars($user['nik'] ?: 'Belum diisi') ?></span></div>
+            <div class="info-item"><span class="label">Email</span><span class="value"><?= htmlspecialchars($user['email']) ?></span></div>
+            <div class="info-item"><span class="label">No. Telepon</span><span class="value"><?= htmlspecialchars($user['no_telp'] ?: 'Belum diisi') ?></span></div>
+            <div class="info-item full-width"><span class="label">Alamat</span><div class="value description"><?= htmlspecialchars($user['alamat'] ?: 'Belum diisi') ?></div></div>
+            <div class="info-item full-width"><span class="label">Foto KTP</span>
+                <div class="value">
+                    <?php if (!empty($user['foto_ktp'])): ?>
+                        <a href="<?= BASE_URL ?>assets/img/ktp/<?= htmlspecialchars($user['foto_ktp']) ?>" target="_blank">Lihat Foto KTP</a>
+                    <?php else: ?>
+                        Belum diunggah
+                    <?php endif; ?>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="foto_ktp">Upload Foto KTP</label>
-                <input type="file" id="foto_ktp" name="foto_ktp" accept="image/jpeg, image/png">
-                <?php if (!empty($user['foto_ktp'])): ?>
-                    <small>KTP sudah diunggah. <a href="<?= BASE_URL ?>uploads/ktp/<?= $user['foto_ktp'] ?>" target="_blank">Lihat KTP</a>. Ganti file jika ingin memperbarui.</small>
-                <?php else: ?>
-                    <small style="color:red;">Anda wajib mengunggah foto KTP.</small>
-                <?php endif; ?>
-            </div>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" value="<?= htmlspecialchars($user['username']) ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="nama_lengkap">Nama Lengkap</label>
-                <input type="text" id="nama_lengkap" name="nama_lengkap" value="<?= htmlspecialchars($user['nama_lengkap']) ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="no_telp">No. Telepon</label>
-                <input type="tel" id="no_telp" name="no_telp" value="<?= htmlspecialchars($user['no_telp']) ?>">
-            </div>
-            <div class="form-group">
-                <label for="alamat">Alamat</label>
-                <textarea id="alamat" name="alamat" rows="3"><?= htmlspecialchars($user['alamat']) ?></textarea>
-            </div>
-            <hr>
-            <h3>Ubah Password</h3>
-            <div class="form-group">
-                <label for="password">Password Baru</label>
-                <input type="password" id="password" name="password" placeholder="Kosongkan jika tidak ingin diubah">
-            </div>
-            <div class="form-group">
-                <label for="password_confirm">Konfirmasi Password Baru</label>
-                <input type="password" id="password_confirm" name="password_confirm">
-            </div>
-            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-        </form>
-        <div class="form-box danger-zone">
-            <h3>Zona Berbahaya</h3>
-            <p>Tindakan ini tidak dapat dibatalkan. Menghapus akun akan menghilangkan semua riwayat pemesanan Anda secara permanen.</p>
-            <form action="<?= BASE_URL ?>actions/pengguna/hapus_akun.php" method="POST" onsubmit="return confirm('PERINGATAN: Anda akan menghapus akun Anda secara permanen. Tindakan ini tidak bisa dibatalkan. Lanjutkan?');">
-                <button type="submit" class="btn btn-danger">Hapus Akun Saya</button>
-            </form>
         </div>
     </div>
+</div>
+
+<div class="detail-actions">
+    <form action="<?= BASE_URL ?>actions/pengguna/hapus_akun.php" method="POST" onsubmit="return confirm('PERINGATAN: Anda akan menghapus akun Anda secara permanen. Lanjutkan?');">
+        <button type="submit" class="btn btn-danger">Hapus Akun Saya</button>
+    </form>
 </div>
 
 <?php require_once '../includes/footer.php'; ?>

@@ -50,12 +50,6 @@ try {
                         <td><?= htmlspecialchars($user['role']) ?></td>
                         <td>
                             <a href="../actions/pengguna/detail.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-info btn-sm">Detail</a>
-                            <?php if ($user['id_pengguna'] !== $_SESSION['id_pengguna']): ?>
-                                <form action="../actions/pengguna/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Peringatan: Yakin ingin menghapus pengguna ini?');">
-                                    <input type="hidden" name="id_pengguna" value="<?= $user['id_pengguna'] ?>">
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
-                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
