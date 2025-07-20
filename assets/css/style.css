@@ -358,7 +358,8 @@ tbody tr:hover {
 
 /* Status Informasi (Biru) */
 .status-perawatan,
-.status-pengajuan-ambil-cepat {
+.status-pengajuan-ambil-cepat,
+.status-pelanggan {
     background-color: var(--info-color);
 }
 
