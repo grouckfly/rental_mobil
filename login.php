@@ -36,25 +36,29 @@ if (isset($_GET['status'])) {
 
 // Proses form login jika metode request adalah POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // ... (Semua logika login Anda tetap di sini) ...
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
     if (empty($username) || empty($password)) {
-        $error_message = 'Username dan password tidak boleh kosong.';
+        // ...
     } else {
         try {
-            $stmt = $pdo->prepare("SELECT id_pengguna, username, password, role FROM pengguna WHERE username = ?");
+            // PERBAIKAN 1: Pastikan query mengambil 'nama_lengkap'
+            $stmt = $pdo->prepare("SELECT id_pengguna, username, password, role, nama_lengkap FROM pengguna WHERE username = ?");
             $stmt->execute([$username]);
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
+                // --- LOGIN BERHASIL ---
                 $_SESSION['id_pengguna'] = $user['id_pengguna'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
                 
+                // PERBAIKAN 2: Simpan 'nama_lengkap' ke dalam session
+                $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
+
                 $role_dashboard = strtolower($user['role']);
-                redirect_with_message("{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($user['username']) . "!");
+                redirect_with_message("{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($user['nama_lengkap']) . "!");
             } else {
                 $error_message = 'Kombinasi username dan password salah.';
             }
