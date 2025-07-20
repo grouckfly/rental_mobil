@@ -165,3 +165,10 @@ body.dark-mode .cancellation-info {
     font-size: 0.8rem;
     font-weight: bold;
 }
+
+/* Pengguna */
+.detail-container.single-column {
+    display: block;
+    max-width: 800px;
+    margin: auto;
+}
