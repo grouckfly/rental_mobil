@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 19, 2025 at 08:03 PM
+-- Generation Time: Jul 20, 2025 at 09:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,19 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `login_attempts`
+--
+
+CREATE TABLE `login_attempts` (
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `attempt_time` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mobil`
 --
 
@@ -36,7 +49,7 @@ CREATE TABLE `mobil` (
   `jenis_mobil` varchar(50) DEFAULT NULL,
   `harga_sewa_harian` decimal(10,2) NOT NULL,
   `denda_per_hari` decimal(10,2) NOT NULL,
-  `status` enum('Tersedia','Disewa','Perawatan','Tidak Aktif') NOT NULL DEFAULT 'Tersedia',
+  `status` enum('Tersedia','Disewa','Perawatan','Tidak Aktif','Dipesan') NOT NULL DEFAULT 'Tersedia',
   `gambar_mobil` varchar(255) DEFAULT NULL,
   `spesifikasi` text DEFAULT NULL,
   `kelas_mobil` enum('Low level','Mid level','High level','Luxury') DEFAULT 'Mid level',
@@ -52,7 +65,7 @@ INSERT INTO `mobil` (`id_mobil`, `plat_nomor`, `merk`, `model`, `tahun`, `jenis_
 (4, 'M 45 DA', 'Mazda', 'CX-5', '2024', 'SUV', 700000.00, 70000.00, 'Tidak Aktif', '68737fcdb2bf74.16132469.jpg', 'Mazda vrummm', 'Mid level', '2025-07-19 08:00:26'),
 (18, 'B 1101 TY', 'Toyota', 'Avanza G', '2023', 'MPV', 400000.00, 50000.00, 'Tersedia', '687bb636314b54.12310854.jpg', '7 Seater, Bensin, Otomatis', 'Low level', '2025-07-19 15:14:14'),
 (19, 'B 1102 TY', 'Toyota', 'Kijang Innova Zenix', '2024', 'MPV', 750000.00, 100000.00, 'Tersedia', 'innova.jpg', '7 Seater, Hybrid, Otomatis, Captain Seat', 'Mid level', '2025-07-19 08:28:15'),
-(20, 'B 1103 TY', 'Toyota', 'Fortuner VRZ', '2022', 'SUV', 900000.00, 150000.00, 'Tersedia', '687bb66a762136.20231195.jpg', '7 Seater, Diesel, 4x2, Otomatis', 'High level', '2025-07-19 15:14:50'),
+(20, 'B 1103 TY', 'Toyota', 'Fortuner VRZ', '2022', 'SUV', 900000.00, 150000.00, 'Tersedia', '687bb66a762136.20231195.jpg', '7 Seater, Diesel, 4x2, Otomatis', 'High level', '2025-07-20 04:06:16'),
 (21, 'B 1104 TY', 'Toyota', 'Alphard G', '2023', 'MPV Premium', 1500000.00, 200000.00, 'Tersedia', 'alphard.jpg', '6 Seater, Bensin, Pilot Seat', 'Luxury', '2025-07-19 08:28:15'),
 (22, 'B 1105 TY', 'Toyota', 'Yaris Cross', '2024', 'SUV Compact', 550000.00, 60000.00, 'Tersedia', 'yaris.jpg', '5 Seater, Hybrid, Otomatis', 'Mid level', '2025-07-19 08:48:06'),
 (23, 'D 1201 DH', 'Daihatsu', 'Xenia R', '2023', 'MPV', 350000.00, 50000.00, 'Tersedia', 'xenia.jpg', '7 Seater, Bensin, Manual', 'Low level', '2025-07-19 08:28:15'),
@@ -70,26 +83,26 @@ INSERT INTO `mobil` (`id_mobil`, `plat_nomor`, `merk`, `model`, `tahun`, `jenis_
 (35, 'B 1601 IS', 'Isuzu', 'MU-X', '2022', 'SUV', 700000.00, 90000.00, 'Tersedia', 'mux.jpg', '7 Seater, Diesel, 4x4, Tangguh', 'High level', '2025-07-19 08:28:15'),
 (36, 'B 1701 SB', 'Subaru', 'Crosstrek', '2024', 'SUV Crossover', 750000.00, 100000.00, 'Tersedia', 'crosstrek.jpg', '5 Seater, Bensin, Symmetrical AWD', 'High level', '2025-07-19 08:28:15'),
 (37, 'B 1801 NS', 'Nissan', 'Kicks e-Power', '2023', 'SUV Hybrid', 600000.00, 70000.00, 'Tersedia', 'kicks.jpg', '5 Seater, Hybrid, One-Pedal Operation', 'Mid level', '2025-07-19 08:28:15'),
-(38, 'B 1802 NS', 'Nissan', 'Terra VL', '2022', 'SUV', 750000.00, 95000.00, 'Tersedia', 'terra.jpg', '7 Seater, Diesel, 4x4', 'High level', '2025-07-19 08:28:15'),
+(38, 'B 1802 NS', 'Nissan', 'Terra VL', '2022', 'SUV', 750000.00, 95000.00, 'Tersedia', '687c8c395dd8f7.37361588.jpg', '7 Seater, Diesel, 4x4', 'High level', '2025-07-20 06:27:05'),
 (39, 'B 1901 MT', 'Mitsubishi', 'Pajero Sport Dakar', '2023', 'SUV', 950000.00, 150000.00, 'Tersedia', '687bb677e43d05.71645899.jpg', '7 Seater, Diesel, Otomatis, Sunroof', 'High level', '2025-07-19 15:15:03'),
 (40, 'B 1902 MT', 'Mitsubishi', 'Xforce Ultimate', '2024', 'SUV Compact', 500000.00, 60000.00, 'Tersedia', 'xforce.jpg', '5 Seater, Bensin, Audio by Yamaha', 'Mid level', '2025-07-19 08:28:15'),
 (41, 'B 1903 MT', 'Mitsubishi', 'Triton', '2023', 'Double Cabin', 800000.00, 100000.00, 'Tidak Aktif', 'triton.jpg', '5 Seater, Diesel, 4x4', 'High level', '2025-07-19 08:28:15'),
 (42, 'B 2001 LX', 'Lexus', 'RX 350h', '2024', 'SUV', 2000000.00, 250000.00, 'Tersedia', 'lexus_rx.jpg', '5 Seater, Hybrid, Premium Comfort', 'Luxury', '2025-07-19 08:28:15'),
 (43, 'B 2002 LX', 'Lexus', 'LM 350h', '2024', 'MPV Premium', 3500000.00, 400000.00, 'Tersedia', 'lexus_lm.jpg', '4 Seater, Hybrid, VIP Lounge', 'Luxury', '2025-07-19 08:28:15'),
-(44, 'B 3001 BW', 'BMW', '330i M Sport', '2023', 'Sedan', 1300000.00, 180000.00, 'Tersedia', 'bmw3.jpg', '5 Seater, Bensin, Sporty Handling', 'High level', '2025-07-19 08:28:15'),
+(44, 'B 3001 BW', 'BMW', '330i M Sport', '2023', 'Sedan', 1300000.00, 180000.00, 'Tersedia', 'bmw3.jpg', '5 Seater, Bensin, Sporty Handling', 'High level', '2025-07-20 03:58:54'),
 (45, 'B 3002 BW', 'BMW', 'X1 sDrive18i', '2024', 'SUV', 1000000.00, 150000.00, 'Tersedia', 'bmwx1.jpg', '5 Seater, Bensin, Compact Luxury', 'High level', '2025-07-19 08:28:15'),
-(46, 'B 3003 BW', 'BMW', 'i7', '2024', 'EV Sedan', 4000000.00, 500000.00, 'Tersedia', 'bmwi7.jpg', '5 Seater, Listrik, Theatre Screen', 'Luxury', '2025-07-19 08:28:15'),
+(46, 'B 3003 BW', 'BMW', 'i7', '2024', 'EV Sedan', 4000000.00, 500000.00, 'Tersedia', 'bmwi7.jpg', '5 Seater, Listrik, Theatre Screen', 'Luxury', '2025-07-20 03:40:51'),
 (47, 'B 4001 MB', 'Mercedes Benz', 'C200', '2023', 'Sedan', 1100000.00, 170000.00, 'Tersedia', 'mb_c200.jpg', '5 Seater, Bensin, Elegant Design', 'High level', '2025-07-19 08:28:15'),
 (48, 'B 4002 MB', 'Mercedes Benz', 'GLC 300', '2024', 'SUV', 1800000.00, 220000.00, 'Tersedia', 'mb_glc.jpg', '5 Seater, Bensin, MBUX Infotainment', 'Luxury', '2025-07-19 08:47:30'),
 (49, 'B 4003 MB', 'Mercedes Benz', 'V-Class', '2022', 'MPV Premium', 2200000.00, 280000.00, 'Tersedia', 'mb_v.jpg', '7 Seater, Diesel, Business Lounge', 'Luxury', '2025-07-19 08:28:15'),
 (50, 'B 5001 VW', 'Volkswagen', 'T-Cross', '2023', 'SUV Compact', 600000.00, 70000.00, 'Tersedia', 'vw_tcross.jpg', '5 Seater, Bensin Turbo, European Build', 'Mid level', '2025-07-19 08:28:15'),
-(51, 'B 6001 AD', 'Audi', 'Q3', '2023', 'SUV', 1000000.00, 150000.00, 'Tersedia', 'audi_q3.jpg', '5 Seater, Bensin, Virtual Cockpit', 'High level', '2025-07-19 08:28:15'),
+(51, 'B 6001 AD', 'Audi', 'Q3', '2023', 'SUV', 1000000.00, 150000.00, 'Tersedia', 'audi_q3.jpg', '5 Seater, Bensin, Virtual Cockpit', 'High level', '2025-07-20 02:16:54'),
 (52, 'B 7001 PG', 'Peugeot', '2008', '2023', 'SUV', 650000.00, 75000.00, 'Tersedia', 'peugeot2008.jpg', '5 Seater, Bensin, Stylish French Design', 'Mid level', '2025-07-19 08:28:15'),
 (53, 'B 8001 VL', 'Volvo', 'XC60 Recharge', '2024', 'SUV', 2100000.00, 250000.00, 'Tersedia', 'volvo_xc60.jpg', '5 Seater, Plug-in Hybrid, Scandinavian Safety', 'Luxury', '2025-07-19 08:28:15'),
 (54, 'B 9001 MN', 'MINI', 'Cooper S 3-Door', '2024', 'Hatchback', 900000.00, 120000.00, 'Tersedia', 'mini.jpg', '4 Seater, Bensin, Fun to Drive', 'High level', '2025-07-19 08:28:15'),
 (55, 'B 1 LMBO', 'Lamborghini', 'Huracan Tecnica', '2023', 'Supercar', 15000000.00, 3000000.00, 'Tersedia', 'huracan.jpg', '2 Seater, Bensin V10, High Performance', 'Luxury', '2025-07-19 08:28:15'),
 (56, 'B 2 FRRI', 'Ferrari', '296 GTB', '2024', 'Supercar', 18000000.00, 3500000.00, 'Tersedia', 'ferrari296.jpg', '2 Seater, Hybrid V6, Italian Icon', 'Luxury', '2025-07-19 08:28:15'),
-(57, 'B 111 FO', 'Ford', 'Everest Titanium', '2023', 'SUV', 900000.00, 120000.00, 'Tersedia', 'everest.jpg', '7 Seater, Diesel Bi-Turbo, 4x4', 'High level', '2025-07-19 08:28:15'),
+(57, 'B 111 FO', 'Ford', 'Everest Titanium', '2023', 'SUV', 900000.00, 120000.00, 'Tersedia', '687c4fa5245db0.16161607.jpg', '7 Seater, Diesel Bi-Turbo, 4x4', 'High level', '2025-07-20 02:08:37'),
 (58, 'B 222 FO', 'Ford', 'Ranger Raptor', '2024', 'Double Cabin', 1200000.00, 150000.00, 'Tersedia', 'raptor.jpg', '5 Seater, Diesel, Off-road Performance', 'High level', '2025-07-19 08:28:15'),
 (59, 'B 333 CH', 'Chevrolet', 'Trax', '2024', 'SUV Compact', 500000.00, 60000.00, 'Tersedia', 'trax.jpg', '5 Seater, Bensin, Modern Design', 'Mid level', '2025-07-19 08:28:15'),
 (60, 'B 444 JP', 'Jeep', 'Wrangler Rubicon', '2022', 'SUV Off-road', 1500000.00, 200000.00, 'Tersedia', 'wrangler.jpg', '4 Seater, Bensin, Open Roof', 'Luxury', '2025-07-19 08:47:39'),
@@ -101,7 +114,7 @@ INSERT INTO `mobil` (`id_mobil`, `plat_nomor`, `merk`, `model`, `tahun`, `jenis_
 (66, 'B 303 CN', 'Chery', 'Omoda 5', '2023', 'SUV Crossover', 500000.00, 60000.00, 'Tersedia', 'omoda5.jpg', '5 Seater, Bensin Turbo, Futuristic Design', 'Mid level', '2025-07-19 08:28:15'),
 (67, 'B 404 CN', 'Chery', 'Tiggo 8 Pro', '2023', 'SUV', 650000.00, 75000.00, 'Tersedia', 'tiggo8.jpg', '7 Seater, Bensin, Premium Features', 'High level', '2025-07-19 08:28:15'),
 (68, 'B 505 CN', 'BYD', 'Dolphin', '2024', 'EV Hatchback', 450000.00, 55000.00, 'Tersedia', 'dolphin.jpg', '5 Seater, Listrik, Blade Battery', 'Mid level', '2025-07-19 08:28:15'),
-(69, 'B 606 CN', 'BYD', 'Seal', '2024', 'EV Sedan', 800000.00, 100000.00, 'Tersedia', 'seal.jpg', '5 Seater, Listrik, AWD Performance', 'High level', '2025-07-19 08:28:15'),
+(69, 'B 606 CN', 'BYD', 'Seal', '2024', 'EV Sedan', 800000.00, 100000.00, 'Tersedia', 'seal.jpg', '5 Seater, Listrik, AWD Performance', 'High level', '2025-07-20 04:04:32'),
 (70, 'B 707 CN', 'DFSK', 'Glory i-Auto', '2022', 'SUV', 450000.00, 55000.00, 'Tersedia', 'glory.jpg', '7 Seater, Bensin, Voice Command', 'Mid level', '2025-07-19 08:48:20'),
 (71, 'B 808 CN', 'Neta', 'V', '2024', 'EV Crossover', 400000.00, 50000.00, 'Tersedia', 'neta_v.jpg', '5 Seater, Listrik, Affordable EV', 'Low level', '2025-07-19 08:28:15'),
 (72, 'B 909 CN', 'GWM', 'Tank 500', '2024', 'SUV', 1200000.00, 150000.00, 'Tersedia', 'tank500.jpg', '7 Seater, Hybrid, Rugged Luxury', 'Luxury', '2025-07-19 08:28:15'),
@@ -157,19 +170,32 @@ CREATE TABLE `pemesanan` (
   `catatan_admin` varchar(255) DEFAULT NULL,
   `waktu_pengambilan` datetime DEFAULT NULL,
   `waktu_pengembalian` datetime DEFAULT NULL,
+  `batas_pembayaran` datetime DEFAULT NULL,
   `tgl_mulai_diajukan` datetime DEFAULT NULL,
-  `tanggal_pemesanan` timestamp NOT NULL DEFAULT current_timestamp()
+  `tanggal_pemesanan` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pemesanan`
 --
 
-INSERT INTO `pemesanan` (`id_pemesanan`, `kode_pemesanan`, `id_pengguna`, `id_mobil`, `tanggal_mulai`, `tanggal_selesai`, `tanggal_pengembalian`, `total_biaya`, `total_denda`, `total_biaya_diajukan`, `status_pemesanan`, `alasan_pembatalan`, `rekening_pembatalan`, `rating_pengguna`, `review_pelanggan`, `catatan_admin`, `waktu_pengambilan`, `waktu_pengembalian`, `tgl_mulai_diajukan`, `tanggal_pemesanan`) VALUES
-(1, 'BOOK-U5H7K', 3, 4, '2025-07-18 00:00:00', '2025-07-20 00:00:00', NULL, 1400000.00, 0.00, NULL, 'Dibatalkan', 'Testing', '19y823194y2 an wawan', NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-13 12:04:04'),
-(2, 'BOOK-WVDHT', 3, 3, '2025-07-13 00:00:00', '2025-07-14 00:00:00', NULL, 650000.00, 150000.00, NULL, 'Selesai', NULL, NULL, 5, 'Gacor lek sound horeg, DUm tak dum tak ngunu le', NULL, '2025-07-13 21:50:14', '2025-07-16 10:53:01', NULL, '2025-07-13 12:50:09'),
-(3, 'BOOK-T40O5', 3, 3, '2025-07-17 00:00:00', '2025-07-18 00:00:00', NULL, 650000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-16 04:02:40'),
-(4, 'BOOK-CSSGP', 6, 26, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 275000.00, 0.00, NULL, 'Selesai', NULL, NULL, 5, 'Peh Lancar Jaya Bolo', NULL, '2025-07-20 00:46:32', '2025-07-20 00:47:49', NULL, '2025-07-19 17:37:20');
+INSERT INTO `pemesanan` (`id_pemesanan`, `kode_pemesanan`, `id_pengguna`, `id_mobil`, `tanggal_mulai`, `tanggal_selesai`, `tanggal_pengembalian`, `total_biaya`, `total_denda`, `total_biaya_diajukan`, `status_pemesanan`, `alasan_pembatalan`, `rekening_pembatalan`, `rating_pengguna`, `review_pelanggan`, `catatan_admin`, `waktu_pengambilan`, `waktu_pengembalian`, `batas_pembayaran`, `tgl_mulai_diajukan`, `tanggal_pemesanan`, `updated_at`) VALUES
+(1, 'BOOK-U5H7K', 3, 4, '2025-07-18 00:00:00', '2025-07-20 00:00:00', NULL, 1400000.00, 0.00, NULL, 'Dibatalkan', 'Testing', '19y823194y2 an wawan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-13 12:04:04', '2025-07-20 04:01:55'),
+(2, 'BOOK-WVDHT', 3, 3, '2025-07-13 00:00:00', '2025-07-14 00:00:00', NULL, 650000.00, 150000.00, NULL, 'Selesai', NULL, NULL, 5, 'Gacor lek sound horeg, DUm tak dum tak ngunu le', NULL, '2025-07-13 21:50:14', '2025-07-16 10:53:01', NULL, NULL, '2025-07-13 12:50:09', '2025-07-20 04:01:55'),
+(3, 'BOOK-T40O5', 3, 3, '2025-07-17 00:00:00', '2025-07-18 00:00:00', NULL, 650000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-16 04:02:40', '2025-07-20 04:01:55'),
+(4, 'BOOK-CSSGP', 6, 26, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 275000.00, 0.00, NULL, 'Selesai', NULL, NULL, 5, 'Peh Lancar Jaya Bolo', NULL, '2025-07-20 00:46:32', '2025-07-20 00:47:49', NULL, NULL, '2025-07-19 17:37:20', '2025-07-20 04:01:55'),
+(5, 'BOOK-ITY8P', 6, 51, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 1000000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 12:14:31', NULL, '2025-07-20 02:14:31', '2025-07-20 04:01:55'),
+(6, 'BOOK-UOLUS', 6, 51, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 1000000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 12:27:55', NULL, '2025-07-20 02:27:55', '2025-07-20 04:01:55'),
+(7, 'BOOK-979AB', 6, 51, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 1000000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 12:29:20', NULL, '2025-07-20 02:29:20', '2025-07-20 04:01:55'),
+(8, 'BOOK-3W06O', 3, 51, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 1000000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 15:31:34', NULL, '2025-07-20 05:31:34', '2025-07-20 04:01:55'),
+(9, 'BOOK-7GPEW', 6, 51, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 1000000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 12:00:28', NULL, '2025-07-20 02:00:28', '2025-07-20 04:01:55'),
+(10, 'BOOK-MBAQ2', 3, 44, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 1300000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 12:06:50', NULL, '2025-07-20 02:06:50', '2025-07-20 04:01:55'),
+(11, 'BOOK-4F9R1', 6, 44, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 1300000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 13:39:36', NULL, '2025-07-20 03:39:36', '2025-07-20 04:01:55'),
+(12, 'BOOK-5PM5D', 6, 46, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 4000000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 13:40:18', NULL, '2025-07-20 03:40:18', '2025-07-20 04:01:55'),
+(13, 'BOOK-OXP7F', 6, 44, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 1300000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 13:58:43', NULL, '2025-07-20 03:58:43', '2025-07-20 04:01:55'),
+(14, 'BOOK-WB3D5', 6, 69, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 800000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 14:03:48', NULL, '2025-07-20 04:03:48', '2025-07-20 04:04:32'),
+(15, 'BOOK-ZJ2GU', 6, 20, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 900000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 14:06:05', NULL, '2025-07-20 04:06:05', '2025-07-20 04:06:16');
 
 -- --------------------------------------------------------
 
@@ -182,6 +208,8 @@ CREATE TABLE `pengguna` (
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `nama_lengkap` varchar(100) NOT NULL,
+  `nik` varchar(16) DEFAULT NULL,
+  `foto_ktp` varchar(255) DEFAULT NULL,
   `email` varchar(100) NOT NULL,
   `no_telp` varchar(15) NOT NULL,
   `alamat` text DEFAULT NULL,
@@ -193,15 +221,25 @@ CREATE TABLE `pengguna` (
 -- Dumping data for table `pengguna`
 --
 
-INSERT INTO `pengguna` (`id_pengguna`, `username`, `password`, `nama_lengkap`, `email`, `no_telp`, `alamat`, `role`, `created_at`) VALUES
-(1, 'admin1', '$2y$10$XVska1TxhC3PoqFFdG662u7z92jXpCt2R0sFFHUjENdojZqnLeiNi', 'admin', 'admin@email.com', '081234567890', 'yo ndak tau ler', 'Admin', '2025-07-13 07:17:20'),
-(2, 'karyawan1', '$2y$10$Vp9b4.pFgY9isyEpByHjP.14LjyI3Keq6CT.kyrdTrHXHElneO9TS', 'karyawan', 'karyawan@email.com', '080987654321', NULL, 'Karyawan', '2025-07-13 07:19:46'),
-(3, 'pelanggan1', '$2y$10$OMOPWI8SLcN/UPQ0ssoLZ.qc9dH2XPVu4w.AV9W7vsfMFMdl7MmTq', 'pelanggan', 'pelanggan@email.com', '088765123490', NULL, 'Pelanggan', '2025-07-13 07:20:33'),
-(6, 'pelanggan2', '$2y$10$mI98taoejY2Z31EOxRVbwesOcRYAcWgp6ptv.vqQbhjxomQF3XBUS', 'pelanggan2', 'pelanggan2@email.com', '089012368173', NULL, 'Pelanggan', '2025-07-13 11:52:43');
+INSERT INTO `pengguna` (`id_pengguna`, `username`, `password`, `nama_lengkap`, `nik`, `foto_ktp`, `email`, `no_telp`, `alamat`, `role`, `created_at`) VALUES
+(1, 'admin1', '$2y$10$XVska1TxhC3PoqFFdG662u7z92jXpCt2R0sFFHUjENdojZqnLeiNi', 'admin', NULL, NULL, 'admin@email.com', '081234567890', 'yo ndak tau ler', 'Admin', '2025-07-13 07:17:20'),
+(2, 'karyawan1', '$2y$10$Vp9b4.pFgY9isyEpByHjP.14LjyI3Keq6CT.kyrdTrHXHElneO9TS', 'Kancut Anjay', NULL, NULL, 'karyawan@email.com', '080987654321', 'Jl. Gtw le awokawokawokow', 'Karyawan', '2025-07-13 07:19:46'),
+(3, 'pelanggan1', '$2y$10$OMOPWI8SLcN/UPQ0ssoLZ.qc9dH2XPVu4w.AV9W7vsfMFMdl7MmTq', 'pelanggan', NULL, NULL, 'pelanggan@email.com', '088765123490', NULL, 'Pelanggan', '2025-07-13 07:20:33'),
+(6, 'pelanggan2', '$2y$10$mI98taoejY2Z31EOxRVbwesOcRYAcWgp6ptv.vqQbhjxomQF3XBUS', 'Pudidi', NULL, NULL, 'pelanggan2@email.com', '089012368173', 'Jl. Pudidi Jaya 3X', 'Pelanggan', '2025-07-13 11:52:43'),
+(8, 'cibi', '$2y$10$.iycQdIoitNpouW9dYsxPekI2n3OqIojY9KosANms6HCmMxmxsGUa', 'cibi maruko chan', '5234987012340006', '687c9264c295c5.44355234.jpg', 'cibi@email.com', '081234753200', 'Jl. moroko 22', 'Pelanggan', '2025-07-20 06:51:26'),
+(9, 'syibal', '$2y$10$537M.Unf6s41PonlNaSsaezCQTWZT/3ndjOrxwPsTHVqfCSseouMu', '', NULL, NULL, 'syibal@email.com', '', NULL, 'Pelanggan', '2025-07-20 07:39:12');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `login_attempts`
+--
+ALTER TABLE `login_attempts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `username` (`username`),
+  ADD KEY `ip_address` (`ip_address`);
 
 --
 -- Indexes for table `mobil`
@@ -233,11 +271,18 @@ ALTER TABLE `pemesanan`
 ALTER TABLE `pengguna`
   ADD PRIMARY KEY (`id_pengguna`),
   ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `nik` (`nik`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `login_attempts`
+--
+ALTER TABLE `login_attempts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `mobil`
@@ -255,13 +300,13 @@ ALTER TABLE `pembayaran`
 -- AUTO_INCREMENT for table `pemesanan`
 --
 ALTER TABLE `pemesanan`
-  MODIFY `id_pemesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_pemesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `pengguna`
 --
 ALTER TABLE `pengguna`
-  MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
