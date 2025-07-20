@@ -19,13 +19,24 @@ $id_pengguna_session = $_SESSION['id_pengguna'];
 $tgl_awal = $_GET['tgl_awal'] ?? '';
 $tgl_akhir = $_GET['tgl_akhir'] ?? '';
 $status = $_GET['status'] ?? '';
-$id_mobil = isset($_GET['id_mobil']) ? (int)$_GET['id_mobil'] : 0;
 $kode_pesanan = $_GET['kode_pesanan'] ?? '';
+$id_mobil = isset($_GET['id_mobil']) ? (int)$_GET['id_mobil'] : 0;
 $nama_pelanggan = $_GET['nama_pelanggan'] ?? '';
+$kelas_mobil = $_GET['kelas_mobil'] ?? '';
+$jenis_mobil = $_GET['jenis'] ?? '';
 
-// ==========================================================
-// LOGIKA QUERY DINAMIS BERDASARKAN ROLE
-// ==========================================================
+// Ambil daftar mobil & jenis untuk dropdown
+try {
+    $stmt_mobil = $pdo->query("SELECT id_mobil, merk, model FROM mobil ORDER BY merk ASC, model ASC");
+    $daftar_mobil = $stmt_mobil->fetchAll();
+    $stmt_jenis = $pdo->query("SELECT DISTINCT jenis_mobil FROM mobil WHERE jenis_mobil IS NOT NULL AND jenis_mobil != '' ORDER BY jenis_mobil ASC");
+    $daftar_jenis = $stmt_jenis->fetchAll(PDO::FETCH_COLUMN);
+} catch (PDOException $e) {
+    $daftar_mobil = [];
+    $daftar_jenis = [];
+}
+
+// Logika Query Dinamis Berdasarkan Role
 $sql = "SELECT p.*, pg.nama_lengkap, m.merk, m.model, m.gambar_mobil
         FROM pemesanan p
         JOIN pengguna pg ON p.id_pengguna = pg.id_pengguna
@@ -38,11 +49,13 @@ if ($role_session === 'Pelanggan') {
     $params[] = $id_pengguna_session;
 }
 
+// Terapkan filter
 if (!empty($tgl_awal) && !empty($tgl_akhir)) { $sql .= " AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?"; $params[] = $tgl_awal; $params[] = $tgl_akhir; }
 if (!empty($status)) { $sql .= " AND p.status_pemesanan = ?"; $params[] = $status; }
-if ($id_mobil > 0) { $sql .= " AND p.id_mobil = ?"; $params[] = $id_mobil; }
 if (!empty($kode_pesanan)) { $sql .= " AND p.kode_pemesanan LIKE ?"; $params[] = "%$kode_pesanan%"; }
-
+if ($id_mobil > 0) { $sql .= " AND p.id_mobil = ?"; $params[] = $id_mobil; }
+if (!empty($kelas_mobil)) { $sql .= " AND m.kelas_mobil = ?"; $params[] = $kelas_mobil; }
+if (!empty($jenis_mobil)) { $sql .= " AND m.jenis_mobil = ?"; $params[] = $jenis_mobil; }
 if (in_array($role_session, ['Admin', 'Karyawan']) && !empty($nama_pelanggan)) {
     $sql .= " AND pg.nama_lengkap LIKE ?";
     $params[] = "%$nama_pelanggan%";
@@ -55,8 +68,8 @@ try {
     $histories = $stmt->fetchAll();
 } catch (PDOException $e) { $histories = []; }
 
-// Daftar status untuk dropdown
-$status_list = ['Selesai', 'Dibatalkan', 'Berjalan', 'Dikonfirmasi', 'Menunggu Pembayaran', 'Pengajuan Ditolak'];
+$status_list = ['Selesai', 'Dibatalkan'];
+$kelas_list = ['Low level', 'Mid level', 'High level', 'Luxury'];
 ?>
 
 <div class="page-header">
@@ -65,7 +78,38 @@ $status_list = ['Selesai', 'Dibatalkan', 'Berjalan', 'Dikonfirmasi', 'Menunggu P
 
 <div class="filter-container">
     <form action="" method="GET" class="filter-form">
-        </form>
+        <div class="form-group"><label>Dari Tgl</label><input type="date" name="tgl_awal" value="<?= htmlspecialchars($tgl_awal) ?>"></div>
+        <div class="form-group"><label>Sampai Tgl</label><input type="date" name="tgl_akhir" value="<?= htmlspecialchars($tgl_akhir) ?>"></div>
+        <div class="form-group"><label>Status</label>
+            <select name="status"><option value="">Semua</option>
+                <?php foreach($status_list as $s): ?><option value="<?= $s ?>" <?= ($status === $s) ? 'selected' : '' ?>><?= $s ?></option><?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group"><label>Kode</label><input type="text" name="kode_pesanan" placeholder="Kode Pesanan..." value="<?= htmlspecialchars($kode_pesanan) ?>"></div>
+        <div class="form-group"><label>Mobil</label>
+            <select name="id_mobil" id="filter-mobil" style="width: 200px;">
+                <?php if ($id_mobil > 0 && $mobil_pilihan = $pdo->query("SELECT merk, model FROM mobil WHERE id_mobil=$id_mobil")->fetch()): ?>
+                    <option value="<?= $id_mobil ?>" selected><?= htmlspecialchars($mobil_pilihan['merk'] . ' ' . $mobil_pilihan['model']) ?></option>
+                <?php endif; ?>
+            </select>
+        </div>
+        <div class="form-group"><label>Kelas</label>
+            <select name="kelas_mobil"><option value="">Semua Kelas</option>
+                <?php foreach($kelas_list as $k): ?><option value="<?= $k ?>" <?= ($kelas_mobil === $k) ? 'selected' : '' ?>><?= $k ?></option><?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group"><label>Jenis</label>
+            <select name="jenis"><option value="">Semua Jenis</option>
+                <?php foreach($daftar_jenis as $j): ?><option value="<?= $j ?>" <?= ($jenis_mobil === $j) ? 'selected' : '' ?>><?= $j ?></option><?php endforeach; ?>
+            </select>
+        </div>
+        <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
+            <div class="form-group"><label>Pelanggan</label><input type="text" name="nama_pelanggan" placeholder="Nama Pelanggan..." value="<?= htmlspecialchars($nama_pelanggan) ?>"></div>
+        <?php endif; ?>
+
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="history.php" class="btn btn-secondary">Reset</a>
+    </form>
 </div>
 
 <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
