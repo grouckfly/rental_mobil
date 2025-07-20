@@ -1,5 +1,5 @@
 <?php
-// File: login.php (Versi Final dengan Notifikasi Pendaftaran)
+// File: login.php (Versi Final Disempurnakan)
 
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
@@ -11,59 +11,65 @@ if (isset($_SESSION['id_pengguna'])) {
     exit();
 }
 
-// Inisialisasi variabel untuk pesan error dan notifikasi
 $error_message = '';
 $notification_script = '';
 
-// PERBAIKAN: Cek berbagai status dari URL
+// Menangani notifikasi dari URL (misal: setelah logout atau registrasi)
 if (isset($_GET['status'])) {
     $message = '';
-    $type = 'success'; // Tipe default
-
     if ($_GET['status'] === 'logout_success') {
         $message = 'Anda telah berhasil logout.';
     } elseif ($_GET['status'] === 'register_success') {
         $message = 'Pendaftaran berhasil! Silakan login.';
     }
-
-    // Jika ada pesan yang perlu ditampilkan, siapkan script-nya
     if (!empty($message)) {
-        // addslashes untuk memastikan pesan aman disisipkan di dalam string JavaScript
         $safe_message = addslashes($message);
-        $notification_script = "<script>document.addEventListener('DOMContentLoaded', () => { showToast('{$safe_message}', '{$type}'); });</script>";
+        $notification_script = "<script>document.addEventListener('DOMContentLoaded', () => { showToast('{$safe_message}', 'success'); });</script>";
     }
 }
 
-// Proses form login jika metode request adalah POST
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
+// Proses form login hanya jika metode request adalah POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
 
+    // ==========================================================
+    // PERBAIKAN 1: Validasi Input Lebih Ketat
+    // ==========================================================
     if (empty($username) || empty($password)) {
-        // ...
+        $error_message = 'Username dan password tidak boleh kosong.';
     } else {
         try {
-            // PERBAIKAN 1: Pastikan query mengambil 'nama_lengkap'
             $stmt = $pdo->prepare("SELECT id_pengguna, username, password, role, nama_lengkap FROM pengguna WHERE username = ?");
             $stmt->execute([$username]);
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
-                // --- LOGIN BERHASIL ---
+                // Login Berhasil
+                
+                // ==========================================================
+                // PERBAIKAN 2: Regenerasi Session ID untuk Keamanan
+                // ==========================================================
+                // Ini mencegah serangan session fixation.
+                session_regenerate_id(true);
+
                 $_SESSION['id_pengguna'] = $user['id_pengguna'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
-                
-                // PERBAIKAN 2: Simpan 'nama_lengkap' ke dalam session
                 $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
-
+                
                 $role_dashboard = strtolower($user['role']);
-                redirect_with_message("{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($user['nama_lengkap']) . "!");
+                $welcome_message = empty($user['nama_lengkap']) ? $user['username'] : $user['nama_lengkap'];
+                
+                redirect_with_message("{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($welcome_message) . "!");
             } else {
+                // Pesan error dibuat generik untuk keamanan (tidak memberitahu mana yang salah)
                 $error_message = 'Kombinasi username dan password salah.';
             }
         } catch (PDOException $e) {
-            $error_message = "Terjadi kesalahan pada sistem.";
+            // Catat error ke log server, jangan tampilkan ke pengguna
+            error_log("Login error: " . $e->getMessage());
+            $error_message = "Terjadi kesalahan pada sistem. Silakan coba lagi nanti.";
         }
     }
 }
@@ -78,6 +84,7 @@ require_once 'includes/header.php';
         <p>Silakan masuk untuk melanjutkan.</p>
         
         <?php 
+        // Menampilkan pesan error dari proses login
         if(!empty($error_message)) {
             echo "<div class='flash-message flash-error'>{$error_message}</div>";
         }
@@ -86,11 +93,11 @@ require_once 'includes/header.php';
         <form action="login.php" method="POST">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" required autocomplete="username">
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
@@ -102,7 +109,6 @@ require_once 'includes/header.php';
 
 <?php
 require_once 'includes/footer.php';
-
 // Mencetak script notifikasi di akhir halaman jika ada
 echo $notification_script;
 ?>
