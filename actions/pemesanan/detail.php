@@ -132,6 +132,16 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         <?php endif;
         endif; ?>
 
+        <?php if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && !empty($pemesanan['batas_pembayaran'])): ?>
+            <div class="timer-container payment-timer">
+                <h4>Sisa Waktu Pembayaran</h4>
+                <div id="countdown-timer"
+                    data-end-time="<?= $pemesanan['batas_pembayaran'] ?>"
+                    data-action-on-expire="redirect">
+                </div>
+            </div>
+        <?php endif; ?>
+
         <?php if ($pemesanan['status_pemesanan'] === 'Berjalan'): ?>
             <div class="timer-container">
                 <h4>Sisa Waktu Sewa</h4>

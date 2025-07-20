@@ -73,3 +73,12 @@
     font-weight: bold;
     color: var(--danger-color);
 }
+
+.notification-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--danger-color);
+    border-radius: 50%;
+    margin-left: 5px;
+}
