@@ -23,6 +23,11 @@ if (isset($_GET['status']) && $_GET['status'] === 'payment_expired') {
 
 $id_pengguna = $_SESSION['id_pengguna'];
 
+// Ambil data untuk penanda auto-refresh
+$stmt_live = $pdo->prepare("SELECT COUNT(*) as total, MAX(tanggal_pemesanan) as last_update FROM pemesanan WHERE id_pengguna = ?");
+$stmt_live->execute([$id_pengguna]);
+$live_data = $stmt_live->fetch();
+
 // Mengambil data statistik pelanggan
 try {
     $stmt_aktif = $pdo->prepare("SELECT COUNT(*) FROM pemesanan WHERE id_pengguna = ? AND status_pemesanan IN ('Menunggu Pembayaran', 'Dikonfirmasi', 'Berjalan')");
@@ -42,14 +47,16 @@ try {
     ");
     $stmt_booking->execute([$id_pengguna]);
     $booking_terbaru = $stmt_booking->fetch();
-
 } catch (PDOException $e) {
     $pemesanan_aktif = $pemesanan_selesai = 'N/A';
     $booking_terbaru = null;
 }
 ?>
 
-<div class="page-header">
+<div class="page-header" 
+    data-live-context="pelanggan_pemesanan"
+    data-live-total="<?= $live_data['total'] ?>"
+    data-live-last-update="<?= $live_data['last_update'] ?>">
     <h1>Dashboard Saya</h1>
 </div>
 

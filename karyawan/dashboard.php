@@ -28,14 +28,16 @@ try {
         LIMIT 5
     ");
     $recent_tasks = $stmt->fetchAll();
-
 } catch (PDOException $e) {
     $perlu_verifikasi = $sedang_disewa = $mobil_perawatan = 'N/A';
     $recent_tasks = [];
 }
 ?>
 
-<div class="page-header">
+<div class="page-header"
+    data-live-context="admin_pemesanan"
+    data-live-total="<?= $pdo->query("SELECT COUNT(*) FROM pemesanan")->fetchColumn() ?>"
+    data-live-last-update="<?= $pdo->query("SELECT MAX(tanggal_pemesanan) FROM pemesanan")->fetchColumn() ?>">
     <h1>Dashboard Operasional</h1>
     <p>Selamat datang, <?= htmlspecialchars($_SESSION['username']) ?>. Berikut adalah tugas operasional Anda.</p>
 </div>
@@ -87,7 +89,7 @@ try {
                         <td><?= htmlspecialchars($task['merk'] . ' ' . $task['model']) ?></td>
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $task['status_pemesanan'])) ?>"><?= htmlspecialchars($task['status_pemesanan']) ?></span></td>
                         <td>
-                           <a href="../actions/pemesanan/detail.php?id=<?= $task['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
+                            <a href="../actions/pemesanan/detail.php?id=<?= $task['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

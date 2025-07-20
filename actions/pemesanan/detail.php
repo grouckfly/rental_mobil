@@ -76,7 +76,11 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
     </div>
 <?php endif; ?>
 
-<div class="detail-container">
+<div class="detail-container"
+    data-live-context="detail_pemesanan"
+    data-live-id="<?= $pemesanan['id_pemesanan'] ?>"
+    data-live-status="<?= $pemesanan['status_pemesanan'] ?>"
+    data-live-last-update="<?= $pemesanan['updated_at'] ?>">
     <div class="detail-main">
         <div class="info-item booking-code-item">
             <span class="label">Kode Pemesanan</span>
