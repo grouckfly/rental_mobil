@@ -94,7 +94,7 @@ $kelas_list = ['Low Level', 'Mid Level', 'High Level', 'Luxury'];
             <label>Jenis Mobil</label>
             <select name="jenis" class="form-control">
                 <option value="">Semua</option>
-                <?php foreach($daftar_jenis as $jenis): ?>
+                <?php foreach ($daftar_jenis as $jenis): ?>
                     <option value="<?= htmlspecialchars($jenis) ?>" <?= ($jenis_filter === $jenis) ? 'selected' : '' ?>><?= htmlspecialchars($jenis) ?></option>
                 <?php endforeach; ?>
             </select>
@@ -103,7 +103,7 @@ $kelas_list = ['Low Level', 'Mid Level', 'High Level', 'Luxury'];
             <label>Kelas</label>
             <select name="kelas" class="form-control">
                 <option value="">Semua</option>
-                <?php foreach($kelas_list as $k): ?>
+                <?php foreach ($kelas_list as $k): ?>
                     <option value="<?= $k ?>" <?= ($kelas_filter === $k) ? 'selected' : '' ?>><?= $k ?></option>
                 <?php endforeach; ?>
             </select>
@@ -112,7 +112,7 @@ $kelas_list = ['Low Level', 'Mid Level', 'High Level', 'Luxury'];
             <label>Status</label>
             <select name="status" class="form-control">
                 <option value="">Semua</option>
-                <?php foreach($status_list as $s): ?>
+                <?php foreach ($status_list as $s): ?>
                     <option value="<?= $s ?>" <?= ($status_filter === $s) ? 'selected' : '' ?>><?= $s ?></option>
                 <?php endforeach; ?>
             </select>
@@ -125,6 +125,9 @@ $kelas_list = ['Low Level', 'Mid Level', 'High Level', 'Luxury'];
 <?php display_flash_message(); ?>
 
 <div class="table-container">
+    data-live-context="admin_mobil"
+    data-live-total="<?= count($cars) ?>"
+    data-live-last-update="<?= $pdo->query("SELECT MAX(updated_at) FROM mobil")->fetchColumn() ?>">
     <table>
         <thead>
             <tr>
@@ -155,7 +158,9 @@ $kelas_list = ['Low Level', 'Mid Level', 'High Level', 'Luxury'];
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
-                <tr><td colspan="7">Tidak ada mobil yang ditemukan sesuai kriteria.</td></tr>
+                <tr>
+                    <td colspan="7">Tidak ada mobil yang ditemukan sesuai kriteria.</td>
+                </tr>
             <?php endif; ?>
         </tbody>
     </table>

@@ -1,5 +1,5 @@
 <?php
-// File: admin/history.php (Versi Universal untuk Semua Role)
+// File: admin/history.php (Versi Final Universal untuk Semua Role)
 
 require_once '../includes/config.php';
 require_once '../includes/auth.php';
@@ -19,9 +19,9 @@ $id_pengguna_session = $_SESSION['id_pengguna'];
 $tgl_awal = $_GET['tgl_awal'] ?? '';
 $tgl_akhir = $_GET['tgl_akhir'] ?? '';
 $status = $_GET['status'] ?? '';
+$id_mobil = isset($_GET['id_mobil']) ? (int)$_GET['id_mobil'] : 0;
 $kode_pesanan = $_GET['kode_pesanan'] ?? '';
-$mobil = $_GET['mobil'] ?? '';
-$nama_pelanggan = $_GET['nama_pelanggan'] ?? ''; // Hanya untuk admin/karyawan
+$nama_pelanggan = $_GET['nama_pelanggan'] ?? '';
 
 // ==========================================================
 // LOGIKA QUERY DINAMIS BERDASARKAN ROLE
@@ -33,19 +33,16 @@ $sql = "SELECT p.*, pg.nama_lengkap, m.merk, m.model, m.gambar_mobil
         WHERE 1=1";
 $params = [];
 
-// Jika yang login adalah Pelanggan, WAJIB filter berdasarkan ID mereka
 if ($role_session === 'Pelanggan') {
     $sql .= " AND p.id_pengguna = ?";
     $params[] = $id_pengguna_session;
 }
 
-// Terapkan filter lainnya
 if (!empty($tgl_awal) && !empty($tgl_akhir)) { $sql .= " AND DATE(p.tanggal_pemesanan) BETWEEN ? AND ?"; $params[] = $tgl_awal; $params[] = $tgl_akhir; }
 if (!empty($status)) { $sql .= " AND p.status_pemesanan = ?"; $params[] = $status; }
+if ($id_mobil > 0) { $sql .= " AND p.id_mobil = ?"; $params[] = $id_mobil; }
 if (!empty($kode_pesanan)) { $sql .= " AND p.kode_pemesanan LIKE ?"; $params[] = "%$kode_pesanan%"; }
-if (!empty($mobil)) { $sql .= " AND (m.merk LIKE ? OR m.model LIKE ?)"; $params[] = "%$mobil%"; $params[] = "%$mobil%"; }
 
-// Terapkan filter nama pelanggan HANYA untuk Admin/Karyawan
 if (in_array($role_session, ['Admin', 'Karyawan']) && !empty($nama_pelanggan)) {
     $sql .= " AND pg.nama_lengkap LIKE ?";
     $params[] = "%$nama_pelanggan%";
@@ -62,50 +59,19 @@ try {
 $status_list = ['Selesai', 'Dibatalkan', 'Berjalan', 'Dikonfirmasi', 'Menunggu Pembayaran', 'Pengajuan Ditolak'];
 ?>
 
-<div class="page-header"><h1>Riwayat Transaksi</h1></div>
+<div class="page-header">
+    <h1>Riwayat Transaksi</h1>
+</div>
 
 <div class="filter-container">
     <form action="" method="GET" class="filter-form">
-        <div class="form-group"><label>Dari Tgl</label><input type="date" name="tgl_awal" value="<?= htmlspecialchars($tgl_awal) ?>"></div>
-        <div class="form-group"><label>Sampai Tgl</label><input type="date" name="tgl_akhir" value="<?= htmlspecialchars($tgl_akhir) ?>"></div>
-        <div class="form-group"><label>Status</label>
-            <select name="status"><option value="">Semua</option>
-                <?php foreach($status_list as $s): ?><option value="<?= $s ?>" <?= ($status === $s) ? 'selected' : '' ?>><?= $s ?></option><?php endforeach; ?>
-            </select>
-        </div>
-        <div class="form-group"><label>Kode</label><input type="text" name="kode_pesanan" placeholder="Kode Pesanan..." value="<?= htmlspecialchars($kode_pesanan) ?>"></div>
-        
-        <div class="form-group">
-            <label>Mobil</label>
-            <select name="id_mobil" id="filter-mobil" style="width: 250px;">
-                <?php
-                // Jika ada mobil yang sudah dipilih sebelumnya, tampilkan sebagai opsi awal
-                if ($id_mobil > 0) {
-                    $stmt_mobil_pilihan = $pdo->prepare("SELECT id_mobil, merk, model FROM mobil WHERE id_mobil = ?");
-                    $stmt_mobil_pilihan->execute([$id_mobil]);
-                    $mobil_pilihan = $stmt_mobil_pilihan->fetch();
-                    if ($mobil_pilihan) {
-                        echo '<option value="' . $mobil_pilihan['id_mobil'] . '" selected>' . htmlspecialchars($mobil_pilihan['merk'] . ' ' . $mobil_pilihan['model']) . '</option>';
-                    }
-                }
-                ?>
-            </select>
-        </div>
-
-        <?php // Tampilkan filter nama pelanggan HANYA untuk Admin/Karyawan
-        if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
-            <div class="form-group"><label>Pelanggan</label><input type="text" name="nama_pelanggan" placeholder="Nama Pelanggan..." value="<?= htmlspecialchars($nama_pelanggan) ?>"></div>
-        <?php endif; ?>
-
-        <button type="submit" class="btn btn-primary">Filter</button>
-        <a href="history.php" class="btn btn-secondary">Reset</a>
-    </form>
+        </form>
 </div>
 
 <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
 <div class="export-buttons">
     <p>Total ditemukan: <strong><?= count($histories) ?></strong> transaksi.</p>
-    <?php if (!empty($histories)): 
+    <?php if (!empty($histories)):
         $export_params = http_build_query($_GET);
     ?>
         <a href="../actions/export/excel.php?<?= $export_params ?>" class="btn btn-success">Export ke Excel</a>
@@ -114,7 +80,29 @@ $status_list = ['Selesai', 'Dibatalkan', 'Berjalan', 'Dikonfirmasi', 'Menunggu P
 </div>
 <?php endif; ?>
 
-<div class="table-container">
+<?php
+// ==========================================================
+// LOGIKA PENANDA AUTO-REFRESH YANG SUDAH DIPERBAIKI
+// ==========================================================
+$live_context = '';
+$live_last_update = '';
+
+if ($role_session === 'Pelanggan') {
+    $live_context = 'pelanggan_pemesanan';
+    $last_update_stmt = $pdo->prepare("SELECT MAX(tanggal_pemesanan) FROM pemesanan WHERE id_pengguna = ?");
+    $last_update_stmt->execute([$id_pengguna_session]);
+    $live_last_update = $last_update_stmt->fetchColumn();
+} else { // Admin atau Karyawan
+    $live_context = 'admin_pemesanan';
+    $live_last_update = $pdo->query("SELECT MAX(tanggal_pemesanan) FROM pemesanan")->fetchColumn();
+}
+?>
+
+<div class="table-container" 
+     data-live-context="<?= $live_context ?>" 
+     data-live-total="<?= count($histories) ?>" 
+     data-live-last-update="<?= $live_last_update ?>">
+    
     <table>
         <thead>
             <tr>

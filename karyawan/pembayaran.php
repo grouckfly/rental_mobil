@@ -33,6 +33,9 @@ try {
 </div>
 
 <div class="table-container">
+    data-live-context="admin_pemesanan"
+    data-live-total="<?= count($bookings) ?>"
+    data-live-last-update="<?= $pdo->query("SELECT MAX(tanggal_pemesanan) FROM pemesanan")->fetchColumn() ?>">
     <table>
         <thead>
             <tr>

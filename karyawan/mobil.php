@@ -125,6 +125,9 @@ $kelas_list = ['Low Level', 'Mid Level', 'High Level', 'Luxury'];
 <?php display_flash_message(); ?>
 
 <div class="table-container">
+    data-live-context="admin_mobil"
+    data-live-total="<?= count($cars) ?>"
+    data-live-last-update="<?= $pdo->query("SELECT MAX(updated_at) FROM mobil")->fetchColumn() ?>">
     <table>
         <thead>
             <tr>

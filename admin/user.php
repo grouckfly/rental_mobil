@@ -25,6 +25,9 @@ try {
 </div>
 
 <div class="table-container">
+    data-live-context="admin_user"
+    data-live-total="<?= count($users) ?>"
+    data-live-last-update="<?= $pdo->query("SELECT MAX(created_at) FROM pengguna")->fetchColumn() ?>">
     <table>
         <thead>
             <tr>
@@ -48,7 +51,7 @@ try {
                         <td>
                             <a href="../actions/pengguna/detail.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-info btn-sm">Detail</a>
                             <a href="../actions/pengguna/edit.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-secondary btn-sm">Edit</a>
-                            
+
                             <?php if ($user['id_pengguna'] !== $_SESSION['id_pengguna']): ?>
                                 <form action="../actions/pengguna/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Peringatan: Yakin ingin menghapus pengguna ini?');">
                                     <input type="hidden" name="id_pengguna" value="<?= $user['id_pengguna'] ?>">
@@ -59,7 +62,9 @@ try {
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
-                <tr><td colspan="6">Tidak ada data pengguna.</td></tr>
+                <tr>
+                    <td colspan="6">Tidak ada data pengguna.</td>
+                </tr>
             <?php endif; ?>
         </tbody>
     </table>
