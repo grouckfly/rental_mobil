@@ -11,7 +11,22 @@ check_auth('Pelanggan');
 $page_title = 'Dashboard Pelanggan';
 require_once '../includes/header.php';
 
+// ========================================================
+// PERBAIKAN: Tangkap status dari URL
+// ========================================================
+$notification_script = '';
+if (isset($_GET['status']) && $_GET['status'] === 'payment_expired') {
+    $message = addslashes('Waktu pembayaran telah habis. Pesanan Anda mungkin telah dibatalkan secara otomatis.');
+    // Siapkan script untuk memanggil notifikasi toast dengan tipe error
+    $notification_script = "<script>document.addEventListener('DOMContentLoaded', () => { showToast('{$message}', 'error'); });</script>";
+}
+
 $id_pengguna = $_SESSION['id_pengguna'];
+
+// Ambil data untuk penanda auto-refresh
+$stmt_live = $pdo->prepare("SELECT COUNT(*) as total, MAX(tanggal_pemesanan) as last_update FROM pemesanan WHERE id_pengguna = ?");
+$stmt_live->execute([$id_pengguna]);
+$live_data = $stmt_live->fetch();
 
 // Mengambil data statistik pelanggan
 try {
@@ -32,16 +47,20 @@ try {
     ");
     $stmt_booking->execute([$id_pengguna]);
     $booking_terbaru = $stmt_booking->fetch();
-
 } catch (PDOException $e) {
     $pemesanan_aktif = $pemesanan_selesai = 'N/A';
     $booking_terbaru = null;
 }
 ?>
 
-<div class="page-header">
+<div class="page-header" 
+    data-live-context="pelanggan_pemesanan"
+    data-live-total="<?= $live_data['total'] ?>"
+    data-live-last-update="<?= $live_data['last_update'] ?>">
     <h1>Dashboard Saya</h1>
 </div>
+
+<?php display_flash_message(); ?>
 
 <div class="dashboard-widgets">
     <div class="widget">

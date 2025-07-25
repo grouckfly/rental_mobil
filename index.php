@@ -10,7 +10,7 @@ require_once 'includes/header.php';
 // Mengambil data mobil unggulan dari database
 $featured_cars = [];
 try {
-    $stmt = $pdo->prepare("SELECT id_mobil, merk, model, harga_sewa_harian, gambar_mobil FROM mobil WHERE status = 'Tersedia' ORDER BY RAND() LIMIT 4");
+    $stmt = $pdo->prepare("SELECT id_mobil, merk, model, harga_sewa_harian, gambar_mobil FROM mobil WHERE status = 'Tersedia' ORDER BY RAND() LIMIT 6");
     $stmt->execute();
     $featured_cars = $stmt->fetchAll();
 } catch (PDOException $e) {

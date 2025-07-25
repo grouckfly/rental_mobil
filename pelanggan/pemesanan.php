@@ -12,6 +12,11 @@ require_once '../includes/header.php';
 
 $id_pengguna = $_SESSION['id_pengguna'];
 
+// Tambahkan query ini di atas setelah $id_pengguna didefinisikan
+$last_update_stmt = $pdo->prepare("SELECT MAX(tanggal_pemesanan) FROM pemesanan WHERE id_pengguna = ?");
+$last_update_stmt->execute([$id_pengguna]);
+$last_update = $last_update_stmt->fetchColumn();
+
 // Mengambil data pemesanan yang aktif atau menunggu
 try {
     $stmt = $pdo->prepare("
@@ -32,7 +37,10 @@ try {
     <p>Daftar pemesanan yang sedang berjalan atau menunggu pembayaran.</p>
 </div>
 
-<div class="table-container">
+<div class="table-container"
+    data-live-context="pelanggan_pemesanan"
+    data-live-total="<?= count($bookings) ?>"
+    data-live-last-update="<?= $last_update ?>">
     <table>
         <thead>
             <tr>

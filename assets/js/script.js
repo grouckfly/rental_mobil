@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    initializeStarRatings();
+    initializeSearchableSelect();
+
 });
 
 /**
@@ -54,4 +57,49 @@ function showToast(message, type = 'success') {
             toast.remove();
         }, 500); // Waktu ini harus cocok dengan durasi transisi di CSS
     }, 2500);
+}
+
+
+/**
+ * Fungsi baru untuk menampilkan rating bintang secara dinamis.
+ */
+function initializeStarRatings() {
+    // Cari semua elemen dengan class .star-rating
+    const starRatingElements = document.querySelectorAll('.star-rating');
+    
+    // Lakukan loop untuk setiap elemen yang ditemukan
+    starRatingElements.forEach(starElement => {
+        // Ambil nilai rating dari atribut data-rating
+        const rating = parseFloat(starElement.dataset.rating) || 0;
+        
+        // Hitung persentase lebar bintang kuning
+        const percentage = (rating / 5) * 100;
+
+        // Set variabel CSS --rating-percent pada elemen
+        starElement.style.setProperty('--rating-percent', percentage + '%');
+    });
+}
+
+function initializeSearchableSelect() {
+    // Gunakan jQuery untuk menargetkan elemen
+    const $selectElement = $('#filter-mobil');
+    
+    if ($selectElement.length) {
+        $selectElement.select2({
+            placeholder: 'Ketik untuk mencari mobil...',
+            allowClear: true,
+            ajax: {
+                url: BASE_URL + 'actions/mobil/cari_mobil.php',
+                dataType: 'json',
+                delay: 50,
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true
+            },
+            dropdownCssClass: "select2-dropdown-scrollable"
+        });
+    }
 }

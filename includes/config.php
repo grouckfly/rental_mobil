@@ -27,6 +27,19 @@ try {
     die("Koneksi ke database gagal: " . $e->getMessage());
 }
 
+// PENGATURAN KEAMANAN SESSION
+ini_set('session.use_only_cookies', 1); // Hanya gunakan cookie untuk session
+ini_set('session.use_strict_mode', 1); // Pastikan session ID dibuat oleh server
+
+session_set_cookie_params([
+    'lifetime' => 1800, // Durasi session 30 menit
+    'path' => '/',
+    'domain' => '', // Sesuaikan dengan domain Anda jika sudah online
+    'secure' => isset($_SERVER['HTTPS']), // Kirim cookie hanya melalui HTTPS
+    'httponly' => true, // Cegah akses cookie dari JavaScript
+    'samesite' => 'Lax'
+]);
+
 // MEMULAI SESSION (tetap sama)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

@@ -61,9 +61,12 @@ try {
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="page-header">
+<div class="page-header"
+    data-live-context="admin_dashboard"
+    data-live-total="<?= $pdo->query("SELECT COUNT(*) FROM pemesanan")->fetchColumn() ?>"
+    data-live-last-update="<?= $pdo->query("SELECT MAX(tanggal_pemesanan) FROM pemesanan")->fetchColumn() ?>">
     <h1>Dashboard Administrator</h1>
-    <p>Selamat datang, <?= htmlspecialchars($_SESSION['username']) ?>. Berikut ringkasan aktivitas rental mobil Anda.</p>
+    <p>Selamat datang, <?= htmlspecialchars($_SESSION['nama_lengkap']) ?>. Berikut ringkasan aktivitas rental mobil Anda.</p>
 </div>
 
 <div class="dashboard-widgets">
@@ -92,9 +95,9 @@ try {
 <div class="chart-container">
     <h2>Grafik Pemesanan (6 Bulan Terakhir)</h2>
     <div class="chart-wrapper">
-        <canvas id="dashboardChart" 
-                data-labels='<?= json_encode($chart_labels) ?>' 
-                data-values='<?= json_encode($chart_values) ?>'>
+        <canvas id="dashboardChart"
+            data-labels='<?= json_encode($chart_labels) ?>'
+            data-values='<?= json_encode($chart_values) ?>'>
         </canvas>
     </div>
 </div>

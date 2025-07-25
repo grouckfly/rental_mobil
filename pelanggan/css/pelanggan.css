@@ -1,0 +1,90 @@
+/* ========================================= */
+/* Style untuk Rating Bintang pada Form Ulasan */
+/* ========================================= */
+.rating {
+    display: inline-block;
+    border: none;
+    font-size: 2rem;
+    /* Balik urutan bintang agar bisa menggunakan ~ selector */
+    unicode-bidi: bidi-override;
+    direction: rtl;
+}
+
+.rating>input {
+    display: none;
+}
+
+.rating>label {
+    display: inline-block;
+    position: relative;
+    width: 1.1em;
+    cursor: pointer;
+}
+
+.rating>label:before {
+    content: '★';
+    position: absolute;
+    color: #ddd;
+}
+
+/* Style untuk bintang yang dipilih dan saat hover */
+.rating>input:checked~label:before,
+.rating:not(:checked)>label:hover:before,
+.rating:not(:checked)>label:hover~label:before {
+    color: #ffc107;
+}
+
+/* ========================================= */
+/* Style untuk Halaman Pembayaran            */
+/* ========================================= */
+.payment-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    background: var(--surface-color);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.total-amount {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+/* Responsiveness untuk layar kecil */
+@media (max-width: 800px) {
+    .payment-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.payment-timer {
+    text-align: center;
+    padding: 15px;
+    background: #fff3cd;
+    border-radius: 5px;
+}
+
+.payment-timer #countdown-timer {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--danger-color);
+}
+
+.notification-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--danger-color);
+    border-radius: 50%;
+    margin-left: 5px;
+}
+
+/* Hapus Akun */
+.danger-zone {
+    border-top: 4px solid var(--danger-color);
+    margin-top: 30px;
+}

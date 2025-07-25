@@ -24,7 +24,10 @@ try {
     <a href="../actions/pengguna/tambah.php" class="btn btn-primary">Tambah Pengguna Baru</a>
 </div>
 
-<div class="table-container">
+<div class="table-container"
+    data-live-context="admin_user"
+    data-live-total="<?= count($users) ?>"
+    data-live-last-update="<?= $pdo->query("SELECT MAX(created_at) FROM pengguna")->fetchColumn() ?>">
     <table>
         <thead>
             <tr>
@@ -47,19 +50,13 @@ try {
                         <td><?= htmlspecialchars($user['role']) ?></td>
                         <td>
                             <a href="../actions/pengguna/detail.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-info btn-sm">Detail</a>
-                            <a href="../actions/pengguna/edit.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-secondary btn-sm">Edit</a>
-                            
-                            <?php if ($user['id_pengguna'] !== $_SESSION['id_pengguna']): ?>
-                                <form action="../actions/pengguna/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Peringatan: Yakin ingin menghapus pengguna ini?');">
-                                    <input type="hidden" name="id_pengguna" value="<?= $user['id_pengguna'] ?>">
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
-                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
-                <tr><td colspan="6">Tidak ada data pengguna.</td></tr>
+                <tr>
+                    <td colspan="6">Tidak ada data pengguna.</td>
+                </tr>
             <?php endif; ?>
         </tbody>
     </table>

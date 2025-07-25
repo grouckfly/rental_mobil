@@ -1,25 +1,44 @@
 <?php
 // File: includes/header.php
 // File ini tidak lagi menebak-nebak base url, tapi menggunakan konstanta dari config.php
+
+// ===============================
+// MENJALANKAN PEMBATALAN OTOMATIS
+// ===============================
+require_once __DIR__ . '/../actions/pemesanan/cek_kedaluwarsa.php';
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($page_title) ? htmlspecialchars($page_title) : 'Rental Mobil' ?></title>
-    
+
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dark-mode.css">
-    
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <?php
-    $current_dir = basename(dirname($_SERVER['PHP_SELF']));
-    if (in_array($current_dir, ['admin', 'karyawan', 'pelanggan'])) {
-        // Path ke CSS role akan relatif dari halaman yang memanggilnya, ini sudah benar
-        echo "<link rel=\"stylesheet\" href=\"css/{$current_dir}.css\">";
+    // ==========================================================
+    // Memuat CSS Role berdasarkan SESSION, bukan folder
+    // ==========================================================
+    if (isset($_SESSION['role'])) {
+        // 2. Jika sudah login, muat CSS umum untuk dashboard
+        echo "<link rel=\"stylesheet\" href=\"" . BASE_URL . "assets/css/dashboard.css\">";
+
+        // 3. Muat CSS spesifik untuk role tersebut (jika ada)
+        $role_folder = strtolower($_SESSION['role']);
+        $role_css_path = $role_folder . '/css/' . $role_folder . '.css';
+        if (file_exists(dirname(__DIR__) . '/' . $role_css_path)) {
+            echo "<link rel=\"stylesheet\" href=\"" . BASE_URL . $role_css_path . "\">";
+        }
     }
     ?>
+
 </head>
+
 <body>
 
     <header class="main-header">
@@ -38,10 +57,29 @@
                     </ul>
                 </nav>
             <?php endif; ?>
-            
+
             <div class="user-actions">
-                <?php if (isset($_SESSION['id_pengguna'])): ?>
-                    <span>Halo, <?= htmlspecialchars($_SESSION['username']) ?></span>
+                <?php if (isset($_SESSION['id_pengguna'])):
+
+                    $sapaan = $_SESSION['username']; // Default fallback adalah username
+
+                    if (!empty($_SESSION['nama_lengkap'])) {
+                        $nama_parts = explode(' ', trim($_SESSION['nama_lengkap']));
+                        $jumlah_kata = count($nama_parts);
+
+                        if ($jumlah_kata >= 3) {
+                            // Jika nama terdiri dari 3 kata atau lebih, ambil nama tengah
+                            $sapaan = $nama_parts[1];
+                        } elseif ($jumlah_kata == 2) {
+                            // Jika nama terdiri dari 2 kata, ambil nama akhir
+                            $sapaan = $nama_parts[1];
+                        } else {
+                            // Jika hanya 1 kata, gunakan nama itu
+                            $sapaan = $nama_parts[0];
+                        }
+                    }
+                ?>
+                    <span class="welcome-user">Halo, <?= htmlspecialchars($sapaan) ?></span>
                     <a href="<?= BASE_URL ?>logout.php" class="btn btn-secondary">Logout</a>
                 <?php else: ?>
                     <a href="<?= BASE_URL ?>login.php" class="btn">Login</a>
