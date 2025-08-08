@@ -47,8 +47,8 @@ try {
     $stmt_delete->execute([$id_mobil]);
 
     // 3. Hapus file gambar dari server
-    if ($nama_file_gambar && file_exists('../../uploads/mobil/' . $nama_file_gambar)) {
-        unlink('../../uploads/mobil/' . $nama_file_gambar);
+    if ($nama_file_gambar && file_exists('../../assets/img/mobil/' . $nama_file_gambar)) {
+        unlink('../../assets/img/mobil/' . $nama_file_gambar);
     }
 
     // 4. Redirect dengan pesan sukses

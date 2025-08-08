@@ -66,7 +66,7 @@ function hitung_durasi_sewa($tanggal_mulai, $tanggal_selesai) {
  * Mengunggah file ke direktori yang ditentukan dengan aman.
  *
  * @param array $file_input Data file dari $_FILES['nama_input'].
- * @param string $upload_dir Direktori tujuan (contoh: '../uploads/mobil/').
+ * @param string $upload_dir Direktori tujuan (contoh: '../assets/img/mobil/').
  * @param array $allowed_types Tipe file yang diizinkan (contoh: ['jpg', 'jpeg', 'png']).
  * @param int $max_size Ukuran file maksimum dalam byte.
  * @return string|array Mengembalikan nama file jika berhasil, atau array berisi error jika gagal.

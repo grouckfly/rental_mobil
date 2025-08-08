@@ -77,7 +77,7 @@ try {
     <h2>Pemesanan Anda Saat Ini</h2>
     <?php if ($booking_terbaru): ?>
         <div class="active-booking-card">
-            <img src="../uploads/mobil/<?= htmlspecialchars($booking_terbaru['gambar_mobil'] ?: 'default-car.png') ?>" alt="Mobil">
+            <img src="../assets/img/mobil/<?= htmlspecialchars($booking_terbaru['gambar_mobil'] ?: 'default-car.png') ?>" alt="Mobil">
             <div class="booking-details">
                 <h3><?= htmlspecialchars($booking_terbaru['merk'] . ' ' . $booking_terbaru['model']) ?></h3>
                 <p><strong>Tanggal Sewa:</strong> <?= date('d M Y', strtotime($booking_terbaru['tanggal_mulai'])) ?> - <?= date('d M Y', strtotime($booking_terbaru['tanggal_selesai'])) ?></p>

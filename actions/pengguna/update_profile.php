@@ -39,7 +39,7 @@ if (isset($_FILES['foto_ktp']) && $_FILES['foto_ktp']['error'] === UPLOAD_ERR_OK
     $nama_file_ktp = $upload_result;
     // Hapus file lama jika berhasil upload yang baru
     if ($foto_ktp_lama && file_exists('../../assets/img/ktp/' . $foto_ktp_lama)) {
-        unlink('../../uploads/ktp/' . $foto_ktp_lama);
+        unlink('../../assets/img/ktp/' . $foto_ktp_lama);
     }
 }
 

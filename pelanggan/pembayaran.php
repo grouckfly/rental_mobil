@@ -48,7 +48,7 @@ try {
 // Logika untuk memproses upload bukti pembayaran (tetap sama)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_FILES['bukti_pembayaran']) && $_FILES['bukti_pembayaran']['error'] === UPLOAD_ERR_OK) {
-        $upload_result = upload_file($_FILES['bukti_pembayaran'], '../uploads/bukti_pembayaran/');
+        $upload_result = upload_file($_FILES['bukti_pembayaran'], '../assets/img/bukti_pembayaran/');
         if (is_array($upload_result)) {
             redirect_with_message("pembayaran.php?id=$id_pemesanan", $upload_result['error'], 'error');
         } else {

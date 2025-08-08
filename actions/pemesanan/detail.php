@@ -117,7 +117,7 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         <hr>
         <h3>Informasi Mobil</h3>
         <div class="info-item-row">
-            <img src="<?= BASE_URL ?>uploads/mobil/<?= htmlspecialchars($pemesanan['gambar_mobil'] ?: 'default-car.png') ?>" alt="Mobil" class="info-item-image">
+            <img src="<?= BASE_URL ?>assets/img/mobil/<?= htmlspecialchars($pemesanan['gambar_mobil'] ?: 'default-car.png') ?>" alt="Mobil" class="info-item-image">
             <div><strong><?= htmlspecialchars($pemesanan['merk'] . ' ' . $pemesanan['model']) ?></strong><br>Plat: <?= htmlspecialchars($pemesanan['plat_nomor']) ?></div>
         </div>
 

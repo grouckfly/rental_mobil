@@ -55,7 +55,7 @@ require_once '../../includes/header.php';
             <div class="info-item full-width"><span class="label">Foto KTP</span>
                 <div class="value">
                     <?php if (!empty($user['foto_ktp'])): ?>
-                        <a href="<?= BASE_URL ?>uploads/ktp/<?= htmlspecialchars($user['foto_ktp']) ?>" target="_blank">Lihat Foto KTP</a>
+                        <a href="<?= BASE_URL ?>assets/img/ktp/<?= htmlspecialchars($user['foto_ktp']) ?>" target="_blank">Lihat Foto KTP</a>
                     <?php else: ?>
                         Belum diunggah
                     <?php endif; ?>
