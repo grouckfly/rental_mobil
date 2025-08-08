@@ -89,7 +89,7 @@ require_once '../../includes/header.php';
     if ($role_session === 'Pelanggan' && $mobil['status'] === 'Tersedia'):
 
         // Cek kelengkapan profil di sini
-        if (!empty($user_data['nik']) && !empty($user_data['foto_ktp'])):?>
+        if (!empty($user_data['nik']) && !empty($user_data['foto_ktp'])): ?>
             <div class="form-container">
                 <div class="form-box">
                     <h3>Formulir Pemesanan</h3>
@@ -115,15 +115,20 @@ require_once '../../includes/header.php';
 
         <?php // --- Jika yang melihat adalah PENGUNJUNG (belum login) dan mobil TERSEDIA ---
         endif;
-    elseif ($role_session === null && $mobil['status'] === 'Tersedia'): ?>
+    elseif ($role_session === null && $mobil['status'] === 'Tersedia'):
+        // PERBAIKAN: Simpan URL halaman saat ini untuk redirect setelah login
+        $redirect_url = urlencode($_SERVER['REQUEST_URI']);
+        ?>
         <div class="info-box">
             <h3>Ingin Menyewa Mobil Ini?</h3>
             <p>Silakan login terlebih dahulu untuk melanjutkan proses pemesanan.</p>
-            <a href="<?= BASE_URL ?>login.php" class="btn btn-primary">Login untuk Memesan</a>
+            <a href="<?= BASE_URL ?>login.php?redirect_url=<?= $redirect_url ?>" class="btn btn-primary">Login untuk Memesan</a>
             <a href="<?= BASE_URL ?>mobil.php" class="btn btn-secondary">Kembali</a>
         </div>
     <?php endif; ?>
 </div>
+
+
 
 <?php
 require_once '../../includes/footer.php';

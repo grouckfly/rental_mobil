@@ -11,6 +11,11 @@ if (isset($_SESSION['id_pengguna'])) {
     exit();
 }
 
+// Tangkap dan simpan URL tujuan jika ada
+if (isset($_GET['redirect_url'])) {
+    $_SESSION['redirect_after_login'] = $_GET['redirect_url'];
+}
+
 $error_message = '';
 $notification_script = '';
 
@@ -56,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if ($user && password_verify($password, $user['password'])) {
                     // --- LOGIN BERHASIL ---
-                    
+
                     // LAPISAN KEAMANAN 2: Regenerasi Session ID (Mencegah Session Fixation)
                     session_regenerate_id(true);
 
@@ -65,16 +70,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['role'] = $user['role'];
                     $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
-                    
+
                     // Hapus catatan percobaan gagal untuk IP ini
                     $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$ip_address]);
 
                     // Siapkan redirect
                     $role_dashboard = strtolower($user['role']);
                     $welcome_message = empty($user['nama_lengkap']) ? $user['username'] : $user['nama_lengkap'];
-                    
-                    redirect_with_message(BASE_URL . "{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($welcome_message) . "!");
-                
+
+                    // LOGIKA BARU: Cek apakah ada URL tujuan yang tersimpan
+                    if (isset($_SESSION['redirect_after_login'])) {
+                        $redirect_url = $_SESSION['redirect_after_login'];
+                        // Hapus dari session agar tidak digunakan lagi
+                        unset($_SESSION['redirect_after_login']);
+                        header('Location: ' . $redirect_url);
+                        exit;
+                    } else {
+                        // Jika tidak ada, arahkan ke dashboard seperti biasa
+                        $role_dashboard = strtolower($user['role']);
+                        redirect_with_message(BASE_URL . "{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($welcome_message) . "!");
+                    }
                 } else {
                     // JIKA LOGIN GAGAL: Catat percobaan dan beri pesan error
                     $pdo->prepare("INSERT INTO login_attempts (username, ip_address) VALUES (?, ?)")->execute([$username, $ip_address]);
@@ -96,7 +111,7 @@ require_once 'includes/header.php';
     <div class="form-box">
         <h2>Login Akun</h2>
         <p>Silakan masuk untuk melanjutkan.</p>
-        
+
         <?php if (!empty($error_message)) {
             echo "<div class='flash-message flash-error'>{$error_message}</div>";
         } ?>
@@ -106,7 +121,9 @@ require_once 'includes/header.php';
             <div class="form-group"><label for="password">Password</label><input type="password" id="password" name="password" required autocomplete="current-password"></div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
-        <div class="form-footer"><p>Belum punya akun? <a href="register.php">Daftar di sini</a></p></div>
+        <div class="form-footer">
+            <p>Belum punya akun? <a href="register.php">Daftar di sini</a></p>
+        </div>
     </div>
 </div>
 
