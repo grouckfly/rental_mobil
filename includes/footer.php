@@ -23,8 +23,8 @@
         }
     }
     
-    // Menampilkan notifikasi toast jika ada
-    display_flash_message(); 
+    // Menampilkan notifikasi jika ada
+    echo $notification_script; 
     ?>
 </body>
 </html>

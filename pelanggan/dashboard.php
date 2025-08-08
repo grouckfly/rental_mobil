@@ -60,8 +60,6 @@ try {
     <h1>Dashboard Saya</h1>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="dashboard-widgets">
     <div class="widget">
         <h3>Pemesanan Aktif</h3>

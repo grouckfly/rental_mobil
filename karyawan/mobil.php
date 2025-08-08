@@ -122,8 +122,6 @@ $kelas_list = ['Low Level', 'Mid Level', 'High Level', 'Luxury'];
     </form>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="table-container"
     data-live-context="admin_mobil"
     data-live-total="<?= count($cars) ?>"

@@ -21,7 +21,6 @@ try {
 
 <div class="form-container">
     <div class="form-box">
-        <?php display_flash_message(); ?>
         
         <form action="<?= BASE_URL ?>actions/pengguna/update_profile.php" method="POST" enctype="multipart/form-data">
             <h3>Informasi Akun</h3>

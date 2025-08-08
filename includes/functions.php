@@ -117,35 +117,12 @@ function upload_file($file_input, $upload_dir, $allowed_types = ['jpg', 'jpeg', 
  * @return void
  */
 function redirect_with_message($url, $message, $type = 'success') {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-    $_SESSION['flash_message'] = [
-        'message' => $message,
-        'type' => $type
-    ];
-    header("Location: " . $url);
+    // Cek apakah URL sudah memiliki parameter
+    $separator = (strpos($url, '?') === false) ? '?' : '&';
+    
+    // Bangun URL baru dengan parameter status
+    $redirect_url = $url . $separator . 'status_type=' . $type . '&status_msg=' . urlencode($message);
+    
+    header("Location: " . $redirect_url);
     exit;
 }
-
-/**
- * Menampilkan flash message jika ada dan kemudian menghapusnya.
- * Panggil fungsi ini di halaman tujuan redirect.
- *
- * @return void
- */
-function display_flash_message() {
-    if (isset($_SESSION['flash_message'])) {
-        $flash = $_SESSION['flash_message'];
-        // Membersihkan pesan agar aman disisipkan di dalam string JavaScript
-        $message = addslashes($flash['message']); 
-        $type = $flash['type'];
-
-        // Cetak script untuk memanggil fungsi JavaScript
-        echo "<script>showToast('{$message}', '{$type}');</script>";
-
-        // Hapus pesan dari session agar tidak tampil lagi
-        unset($_SESSION['flash_message']);
-    }
-}
-?>

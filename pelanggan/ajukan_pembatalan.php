@@ -31,7 +31,6 @@ require_once '../includes/header.php';
 ?>
 
 <div class="page-header"><h1>Formulir Pengajuan Pembatalan</h1></div>
-<?php display_flash_message(); ?>
 
 <div class="form-container">
     <div class="form-box">

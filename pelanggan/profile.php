@@ -23,8 +23,6 @@ try {
     <a href="edit_profile.php" class="btn btn-primary">Edit Profil</a>
 </div>
 
-<?php display_flash_message(); ?>
-
 <div class="detail-container single-column">
     <div class="detail-main">
         <h3>Informasi Akun</h3>

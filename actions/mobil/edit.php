@@ -123,8 +123,6 @@ require_once '../../includes/header.php';
                 </ul>
             </div>
         <?php endif; ?>
-        <?php display_flash_message(); // Untuk menampilkan pesan dari redirect 
-        ?>
 
         <form action="" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?= $mobil['id_mobil'] ?>">
