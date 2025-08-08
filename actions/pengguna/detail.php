@@ -39,7 +39,7 @@ require_once '../../includes/header.php';
         <div class="info-grid">
             <div class="info-item"><span class="label">ID Pengguna</span><span class="value"><?= htmlspecialchars($user['id_pengguna']) ?></span></div>
             <div class="info-item"><span class="label">Username</span><span class="value"><?= htmlspecialchars($user['username']) ?></span></div>
-            <div class="info-item"><span class="label">Role</span><span class="value"><span class="status-badge status-<?= strtolower($user['role']) ?>"><?= htmlspecialchars($user['role']) ?></span></span></div>
+            <div class="info-item"><span class="label">Role</span><span class="value"><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $user['role'])) ?>"><?= htmlspecialchars($user['role']) ?></span></span></div>
             <div class="info-item"><span class="label">Tanggal Daftar</span><span class="value"><?= date('d F Y, H:i', strtotime($user['created_at'])) ?></span></div>
         </div>
         <hr>
