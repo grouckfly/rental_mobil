@@ -69,7 +69,6 @@ try {
                             ?>
                                 <form action="../actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
                                     <input type="hidden" name="id_pemesanan" value="<?= $booking['id_pemesanan'] ?>">
-                                    <button type="submit" class="btn btn-danger btn-sm">Batalkan</button>
                                 </form>
                             <?php endif; ?>
 

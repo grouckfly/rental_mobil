@@ -36,7 +36,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
         <ul>
             <?php if ($_SESSION['role'] === 'Admin'): ?>
                 <li>
-                    <a href="<?= BASE_URL ?>karyawan/scan_qr.html">Scan QR Code</a>
+                    <a href="<?= BASE_URL ?>karyawan/scan_qr.php">Scan QR Code</a>
                 </li>
                 <li <?= is_active('profile.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>pelanggan/profile.php">Profil Saya</a>
@@ -59,7 +59,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
 
             <?php elseif ($_SESSION['role'] === 'Karyawan'): ?>
                 <li>
-                    <a href="<?= BASE_URL ?>karyawan/scan_qr.html">Scan QR Code</a>
+                    <a href="<?= BASE_URL ?>karyawan/scan_qr.php">Scan QR Code</a>
                 </li>
                 <li <?= is_active('profile.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>pelanggan/profile.php">Profil Saya</a>
