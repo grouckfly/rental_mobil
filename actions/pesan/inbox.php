@@ -20,12 +20,11 @@ try {
     ";
     $params = [];
 
-    // Jika yang login adalah PELANGGAN, batasi hanya untuk percakapan mereka
+    // Jika yang login adalah PELANGGAN, batasi hanya untuk percakapan yang melibatkannya
     if ($role_session === 'Pelanggan') {
         $sql .= "
-            LEFT JOIN pesan_bantuan AS p_reply ON p_main.id_pesan = p_reply.parent_id
             WHERE p_main.parent_id IS NULL 
-            AND (p_main.id_pengirim = ? OR p_reply.id_penerima = ?)
+            AND (p_main.id_pengirim = ? OR p_main.id_penerima = ?)
         ";
         $params[] = $id_pengguna_session;
         $params[] = $id_pengguna_session;
@@ -67,12 +66,12 @@ try {
                     <td colspan="5" style="text-align:center;">Tidak ada percakapan.</td>
                 </tr>
                 <?php else: foreach ($pesan_list as $pesan):
-                    // Tentukan apakah pesan ini belum dibaca oleh pengguna saat ini
-                    $is_unread = ($pesan['status_pesan'] === 'Belum Dibaca');
-                    // Untuk admin/karyawan, pesan dianggap belum dibaca jika statusnya "Belum Dibaca"
-                    // Untuk pelanggan, pesan dianggap belum dibaca jika statusnya "Dibalas" (artinya ada balasan dari admin)
-                    if ($role_session === 'Pelanggan') {
-                        $is_unread = ($pesan['status_pesan'] === 'Dibalas');
+                    // Logika untuk menentukan apakah pesan "belum dibaca" untuk pengguna saat ini
+                    $is_unread = false;
+                    if (in_array($role_session, ['Admin', 'Karyawan']) && $pesan['status_pesan'] === 'Belum Dibaca') {
+                        $is_unread = true;
+                    } elseif ($role_session === 'Pelanggan' && $pesan['status_pesan'] === 'Dibalas' && $pesan['id_penerima'] == $id_pengguna_session) {
+                        $is_unread = true;
                     }
                 ?>
                     <tr style="<?= $is_unread ? 'font-weight: bold;' : '' ?>">
