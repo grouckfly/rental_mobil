@@ -221,3 +221,20 @@ tbody tr:hover {
 body.dark-mode .my-message {
     background-color: #1c2b22;
 }
+
+/* Style untuk Header Halaman yang Sticky    */
+.sticky-page-header {
+    position: sticky;
+    /* Menempel di bawah header utama */
+    top: var(--header-height); 
+    
+    /* Properti agar tidak transparan */
+    background-color: var(--surface-color);
+    
+    /* Pastikan berada di atas konten lain */
+    z-index: 900; 
+    
+    /* Efek visual tambahan */
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}

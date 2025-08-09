@@ -45,7 +45,7 @@ $page_title = 'Detail Pesan: ' . htmlspecialchars($pesan_utama['subjek']);
 require_once '../../includes/header.php';
 ?>
 
-<div class="page-header"><h1>Percakapan: <?= htmlspecialchars($pesan_utama['subjek']) ?></h1></div>
+<div class="page-header sticky-page-header"><h1>Percakapan: <?= htmlspecialchars($pesan_utama['subjek']) ?></h1></div>
 
 <div class="message-thread">
     <?php foreach ($semua_pesan as $pesan):

@@ -34,12 +34,13 @@ try {
     }
 
     $sql .= " ORDER BY p_main.updated_at DESC";
-    
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $pesan_list = $stmt->fetchAll();
-
-} catch (PDOException $e) { $pesan_list = []; }
+} catch (PDOException $e) {
+    $pesan_list = [];
+}
 ?>
 
 <div class="page-header with-action">
@@ -62,26 +63,36 @@ try {
         </thead>
         <tbody>
             <?php if (empty($pesan_list)): ?>
-                <tr><td colspan="5" style="text-align:center;">Tidak ada percakapan.</td></tr>
-            <?php else: foreach ($pesan_list as $pesan): 
-                // Tentukan apakah pesan ini belum dibaca oleh pengguna saat ini
-                $is_unread = ($pesan['status_pesan'] === 'Belum Dibaca');
-                // Untuk admin/karyawan, pesan dianggap belum dibaca jika statusnya "Belum Dibaca"
-                // Untuk pelanggan, pesan dianggap belum dibaca jika statusnya "Dibalas" (artinya ada balasan dari admin)
-                if ($role_session === 'Pelanggan') {
-                    $is_unread = ($pesan['status_pesan'] === 'Dibalas');
-                }
-            ?>
-                <tr style="<?= $is_unread ? 'font-weight: bold;' : '' ?>">
-                    <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $pesan['status_pesan'])) ?>"><?= $pesan['status_pesan'] ?></span></td>
-                    <td><?= htmlspecialchars($pesan['subjek']) ?></td>
-                    <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
-                        <td><?= htmlspecialchars($pesan['nama_pengirim']) ?></td>
-                    <?php endif; ?>
-                    <td><?= date('d M Y, H:i', strtotime($pesan['updated_at'])) ?></td>
-                    <td><a href="detail.php?id=<?= $pesan['id_pesan'] ?>" class="btn btn-info btn-sm">Lihat</a></td>
+                <tr>
+                    <td colspan="5" style="text-align:center;">Tidak ada percakapan.</td>
                 </tr>
-            <?php endforeach; endif; ?>
+                <?php else: foreach ($pesan_list as $pesan):
+                    // Tentukan apakah pesan ini belum dibaca oleh pengguna saat ini
+                    $is_unread = ($pesan['status_pesan'] === 'Belum Dibaca');
+                    // Untuk admin/karyawan, pesan dianggap belum dibaca jika statusnya "Belum Dibaca"
+                    // Untuk pelanggan, pesan dianggap belum dibaca jika statusnya "Dibalas" (artinya ada balasan dari admin)
+                    if ($role_session === 'Pelanggan') {
+                        $is_unread = ($pesan['status_pesan'] === 'Dibalas');
+                    }
+                ?>
+                    <tr style="<?= $is_unread ? 'font-weight: bold;' : '' ?>">
+                        <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $pesan['status_pesan'])) ?>"><?= $pesan['status_pesan'] ?></span></td>
+                        <td><?= htmlspecialchars($pesan['subjek']) ?></td>
+                        <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
+                            <td><?= htmlspecialchars($pesan['nama_pengirim']) ?></td>
+                        <?php endif; ?>
+                        <td><?= date('d M Y, H:i', strtotime($pesan['updated_at'])) ?></td>
+                        <td>
+                            <a href="detail.php?id=<?= $pesan['id_pesan'] ?>" class="btn btn-info btn-sm">Lihat</a>
+
+                            <form action="hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Anda yakin ingin menghapus seluruh percakapan ini? Tindakan ini tidak bisa dibatalkan.');">
+                                <input type="hidden" name="id_pesan" value="<?= $pesan['id_pesan'] ?>">
+                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+            <?php endforeach;
+            endif; ?>
         </tbody>
     </table>
 </div>
