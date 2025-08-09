@@ -21,12 +21,14 @@ if (isset($_GET['status_type']) && isset($_GET['status_msg'])) {
 // Fitur Pesan Bantuan
 // ===================
 $jumlah_pesan_baru = 0;
+// Cek hanya jika pengguna adalah Admin atau Karyawan
 if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Karyawan'])) {
     try {
-        $stmt_pesan = $pdo->query("SELECT COUNT(*) FROM pesan_bantuan WHERE status_pesan = 'Belum Dibaca'");
+        // Hitung semua pesan utama yang statusnya 'Belum Dibaca'
+        $stmt_pesan = $pdo->query("SELECT COUNT(*) FROM pesan_bantuan WHERE status_pesan = 'Belum Dibaca' AND parent_id IS NULL");
         $jumlah_pesan_baru = $stmt_pesan->fetchColumn();
     } catch (PDOException $e) {
-        $jumlah_pesan_baru = 0;
+        $jumlah_pesan_baru = 0; // Abaikan jika ada error
     }
 }
 
@@ -103,9 +105,9 @@ if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Karyawan'
                         }
                     }
                 ?>
-                
-                    <?php if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Karyawan'])): ?>
-                        <a href="<?= BASE_URL ?>admin/pesan.php" class="notification-icon">
+
+                    <?php if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Karyawan', 'Pelanggan'])): ?>
+                        <a href="<?= BASE_URL ?>actions/pesan/inbox.php" class="notification-icon" title="Pesan Bantuan">
                             <span class="icon">&#9993;</span> <?php if ($jumlah_pesan_baru > 0): ?>
                                 <span class="badge" id="pesan-badge"><?= $jumlah_pesan_baru ?></span>
                             <?php endif; ?>

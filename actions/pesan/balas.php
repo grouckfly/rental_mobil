@@ -34,7 +34,7 @@ try {
 
     // 2. Update status pesan utama menjadi 'Dibalas' (jika admin/karyawan yg balas) atau kembali 'Belum Dibaca' (jika pelanggan yg balas)
     $status_baru = in_array($role_pengirim, ['Admin', 'Karyawan']) ? 'Dibalas' : 'Belum Dibaca';
-    $sql_update = "UPDATE pesan_bantuan SET status_pesan = ? WHERE id_pesan = ?";
+    $sql_update = "UPDATE pesan_bantuan SET status_pesan = ?, updated_at = NOW() WHERE id_pesan = ?";
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$status_baru, $parent_id]);
     $pdo->commit();
