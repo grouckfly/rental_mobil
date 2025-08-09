@@ -337,14 +337,16 @@ tbody tr:hover {
 .status-tersedia,
 .status-dikonfirmasi,
 .status-selesai,
-.status-diverifikasi {
+.status-diverifikasi,
+.status-dibalas {
     background-color: var(--success-color);
 }
 
 /* Status Peringatan (Kuning) - Teks Gelap */
 .status-disewa,
 .status-berjalan,
-.status-menunggu-verifikasi {
+.status-menunggu-verifikasi,
+.status-belum-dibaca {
     background-color: var(--warning-color);
     color: var(--text-color); /* Teks diubah menjadi gelap */
 }
@@ -362,7 +364,8 @@ tbody tr:hover {
 .status-pelanggan,
 .status-admin,
 .status-karyawan,
-.status-pelanggan {
+.status-pelanggan,
+.status-sudah-dibaca {
     background-color: var(--info-color);
 }
 

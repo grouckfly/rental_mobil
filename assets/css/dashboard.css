@@ -133,3 +133,26 @@ tbody tr:hover {
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
 }
+
+/* Style Pesan Bantuan */
+.notification-icon {
+    position: relative;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    text-decoration: none;
+}
+
+.notification-icon .badge {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

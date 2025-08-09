@@ -17,6 +17,19 @@ if (isset($_GET['status_type']) && isset($_GET['status_msg'])) {
     $notification_script = "<script>document.addEventListener('DOMContentLoaded', () => { showToast('{$message}', '{$type}'); });</script>";
 }
 
+// ===================
+// Fitur Pesan Bantuan
+// ===================
+$jumlah_pesan_baru = 0;
+if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Karyawan'])) {
+    try {
+        $stmt_pesan = $pdo->query("SELECT COUNT(*) FROM pesan_bantuan WHERE status_pesan = 'Belum Dibaca'");
+        $jumlah_pesan_baru = $stmt_pesan->fetchColumn();
+    } catch (PDOException $e) {
+        $jumlah_pesan_baru = 0;
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -90,6 +103,15 @@ if (isset($_GET['status_type']) && isset($_GET['status_msg'])) {
                         }
                     }
                 ?>
+                
+                    <?php if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Karyawan'])): ?>
+                        <a href="<?= BASE_URL ?>admin/pesan.php" class="notification-icon">
+                            <span class="icon">&#9993;</span> <?php if ($jumlah_pesan_baru > 0): ?>
+                                <span class="badge" id="pesan-badge"><?= $jumlah_pesan_baru ?></span>
+                            <?php endif; ?>
+                        </a>
+                    <?php endif; ?>
+
                     <span class="welcome-user">Halo, <?= htmlspecialchars($sapaan) ?></span>
                     <a href="<?= BASE_URL ?>logout.php" class="btn btn-secondary">Logout</a>
                 <?php else: ?>
