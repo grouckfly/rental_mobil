@@ -28,13 +28,29 @@ try {
                 $sql = "SELECT status_pemesanan, updated_at FROM pemesanan WHERE id_pemesanan = ?";
                 $params[] = $id;
             }
+            case 'cek_pesan_baru':
+            if ($id_pengguna_session > 0) {
+                $role_session = $_SESSION['role'];
+                if (in_array($role_session, ['Admin', 'Karyawan'])) {
+                    // Admin/Karyawan: Hitung utas percakapan baru dari pelanggan
+                    $sql = "SELECT COUNT(*) as unread_count FROM pesan_bantuan WHERE status_pesan = 'Belum Dibaca' AND parent_id IS NULL";
+                } else { // Pelanggan
+                    // Pelanggan: Hitung utas percakapan mereka yang sudah dibalas admin
+                    $sql = "SELECT COUNT(*) as unread_count FROM pesan_bantuan WHERE id_pengirim = ? AND status_pesan = 'Dibalas'";
+                    $params[] = $id_pengguna_session;
+                }
+            }
             break;
     }
 
     if (!empty($sql)) {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
-        $response = $stmt->fetch(PDO::FETCH_ASSOC);
+        // fetch(PDO::FETCH_ASSOC) untuk memastikan hasilnya adalah array asosiatif
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            $response = $result;
+        }
     }
 } catch (PDOException $e) {
     // Abaikan error

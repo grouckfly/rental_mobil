@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 20, 2025 at 09:53 AM
+-- Generation Time: Aug 09, 2025 at 10:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,13 +61,13 @@ CREATE TABLE `mobil` (
 --
 
 INSERT INTO `mobil` (`id_mobil`, `plat_nomor`, `merk`, `model`, `tahun`, `jenis_mobil`, `harga_sewa_harian`, `denda_per_hari`, `status`, `gambar_mobil`, `spesifikasi`, `kelas_mobil`, `updated_at`) VALUES
-(3, 'W 4 NI', 'Ford', 'Everest Titanium', '2024', 'SUV', 650000.00, 50000.00, 'Tersedia', '68737c74e045a3.41489030.jpg', 'America aaaaa', 'Mid level', '2025-07-17 08:29:22'),
+(3, 'W 4 NI', 'Ford', 'Everest Titanium', '2024', 'SUV', 650000.00, 50000.00, 'Tersedia', '68737c74e045a3.41489030.jpg', 'America aaaaa', 'Mid level', '2025-07-25 10:39:14'),
 (4, 'M 45 DA', 'Mazda', 'CX-5', '2024', 'SUV', 700000.00, 70000.00, 'Tidak Aktif', '68737fcdb2bf74.16132469.jpg', 'Mazda vrummm', 'Mid level', '2025-07-19 08:00:26'),
-(18, 'B 1101 TY', 'Toyota', 'Avanza G', '2023', 'MPV', 400000.00, 50000.00, 'Tersedia', '687bb636314b54.12310854.jpg', '7 Seater, Bensin, Otomatis', 'Low level', '2025-07-19 15:14:14'),
+(18, 'B 1101 TY', 'Toyota', 'Avanza G', '2023', 'MPV', 400000.00, 50000.00, 'Tersedia', '687bb636314b54.12310854.jpg', '7 Seater, Bensin, Otomatis', 'Low level', '2025-08-08 16:27:24'),
 (19, 'B 1102 TY', 'Toyota', 'Kijang Innova Zenix', '2024', 'MPV', 750000.00, 100000.00, 'Tersedia', 'innova.jpg', '7 Seater, Hybrid, Otomatis, Captain Seat', 'Mid level', '2025-07-19 08:28:15'),
 (20, 'B 1103 TY', 'Toyota', 'Fortuner VRZ', '2022', 'SUV', 900000.00, 150000.00, 'Tersedia', '687bb66a762136.20231195.jpg', '7 Seater, Diesel, 4x2, Otomatis', 'High level', '2025-07-20 04:06:16'),
 (21, 'B 1104 TY', 'Toyota', 'Alphard G', '2023', 'MPV Premium', 1500000.00, 200000.00, 'Tersedia', 'alphard.jpg', '6 Seater, Bensin, Pilot Seat', 'Luxury', '2025-07-19 08:28:15'),
-(22, 'B 1105 TY', 'Toyota', 'Yaris Cross', '2024', 'SUV Compact', 550000.00, 60000.00, 'Tersedia', 'yaris.jpg', '5 Seater, Hybrid, Otomatis', 'Mid level', '2025-07-19 08:48:06'),
+(22, 'B 1105 TY', 'Toyota', 'Yaris Cross', '2024', 'SUV Compact', 550000.00, 60000.00, 'Disewa', 'yaris.jpg', '5 Seater, Hybrid, Otomatis', 'Mid level', '2025-08-08 16:48:08'),
 (23, 'D 1201 DH', 'Daihatsu', 'Xenia R', '2023', 'MPV', 350000.00, 50000.00, 'Tersedia', 'xenia.jpg', '7 Seater, Bensin, Manual', 'Low level', '2025-07-19 08:28:15'),
 (24, 'D 1202 DH', 'Daihatsu', 'Terios R', '2024', 'SUV', 420000.00, 55000.00, 'Tersedia', 'terios.jpg', '7 Seater, Bensin, Otomatis', 'Mid level', '2025-07-19 08:28:15'),
 (25, 'D 1203 DH', 'Daihatsu', 'Rocky', '2023', 'SUV Compact', 430000.00, 60000.00, 'Tersedia', 'rocky.jpg', '5 Seater, Bensin Turbo, Otomatis', 'Mid level', '2025-07-19 08:28:15'),
@@ -91,7 +91,7 @@ INSERT INTO `mobil` (`id_mobil`, `plat_nomor`, `merk`, `model`, `tahun`, `jenis_
 (43, 'B 2002 LX', 'Lexus', 'LM 350h', '2024', 'MPV Premium', 3500000.00, 400000.00, 'Tersedia', 'lexus_lm.jpg', '4 Seater, Hybrid, VIP Lounge', 'Luxury', '2025-07-19 08:28:15'),
 (44, 'B 3001 BW', 'BMW', '330i M Sport', '2023', 'Sedan', 1300000.00, 180000.00, 'Tersedia', 'bmw3.jpg', '5 Seater, Bensin, Sporty Handling', 'High level', '2025-07-20 03:58:54'),
 (45, 'B 3002 BW', 'BMW', 'X1 sDrive18i', '2024', 'SUV', 1000000.00, 150000.00, 'Tersedia', 'bmwx1.jpg', '5 Seater, Bensin, Compact Luxury', 'High level', '2025-07-19 08:28:15'),
-(46, 'B 3003 BW', 'BMW', 'i7', '2024', 'EV Sedan', 4000000.00, 500000.00, 'Tersedia', 'bmwi7.jpg', '5 Seater, Listrik, Theatre Screen', 'Luxury', '2025-07-20 03:40:51'),
+(46, 'B 3003 BW', 'BMW', 'i7', '2024', 'EV Sedan', 4000000.00, 500000.00, 'Tersedia', 'bmwi7.jpg', '5 Seater, Listrik, Theatre Screen', 'Luxury', '2025-08-09 04:31:40'),
 (47, 'B 4001 MB', 'Mercedes Benz', 'C200', '2023', 'Sedan', 1100000.00, 170000.00, 'Tersedia', 'mb_c200.jpg', '5 Seater, Bensin, Elegant Design', 'High level', '2025-07-19 08:28:15'),
 (48, 'B 4002 MB', 'Mercedes Benz', 'GLC 300', '2024', 'SUV', 1800000.00, 220000.00, 'Tersedia', 'mb_glc.jpg', '5 Seater, Bensin, MBUX Infotainment', 'Luxury', '2025-07-19 08:47:30'),
 (49, 'B 4003 MB', 'Mercedes Benz', 'V-Class', '2022', 'MPV Premium', 2200000.00, 280000.00, 'Tersedia', 'mb_v.jpg', '7 Seater, Diesel, Business Lounge', 'Luxury', '2025-07-19 08:28:15'),
@@ -143,7 +143,9 @@ CREATE TABLE `pembayaran` (
 --
 
 INSERT INTO `pembayaran` (`id_pembayaran`, `id_pemesanan`, `tanggal_bayar`, `jumlah_bayar`, `metode_pembayaran`, `bukti_pembayaran`, `status_pembayaran`, `keterangan`, `id_karyawan_verif`) VALUES
-(1, 4, '2025-07-20 00:42:54', 275000.00, 'Transfer Bank', '687bd91e76a9b5.62795549.jpg', 'Diverifikasi', NULL, 1);
+(1, 4, '2025-07-20 00:42:54', 275000.00, 'Transfer Bank', '687bd91e76a9b5.62795549.jpg', 'Diverifikasi', NULL, 1),
+(2, 16, '2025-08-08 23:47:39', 550000.00, 'Transfer Bank', '68962a2b728212.74192769.jpg', 'Diverifikasi', NULL, 1),
+(3, 17, '2025-08-09 09:59:31', 4000000.00, 'Transfer Bank', '6896b993ae53f7.21579575.jpg', 'Diverifikasi', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -195,7 +197,9 @@ INSERT INTO `pemesanan` (`id_pemesanan`, `kode_pemesanan`, `id_pengguna`, `id_mo
 (12, 'BOOK-5PM5D', 6, 46, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 4000000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 13:40:18', NULL, '2025-07-20 03:40:18', '2025-07-20 04:01:55'),
 (13, 'BOOK-OXP7F', 6, 44, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 1300000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 13:58:43', NULL, '2025-07-20 03:58:43', '2025-07-20 04:01:55'),
 (14, 'BOOK-WB3D5', 6, 69, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 800000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 14:03:48', NULL, '2025-07-20 04:03:48', '2025-07-20 04:04:32'),
-(15, 'BOOK-ZJ2GU', 6, 20, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 900000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 14:06:05', NULL, '2025-07-20 04:06:05', '2025-07-20 04:06:16');
+(15, 'BOOK-ZJ2GU', 6, 20, '2025-07-20 00:00:00', '2025-07-21 00:00:00', NULL, 900000.00, 0.00, NULL, 'Dibatalkan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-07-20 14:06:05', NULL, '2025-07-20 04:06:05', '2025-07-20 04:06:16'),
+(16, 'BOOK-HE3RV', 8, 22, '2025-08-09 00:00:00', '2025-08-10 00:00:00', NULL, 550000.00, 0.00, NULL, 'Berjalan', NULL, NULL, NULL, NULL, NULL, '2025-08-08 23:49:18', NULL, '2025-08-09 02:29:39', NULL, '2025-08-08 16:29:39', '2025-08-08 16:49:18'),
+(17, 'BOOK-FAY6A', 3, 46, '2025-08-10 00:00:00', '2025-08-11 00:00:00', NULL, 4000000.00, 0.00, NULL, 'Dibatalkan', 'Gk jadi bwang', 'BCD 7777777 A.N pelanggan1', NULL, NULL, NULL, NULL, NULL, '2025-08-09 12:59:21', NULL, '2025-08-09 02:59:21', '2025-08-09 04:31:40');
 
 -- --------------------------------------------------------
 
@@ -222,12 +226,46 @@ CREATE TABLE `pengguna` (
 --
 
 INSERT INTO `pengguna` (`id_pengguna`, `username`, `password`, `nama_lengkap`, `nik`, `foto_ktp`, `email`, `no_telp`, `alamat`, `role`, `created_at`) VALUES
-(1, 'admin1', '$2y$10$XVska1TxhC3PoqFFdG662u7z92jXpCt2R0sFFHUjENdojZqnLeiNi', 'admin', NULL, NULL, 'admin@email.com', '081234567890', 'yo ndak tau ler', 'Admin', '2025-07-13 07:17:20'),
+(1, 'admin1', '$2y$10$XVska1TxhC3PoqFFdG662u7z92jXpCt2R0sFFHUjENdojZqnLeiNi', 'admin', '1234567890123456', '68961d2f8b1631.91525619.jpg', 'admin@email.com', '081234567890', 'yo ndak tau ler', 'Admin', '2025-07-13 07:17:20'),
 (2, 'karyawan1', '$2y$10$Vp9b4.pFgY9isyEpByHjP.14LjyI3Keq6CT.kyrdTrHXHElneO9TS', 'Kancut Anjay', NULL, NULL, 'karyawan@email.com', '080987654321', 'Jl. Gtw le awokawokawokow', 'Karyawan', '2025-07-13 07:19:46'),
-(3, 'pelanggan1', '$2y$10$OMOPWI8SLcN/UPQ0ssoLZ.qc9dH2XPVu4w.AV9W7vsfMFMdl7MmTq', 'pelanggan', NULL, NULL, 'pelanggan@email.com', '088765123490', NULL, 'Pelanggan', '2025-07-13 07:20:33'),
+(3, 'udin', '$2y$10$OMOPWI8SLcN/UPQ0ssoLZ.qc9dH2XPVu4w.AV9W7vsfMFMdl7MmTq', 'Udin Samsudin', '1234567890654321', '6896b9646d0aa9.91511913.jpg', 'udin@email.com', '088765123490', 'JL tugu pahlawan no f 88', 'Pelanggan', '2025-07-13 07:20:33'),
 (6, 'pelanggan2', '$2y$10$mI98taoejY2Z31EOxRVbwesOcRYAcWgp6ptv.vqQbhjxomQF3XBUS', 'Pudidi', NULL, NULL, 'pelanggan2@email.com', '089012368173', 'Jl. Pudidi Jaya 3X', 'Pelanggan', '2025-07-13 11:52:43'),
 (8, 'cibi', '$2y$10$.iycQdIoitNpouW9dYsxPekI2n3OqIojY9KosANms6HCmMxmxsGUa', 'cibi maruko chan', '5234987012340006', '687c9264c295c5.44355234.jpg', 'cibi@email.com', '081234753200', 'Jl. moroko 22', 'Pelanggan', '2025-07-20 06:51:26'),
 (9, 'syibal', '$2y$10$537M.Unf6s41PonlNaSsaezCQTWZT/3ndjOrxwPsTHVqfCSseouMu', '', NULL, NULL, 'syibal@email.com', '', NULL, 'Pelanggan', '2025-07-20 07:39:12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pesan_bantuan`
+--
+
+CREATE TABLE `pesan_bantuan` (
+  `id_pesan` int(11) NOT NULL,
+  `id_pengirim` int(11) NOT NULL,
+  `id_penerima` int(11) DEFAULT NULL,
+  `parent_id` int(11) DEFAULT NULL,
+  `subjek` varchar(255) NOT NULL,
+  `isi_pesan` text NOT NULL,
+  `waktu_kirim` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status_pesan` enum('Belum Dibaca','Sudah Dibaca','Dibalas') NOT NULL DEFAULT 'Belum Dibaca',
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pesan_bantuan`
+--
+
+INSERT INTO `pesan_bantuan` (`id_pesan`, `id_pengirim`, `id_penerima`, `parent_id`, `subjek`, `isi_pesan`, `waktu_kirim`, `status_pesan`, `updated_at`) VALUES
+(1, 3, NULL, NULL, 'Testing bae', 'Ngene lo cak bla bla bla', '2025-08-09 06:56:41', 'Dibalas', '2025-08-09 08:25:21'),
+(2, 1, 3, 1, '', 'Yaws ngunu kae cak piye mane', '2025-08-09 07:17:39', 'Sudah Dibaca', '2025-08-09 07:35:53'),
+(3, 3, NULL, 1, 'Re:', 'test lagi cak', '2025-08-09 07:28:25', 'Sudah Dibaca', '2025-08-09 07:35:53'),
+(4, 1, 3, 1, 'Re:', 'Gacor lek isk e', '2025-08-09 07:28:55', 'Sudah Dibaca', '2025-08-09 07:35:53'),
+(5, 3, NULL, 1, 'Re:', 'Test maneh yo', '2025-08-09 07:40:32', 'Belum Dibaca', '2025-08-09 07:40:32'),
+(6, 1, 3, 1, 'Re:', 'Isok lek gacorrr', '2025-08-09 07:40:51', 'Belum Dibaca', '2025-08-09 07:40:51'),
+(7, 3, NULL, 1, 'Re:', 'Pe test maneh', '2025-08-09 07:52:09', 'Belum Dibaca', '2025-08-09 07:52:09'),
+(8, 1, 3, 1, 'Re:', 'Mashok masseh', '2025-08-09 07:57:58', 'Belum Dibaca', '2025-08-09 07:57:58'),
+(9, 3, NULL, 1, 'Re:', 'Cek maneh cak', '2025-08-09 08:24:19', 'Belum Dibaca', '2025-08-09 08:24:19'),
+(10, 1, 3, 1, 'Re:', 'Okeh mashok', '2025-08-09 08:25:21', 'Belum Dibaca', '2025-08-09 08:25:21');
 
 --
 -- Indexes for dumped tables
@@ -275,6 +313,14 @@ ALTER TABLE `pengguna`
   ADD UNIQUE KEY `nik` (`nik`);
 
 --
+-- Indexes for table `pesan_bantuan`
+--
+ALTER TABLE `pesan_bantuan`
+  ADD PRIMARY KEY (`id_pesan`),
+  ADD KEY `id_pengirim` (`id_pengirim`),
+  ADD KEY `parent_id` (`parent_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -282,7 +328,7 @@ ALTER TABLE `pengguna`
 -- AUTO_INCREMENT for table `login_attempts`
 --
 ALTER TABLE `login_attempts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `mobil`
@@ -294,19 +340,25 @@ ALTER TABLE `mobil`
 -- AUTO_INCREMENT for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
-  MODIFY `id_pembayaran` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_pembayaran` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `pemesanan`
 --
 ALTER TABLE `pemesanan`
-  MODIFY `id_pemesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_pemesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `pengguna`
 --
 ALTER TABLE `pengguna`
   MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `pesan_bantuan`
+--
+ALTER TABLE `pesan_bantuan`
+  MODIFY `id_pesan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -325,6 +377,12 @@ ALTER TABLE `pembayaran`
 ALTER TABLE `pemesanan`
   ADD CONSTRAINT `fk_pemesanan_mobil` FOREIGN KEY (`id_mobil`) REFERENCES `mobil` (`id_mobil`) ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_pemesanan_pengguna` FOREIGN KEY (`id_pengguna`) REFERENCES `pengguna` (`id_pengguna`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `pesan_bantuan`
+--
+ALTER TABLE `pesan_bantuan`
+  ADD CONSTRAINT `pesan_bantuan_ibfk_1` FOREIGN KEY (`id_pengirim`) REFERENCES `pengguna` (`id_pengguna`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -21,12 +21,26 @@ if (isset($_GET['status_type']) && isset($_GET['status_msg'])) {
 // Fitur Pesan Bantuan
 // ===================
 $jumlah_pesan_baru = 0;
-// Cek hanya jika pengguna adalah Admin atau Karyawan
-if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Karyawan'])) {
+$link_pesan = '#'; // Link default jika tidak ada
+
+if (isset($_SESSION['role'])) {
+    $role_session = $_SESSION['role'];
+    $id_pengguna_session = $_SESSION['id_pengguna'];
+
+    // Tentukan link inbox universal
+    $link_pesan = BASE_URL . 'actions/pesan/inbox.php';
+
     try {
-        // Hitung semua pesan utama yang statusnya 'Belum Dibaca'
-        $stmt_pesan = $pdo->query("SELECT COUNT(*) FROM pesan_bantuan WHERE status_pesan = 'Belum Dibaca' AND parent_id IS NULL");
-        $jumlah_pesan_baru = $stmt_pesan->fetchColumn();
+        if (in_array($role_session, ['Admin', 'Karyawan'])) {
+            // Admin/Karyawan: Hitung utas percakapan baru dari pelanggan
+            $stmt_pesan = $pdo->query("SELECT COUNT(*) FROM pesan_bantuan WHERE status_pesan = 'Belum Dibaca' AND parent_id IS NULL");
+            $jumlah_pesan_baru = $stmt_pesan->fetchColumn();
+        } elseif ($role_session === 'Pelanggan') {
+            // Pelanggan: Hitung utas percakapan mereka yang sudah dibalas oleh admin
+            $stmt_pesan = $pdo->prepare("SELECT COUNT(*) FROM pesan_bantuan WHERE id_pengirim = ? AND status_pesan = 'Dibalas' AND parent_id IS NULL");
+            $stmt_pesan->execute([$id_pengguna_session]);
+            $jumlah_pesan_baru = $stmt_pesan->fetchColumn();
+        }
     } catch (PDOException $e) {
         $jumlah_pesan_baru = 0; // Abaikan jika ada error
     }
@@ -106,8 +120,9 @@ if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Karyawan'
                     }
                 ?>
 
-                    <?php if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Karyawan', 'Pelanggan'])): ?>
-                        <a href="<?= BASE_URL ?>actions/pesan/inbox.php" class="notification-icon" title="Pesan Bantuan">
+                    <!-- Notifikasi Pesan Bantuan -->
+                    <?php if (isset($_SESSION['role'])): ?>
+                        <a href="<?= $link_pesan ?>" class="notification-icon" title="Pesan">
                             <span class="icon">&#9993;</span> <?php if ($jumlah_pesan_baru > 0): ?>
                                 <span class="badge" id="pesan-badge"><?= $jumlah_pesan_baru ?></span>
                             <?php endif; ?>
