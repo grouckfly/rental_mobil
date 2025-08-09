@@ -69,7 +69,7 @@ try {
     <div class="widget">
         <h3>Sewa Selesai</h3>
         <p class="widget-data"><?= $pemesanan_selesai ?></p>
-        <a href="history.php">Lihat Riwayat &rarr;</a>
+        <a href="../admin/history.php">Lihat Riwayat &rarr;</a>
     </div>
 </div>
 

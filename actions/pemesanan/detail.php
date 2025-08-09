@@ -180,6 +180,9 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         <div class="info-item"><span class="label">No. Rekening Refund</span>
             <div class="value"><?= htmlspecialchars($pemesanan['rekening_pembatalan']) ?></div>
         </div>
+        <form action="<?= BASE_URL ?>actions/pemesanan/proses_pembatalan.php" method="POST" onsubmit="return confirm('Anda akan membatalkan pesanan ini. Lanjutkan?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
+            <input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-danger">Proses Pembatalan</button>
+        </form>
     </div>
 <?php endif; ?>
 
@@ -219,14 +222,12 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
     <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
         <?php if ($pemesanan['status_pembayaran'] === 'Menunggu Verifikasi'): ?>
             <form action="<?= BASE_URL ?>actions/pembayaran/verifikasi.php" method="POST" onsubmit="return confirm('Verifikasi pembayaran ini?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-primary">Verifikasi</button></form>
-        <?php elseif ($pemesanan['status_pemesanan'] === 'Pengajuan Pembatalan'): ?>
-            <form action="<?= BASE_URL ?>actions/pemesanan/proses_pembatalan.php" method="POST" onsubmit="return confirm('Anda akan membatalkan pesanan ini. Lanjutkan?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-danger">Proses Pembatalan</button></form>
         <?php elseif ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda'): ?>
             <form action="<?= BASE_URL ?>actions/pemesanan/proses_penyelesaian.php" method="POST" onsubmit="return confirm('Konfirmasi denda telah dibayar dan selesaikan penyewaan?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-success">Selesaikan Sewa</button></form>
         <?php endif; ?>
 
         <?php
-        $cancellable_statuses = ['Menunggu Pembayaran', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Pengajuan Pembatalan', 'Menunggu Pembayaran Denda', 'Pengajuan Ditolak'];
+        $cancellable_statuses = ['Menunggu Pembayaran', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Menunggu Pembayaran Denda', 'Pengajuan Ditolak'];
         if (in_array($pemesanan['status_pemesanan'], $cancellable_statuses)):
         ?>
             <form action="<?= BASE_URL ?>actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini secara permanen?');">
