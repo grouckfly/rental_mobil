@@ -35,7 +35,7 @@ try {
                     <td><?= htmlspecialchars($pesan['nama_lengkap']) ?></td>
                     <td><?= htmlspecialchars($pesan['subjek']) ?></td>
                     <td><?= date('d M Y, H:i', strtotime($pesan['waktu_kirim'])) ?></td>
-                    <td><a href="#" class="btn btn-info btn-sm">Lihat & Balas</a></td>
+                    <td><a href="../actions/pesan/detail.php?id=<?= $pesan['id_pesan'] ?>" class="btn btn-info btn-sm">Lihat & Balas</a></td>
                 </tr>
             <?php endforeach; endif; ?>
         </tbody>

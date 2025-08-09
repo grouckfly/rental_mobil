@@ -156,3 +156,56 @@ tbody tr:hover {
     align-items: center;
     justify-content: center;
 }
+
+/* Di dalam file assets/css/dashboard.css */
+
+/* ========================================= */
+/* Style untuk Fitur Pesan Bantuan           */
+/* ========================================= */
+.message-thread {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.message-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    background-color: var(--surface-color);
+    box-shadow: var(--box-shadow);
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-color);
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.message-body {
+    padding: 20px;
+}
+
+.message-body h4 {
+    margin-bottom: 10px;
+}
+
+.message-body p {
+    line-height: 1.7;
+}
+
+/* Membedakan pesan dari admin dan pelanggan */
+.admin-message {
+    border-left: 4px solid var(--primary-color);
+}
+
+.customer-message {
+    border-left: 4px solid var(--secondary-color);
+}
+
+.message-reply-form {
+    margin-top: 30px;
+}
