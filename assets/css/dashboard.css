@@ -209,3 +209,15 @@ tbody tr:hover {
 .message-reply-form {
     margin-top: 30px;
 }
+
+/* Style untuk Percakapan Dua Arah */
+.my-message { /* Pesan dari pengguna yang sedang login */
+    border-left: 4px solid var(--success-color);
+    background-color: #f0fff4;
+}
+.their-message { /* Pesan dari lawan bicara */
+    border-left: 4px solid var(--secondary-color);
+}
+body.dark-mode .my-message {
+    background-color: #1c2b22;
+}

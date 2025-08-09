@@ -46,7 +46,7 @@ require_once '../includes/header.php';
                         <td><?= htmlspecialchars($pesan['subjek']) ?></td>
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $pesan['status_pesan'])) ?>"><?= $pesan['status_pesan'] ?></span></td>
                         <td><?= date('d M Y', strtotime($pesan['waktu_kirim'])) ?></td>
-                        <td><a href="detail_pesan.php?id=<?= $pesan['id_pesan'] ?>" class="btn btn-secondary btn-sm">Lihat</a></td>
+                        <td><a href="../actions/pesan/detail.php?id=<?= $pesan['id_pesan'] ?>" class="btn btn-secondary btn-sm">Lihat</a></td>
                     </tr>
                 <?php endforeach; endif; ?>
             </tbody>
