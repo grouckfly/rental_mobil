@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect_with_message(BASE_URL . 'p
 
 $id_pengguna = $_SESSION['id_pengguna'];
 $username = trim($_POST['username']);
-// ... (ambil semua data lain dari form) ...
 $password = $_POST['password'];
 $password_confirm = $_POST['password_confirm'];
 $nik = trim($_POST['nik']);
@@ -52,7 +51,31 @@ if (empty($nama_file_ktp)) {
 $sql_parts = ["nik = ?", "nama_lengkap = ?", "email = ?", "no_telp = ?", "alamat = ?", "foto_ktp = ?"];
 $params = [$nik, $_POST['nama_lengkap'], $_POST['email'], $_POST['no_telp'], $_POST['alamat'], $nama_file_ktp];
 
-// Logika update password jika diisi
+// Logika update username
+if (!empty($username)) {
+    // Ambil username lama dari database
+    $stmt_check = $pdo->prepare("SELECT username FROM pengguna WHERE id_pengguna = ?");
+    $stmt_check->execute([$id_pengguna]);
+    $username_lama = $stmt_check->fetchColumn();
+
+    // Jika username berubah
+    if ($username !== $username_lama) {
+        // Validasi: hanya huruf, angka, underscore, 4-20 karakter
+        if (!preg_match('/^[a-zA-Z0-9_]{4,20}$/', $username)) {
+            redirect_with_message(BASE_URL . 'pelanggan/profile.php', 'Username hanya boleh huruf, angka, underscore, dan 4-20 karakter.', 'error');
+        }
+        // Cek apakah username sudah digunakan user lain
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM pengguna WHERE username = ? AND id_pengguna != ?");
+        $stmt->execute([$username, $id_pengguna]);
+        if ($stmt->fetchColumn() > 0) {
+            redirect_with_message(BASE_URL . 'pelanggan/profile.php', 'Username sudah digunakan pengguna lain.', 'error');
+        }
+        $sql_parts[] = "username = ?";
+        $params[] = $username;
+    }
+}
+
+// Logika update password 
 if (!empty($password)) {
     if ($password !== $password_confirm) {
         redirect_with_message(BASE_URL . 'pelanggan/profile.php', 'Konfirmasi password baru tidak cocok.', 'error');

@@ -15,16 +15,21 @@ try {
     $stmt = $pdo->prepare("SELECT * FROM pengguna WHERE id_pengguna = ?");
     $stmt->execute([$id_pengguna]);
     $user = $stmt->fetch();
-} catch (PDOException $e) { die("Gagal mengambil data profil."); }
+} catch (PDOException $e) {
+    die("Gagal mengambil data profil.");
+}
 ?>
 
-<div class="page-header with-action">
-    <h1>Profil Saya</h1>
-    <a href="edit_profile.php" class="btn btn-primary">Edit Profil</a>
-</div>
 
 <div class="detail-container single-column">
     <div class="detail-main">
+
+        <div class="page-header with-action">
+            <h1>Profil Saya</h1>
+            <a href="edit_profile.php" class="btn btn-primary">Edit Profil</a>
+        </div>
+        <hr>
+
         <h3>Informasi Akun</h3>
         <div class="info-grid">
             <div class="info-item"><span class="label">ID Pengguna</span><span class="value"><?= htmlspecialchars($user['id_pengguna']) ?></span></div>
@@ -38,7 +43,9 @@ try {
             <div class="info-item"><span class="label">NIK</span><span class="value"><?= htmlspecialchars($user['nik'] ?: 'Belum diisi') ?></span></div>
             <div class="info-item"><span class="label">Email</span><span class="value"><?= htmlspecialchars($user['email']) ?></span></div>
             <div class="info-item"><span class="label">No. Telepon</span><span class="value"><?= htmlspecialchars($user['no_telp'] ?: 'Belum diisi') ?></span></div>
-            <div class="info-item full-width"><span class="label">Alamat</span><div class="value description"><?= htmlspecialchars($user['alamat'] ?: 'Belum diisi') ?></div></div>
+            <div class="info-item full-width"><span class="label">Alamat</span>
+                <div class="value description"><?= htmlspecialchars($user['alamat'] ?: 'Belum diisi') ?></div>
+            </div>
             <div class="info-item full-width"><span class="label">Foto KTP</span>
                 <div class="value">
                     <?php if (!empty($user['foto_ktp'])): ?>

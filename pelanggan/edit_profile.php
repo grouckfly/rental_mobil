@@ -14,32 +14,28 @@ try {
     $stmt = $pdo->prepare("SELECT * FROM pengguna WHERE id_pengguna = ?");
     $stmt->execute([$id_pengguna]);
     $user = $stmt->fetch();
-} catch (PDOException $e) { die("Gagal mengambil data profil."); }
+} catch (PDOException $e) {
+    die("Gagal mengambil data profil.");
+}
 ?>
-
-<div class="page-header"><h1>Edit Profil</h1></div>
 
 <div class="form-container">
     <div class="form-box">
-        
+
         <form action="<?= BASE_URL ?>actions/pengguna/update_profile.php" method="POST" enctype="multipart/form-data">
-            <h3>Informasi Akun</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" value="<?= htmlspecialchars($user['username']) ?>" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
-                </div>
-            </div>
+            <h1>Edit Profile</h1>
             <hr>
             <h3>Data Pribadi</h3>
             <div class="form-grid">
                 <div class="form-group">
                     <label for="nama_lengkap">Nama Lengkap</label>
                     <input type="text" id="nama_lengkap" name="nama_lengkap" value="<?= htmlspecialchars($user['nama_lengkap']) ?>" required>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="nik">Nomor Induk Kependudukan (NIK)</label>
@@ -62,7 +58,11 @@ try {
                 </div>
             </div>
             <hr>
-            <h3>Ubah Password</h3>
+            <h3>Username Dan Password</h3>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" value="<?= htmlspecialchars($user['username']) ?>" required>
+            </div>
             <div class="form-group">
                 <label for="password">Password Baru</label>
                 <input type="password" id="password" name="password" placeholder="Kosongkan jika tidak ingin diubah">
