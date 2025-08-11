@@ -18,50 +18,46 @@ $role_session = $_SESSION['role'];
 
 // QUERY LENGKAP: Mengambil semua data yang dibutuhkan dari semua tabel terkait
 try {
-    $sql = "SELECT p.*, 
-                   u.nama_lengkap AS nama_pelanggan, u.email AS email_pelanggan, u.no_telp AS telp_pelanggan,
-                   m.merk, m.model, m.plat_nomor, m.gambar_mobil, m.denda_per_hari,
-                   pay.status_pembayaran, pay.bukti_pembayaran, pay.tanggal_bayar
-            FROM pemesanan p
-            JOIN pengguna u ON p.id_pengguna = u.id_pengguna
-            JOIN mobil m ON p.id_mobil = m.id_mobil
-            LEFT JOIN pembayaran pay ON p.id_pemesanan = pay.id_pemesanan
-            WHERE p.id_pemesanan = ?";
+    // PERBAIKAN: Query utama sekarang mengambil semua kolom dari `pemesanan` dengan alias p.*
+    $stmt_main = $pdo->prepare(
+        "SELECT p.*, 
+                u.nama_lengkap AS nama_pelanggan, u.email AS email_pelanggan, u.no_telp AS telp_pelanggan,
+                m.merk, m.model, m.plat_nomor, m.gambar_mobil, m.denda_per_hari
+         FROM pemesanan p
+         JOIN pengguna u ON p.id_pengguna = u.id_pengguna
+         JOIN mobil m ON p.id_mobil = m.id_mobil
+         WHERE p.id_pemesanan = ?"
+    );
+    $stmt_main->execute([$id_pemesanan]);
+    $pemesanan = $stmt_main->fetch();
 
-    // Ambil data pembayaran DENDA
+    if (!$pemesanan) {
+        redirect_with_message(BASE_URL . strtolower($role_session) . '/dashboard.php', 'Pemesanan tidak ditemukan.', 'error');
+    }
+    if ($role_session === 'Pelanggan' && $pemesanan['id_pengguna'] !== $id_pengguna_session) {
+        redirect_with_message(BASE_URL . strtolower($role_session) . '/dashboard.php', 'Anda tidak memiliki akses.', 'error');
+    }
+
+    // PERBAIKAN: Mengambil data pembayaran sewa & denda secara terpisah agar akurat
+    $stmt_sewa = $pdo->prepare("SELECT * FROM pembayaran WHERE id_pemesanan = ? AND tipe_pembayaran = 'Sewa'");
+    $stmt_sewa->execute([$id_pemesanan]);
+    $pembayaran_sewa = $stmt_sewa->fetch();
+
     $stmt_denda = $pdo->prepare("SELECT * FROM pembayaran WHERE id_pemesanan = ? AND tipe_pembayaran = 'Denda'");
     $stmt_denda->execute([$id_pemesanan]);
     $pembayaran_denda = $stmt_denda->fetch();
 
-    $params = [$id_pemesanan];
-    if ($role_session === 'Pelanggan') {
-        $sql .= " AND p.id_pengguna = ?";
-        $params[] = $id_pengguna_session;
-    }
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-    $pemesanan = $stmt->fetch();
-    if (!$pemesanan) {
-        redirect_with_message(BASE_URL . strtolower($role_session) . '/dashboard.php', 'Pemesanan tidak ditemukan atau Anda tidak memiliki akses.', 'error');
-    }
 } catch (PDOException $e) {
     die("Terjadi kesalahan pada database: " . $e->getMessage());
 }
 
-// Hitung denda secara real-time jika status 'Berjalan' dan terlambat
-$denda_realtime = 0;
-$hari_terlambat = 0;
+// Logika hitung denda real-time
+$denda_realtime = 0; $hari_terlambat = 0;
 if ($pemesanan['status_pemesanan'] === 'Berjalan' && (new DateTime() > new DateTime($pemesanan['tanggal_selesai']))) {
-    $jadwal_selesai = new DateTime($pemesanan['tanggal_selesai']);
-    $waktu_sekarang = new DateTime();
-    $selisih_terlambat = $jadwal_selesai->diff($waktu_sekarang);
-    $hari_terlambat = (int)$selisih_terlambat->days;
-    if ($selisih_terlambat->h >= 2) {
-        $hari_terlambat += 1;
-    }
-    if ($hari_terlambat > 0) {
-        $denda_realtime = $hari_terlambat * $pemesanan['denda_per_hari'];
-    }
+    $selisih = (new DateTime($pemesanan['tanggal_selesai']))->diff(new DateTime());
+    $hari_terlambat = $selisih->days;
+    if ($selisih->h >= 2) { $hari_terlambat++; }
+    if ($hari_terlambat > 0) { $denda_realtime = $hari_terlambat * $pemesanan['denda_per_hari']; }
 }
 
 $page_title = 'Detail Pemesanan #' . htmlspecialchars($pemesanan['kode_pemesanan']);
@@ -69,12 +65,6 @@ require_once '../../includes/header.php';
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-
-<div style="background: #fff3cd; border: 1px solid #ffeeba; padding: 15px; margin: 20px 0; border-radius: 5px;">
-    <strong>Info Debug:</strong> Status Pemesanan:
-    <span style="color:blue">'<?= $pemesanan['status_pemesanan'] ?>'</span> | Role Saat Ini:
-    <span style="color:blue">'<?= $role_session ?>'</span>
-</div>
 
 <div class="page-header">
     <h1>Detail Pemesanan</h1>
@@ -102,6 +92,7 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
     data-live-id="<?= $pemesanan['id_pemesanan'] ?>"
     data-live-status="<?= $pemesanan['status_pemesanan'] ?>"
     data-live-last-update="<?= $pemesanan['updated_at'] ?>">
+
     <div class="detail-main">
         <div class="info-item booking-code-item">
             <span class="label">Kode Pemesanan</span>
@@ -110,137 +101,71 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         <div class="info-item"><span class="label">Status Pemesanan</span><span class="value"><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $pemesanan['status_pemesanan'])) ?>"><?= htmlspecialchars($pemesanan['status_pemesanan']) ?></span></span></div>
         <div class="info-item"><span class="label">Tanggal Pesan</span><span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['tanggal_pemesanan'])) ?></span></div>
         <div class="info-item"><span class="label">Jadwal Sewa</span><span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['tanggal_mulai'])) ?> s/d <?= date('d M Y, H:i', strtotime($pemesanan['tanggal_selesai'])) ?></span></div>
-        <?php if ($pemesanan['waktu_pengambilan']): ?>
-            <div class="info-item"><span class="label">Waktu Aktual Pengambilan</span><span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['waktu_pengambilan'])) ?></span></div>
-        <?php endif; ?>
-        <?php if ($pemesanan['waktu_pengembalian']): ?>
-            <div class="info-item"><span class="label">Waktu Aktual Pengembalian</span><span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['waktu_pengembalian'])) ?></span></div>
-        <?php endif; ?>
+        <?php if ($pemesanan['waktu_pengambilan']): ?><div class="info-item"><span class="label">Waktu Aktual Pengambilan</span><span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['waktu_pengambilan'])) ?></span></div><?php endif; ?>
+        <?php if ($pemesanan['waktu_pengembalian']): ?><div class="info-item"><span class="label">Waktu Aktual Pengembalian</span><span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['waktu_pengembalian'])) ?></span></div><?php endif; ?>
 
         <hr>
-        <h3>Informasi Pembayaran</h3>
+        <h3>Informasi Pembayaran Sewa</h3>
         <div class="info-item"><span class="label">Total Biaya Sewa</span><span class="value price"><?= format_rupiah($pemesanan['total_biaya']) ?></span></div>
-        <div class="info-item"><span class="label">Status Pembayaran</span><span class="value"><?= htmlspecialchars($pemesanan['status_pembayaran'] ?: 'Belum Bayar') ?></span></div>
-        <?php if ($pemesanan['tanggal_bayar']): ?>
-            <div class="info-item"><span class="label">Tanggal Bayar</span><span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['tanggal_bayar'])) ?></span></div>
+        <div class="info-item"><span class="label">Status</span><span class="value"><?= htmlspecialchars($pembayaran_sewa['status_pembayaran'] ?? 'Belum Dibayar') ?></span></div>
+        <?php if ($pembayaran_sewa && !empty($pembayaran_sewa['bukti_pembayaran'])): ?>
+            <div class="info-item bukti-pembayaran-item"><span class="label">Bukti Pembayaran</span><span class="value"><a href="<?= BASE_URL ?>assets/img/bukti_pembayaran/<?= htmlspecialchars($pembayaran_sewa['bukti_pembayaran']) ?>" target="_blank">Lihat Bukti</a></span></div>
         <?php endif; ?>
-        <?php if ($pemesanan['bukti_pembayaran']): ?>
-            <div class="info-item bukti-pembayaran-item"><span class="label">Bukti Pembayaran</span><span class="value"><a href="<?= BASE_URL ?>assets/img/bukti_pembayaran/<?= htmlspecialchars($pemesanan['bukti_pembayaran']) ?>" target="_blank">Lihat Bukti</a></span></div>
+
+        <?php if (!empty($pemesanan['review_pelanggan'])): ?>
+            <hr>
+            <h3>Ulasan Pelanggan</h3>
+            <div class="info-item"><span class="label">Rating</span>
+                <div class="value star-rating" data-rating="<?= $pemesanan['rating_pengguna'] ?>"></div>
+            </div>
+            <div class="info-item"><span class="label">Ulasan</span>
+                <div class="value description"><?= nl2br(htmlspecialchars($pemesanan['review_pelanggan'])) ?></div>
+            </div>
         <?php endif; ?>
     </div>
 
     <div class="detail-sidebar">
         <h3>Informasi Pelanggan</h3>
         <div class="info-item"><span class="label">Nama</span><span class="value"><?= htmlspecialchars($pemesanan['nama_pelanggan']) ?></span></div>
-        <div class="info-item"><span class="label">Email</span><span class="value"><?= htmlspecialchars($pemesanan['email_pelanggan']) ?></span></div>
         <div class="info-item"><span class="label">No. Telepon</span><span class="value"><?= htmlspecialchars($pemesanan['telp_pelanggan']) ?></span></div>
         <hr>
         <h3>Informasi Mobil</h3>
-        <div class="info-item-row">
-            <img src="<?= BASE_URL ?>assets/img/mobil/<?= htmlspecialchars($pemesanan['gambar_mobil'] ?: 'default-car.png') ?>" alt="Mobil" class="info-item-image">
+        <div class="info-item-row"><img src="<?= BASE_URL ?>assets/img/mobil/<?= htmlspecialchars($pemesanan['gambar_mobil'] ?: 'default-car.png') ?>" alt="Mobil" class="info-item-image">
             <div><strong><?= htmlspecialchars($pemesanan['merk'] . ' ' . $pemesanan['model']) ?></strong><br>Plat: <?= htmlspecialchars($pemesanan['plat_nomor']) ?></div>
         </div>
 
-        <?php if ($role_session === 'Pelanggan'):
-            $qr_title = '';
-            if ($pemesanan['status_pemesanan'] === 'Dikonfirmasi') {
-                $qr_title = 'Tunjukkan QR Code ini Saat Pengambilan';
-            } elseif ($pemesanan['status_pemesanan'] === 'Berjalan') {
-                $qr_title = 'Tunjukkan QR Code ini Saat Pengembalian';
-            }
-            if (!empty($qr_title)): ?>
-                <div class="qr-code-container">
-                    <h4><?= $qr_title ?></h4>
-                    <div id="qrcode" data-kode="<?= htmlspecialchars($pemesanan['kode_pemesanan']) ?>"></div>
-                </div>
-        <?php endif;
-        endif; ?>
-
-        <?php if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && !empty($pemesanan['batas_pembayaran'])): ?>
-            <div class="timer-container payment-timer">
-                <h4>Sisa Waktu Pembayaran</h4>
-                <div id="countdown-timer"
-                    data-end-time="<?= $pemesanan['batas_pembayaran'] ?>"
-                    data-action-on-expire="redirect">
-                </div>
+        <?php if ($role_session === 'Pelanggan' && in_array($pemesanan['status_pemesanan'], ['Dikonfirmasi', 'Berjalan'])):
+            $qr_title = ($pemesanan['status_pemesanan'] === 'Dikonfirmasi') ? 'Tunjukkan QR Code Saat Pengambilan' : 'Tunjukkan QR Code Saat Pengembalian';
+        ?><div class="qr-code-container">
+                <h4><?= $qr_title ?></h4>
+                <div id="qrcode" data-kode="<?= htmlspecialchars($pemesanan['kode_pemesanan']) ?>"></div>
             </div>
         <?php endif; ?>
 
-        <?php if ($pemesanan['status_pemesanan'] === 'Berjalan'): ?>
-            <div class="timer-container">
+        <?php if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran'): ?><div class="timer-container payment-timer">
+                <h4>Sisa Waktu Pembayaran</h4>
+                <div id="countdown-timer" data-end-time="<?= $pemesanan['batas_pembayaran'] ?>" data-action-on-expire="redirect"></div>
+            </div><?php endif; ?>
+        <?php if ($pemesanan['status_pemesanan'] === 'Berjalan'): ?><div class="timer-container">
                 <h4>Sisa Waktu Sewa</h4>
                 <div id="countdown-timer" data-end-time="<?= $pemesanan['tanggal_selesai'] ?>"></div>
-            </div>
-        <?php endif; ?>
+            </div><?php endif; ?>
 
-        <?php
-        // Tampilkan bagian ini HANYA jika ada denda yang tercatat atau sedang dihitung
-        if ($pemesanan['total_denda'] > 0 || $denda_realtime > 0):
-        ?>
+        <?php if ($pemesanan['total_denda'] > 0 || $denda_realtime > 0): ?>
             <div class="cancellation-info" style="border-color: var(--danger-color); margin-top: 20px;">
                 <h4>Informasi Pembayaran Denda</h4>
-
-                <div class="info-item">
-                    <span class="label">Perhitungan Denda</span>
-                    <div class="value">
-                        <?php
-                        if ($pemesanan['status_pemesanan'] === 'Berjalan' && $hari_terlambat > 0) {
-                            echo htmlspecialchars($hari_terlambat) . " hari x " . format_rupiah($pemesanan['denda_per_hari']);
-                        } else {
-                            echo "Denda final tercatat";
-                        }
-                        ?>
-                    </div>
+                <div class="info-item"><span class="label">Total Tagihan Denda</span>
+                    <div class="value price"><?= format_rupiah($pemesanan['total_denda'] > 0 ? $pemesanan['total_denda'] : $denda_realtime) ?></div>
                 </div>
-
-                <div class="info-item">
-                    <span class="label">Total Tagihan Denda</span>
-                    <div class="value price">
-                        <?= format_rupiah($pemesanan['total_denda'] > 0 ? $pemesanan['total_denda'] : $denda_realtime) ?>
-                    </div>
+                <div class="info-item"><span class="label">Status</span>
+                    <div class="value"><?= htmlspecialchars($pembayaran_denda['status_pembayaran'] ?? 'Belum Dibayar') ?></div>
                 </div>
-
-                <div class="info-item">
-                    <span class="label">Status Pembayaran Denda</span>
-                    <div class="value">
-                        <?php // Variabel $pembayaran_denda sudah kita ambil di atas file 
-                        ?>
-                        <?= htmlspecialchars($pembayaran_denda['status_pembayaran'] ?? 'Belum Dibayar') ?>
-                    </div>
-                </div>
-
-                <div class="info-item bukti-pembayaran-item">
-                    <span class="label">Bukti Pembayaran Denda</span>
-                    <div class="value">
-                        <?php if (!empty($pembayaran_denda['bukti_pembayaran'])): ?>
-                            <a href="<?= BASE_URL ?>assets/img/bukti_pembayaran/<?= htmlspecialchars($pembayaran_denda['bukti_pembayaran']) ?>" target="_blank">Lihat Bukti</a>
-                        <?php else: ?>
-                            Belum ada bukti pembayaran.
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <?php if ($role_session === 'Pelanggan' && $pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda' && !$pembayaran_denda): ?>
-                    <div class="detail-actions" style="border-top:none; padding-top:15px; margin-top:15px;">
-                        <a href="<?= BASE_URL ?>pelanggan/bayar_denda.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Bayar Denda Sekarang</a>
-                    </div>
+                <?php if ($pembayaran_denda && !empty($pembayaran_denda['bukti_pembayaran'])): ?>
+                    <div class="info-item bukti-pembayaran-item"><span class="label">Bukti Bayar Denda</span><span class="value"><a href="<?= BASE_URL ?>assets/img/bukti_pembayaran/<?= htmlspecialchars($pembayaran_denda['bukti_pembayaran']) ?>" target="_blank">Lihat Bukti</a></span></div>
                 <?php endif; ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (!empty($pemesanan['review_pelanggan'])): ?>
-            <hr>
-            <h3>Ulasan Pelanggan</h3>
-            <div class="info-item">
-                <span class="label">Rating</span>
-                <div class="value star-rating" data-rating="<?= $pemesanan['rating_pengguna'] ?>">
-                </div>
-            </div>
-            <div class="info-item">
-                <span class="label">Ulasan</span>
-                <div class="value description">
-                    <?= nl2br(htmlspecialchars($pemesanan['review_pelanggan'])) ?>
-                </div>
+                <?php if ($role_session === 'Pelanggan' && $pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda' && !$pembayaran_denda): ?>
+                    <div class="detail-actions" style="border-top:none; padding-top:15px; margin-top:15px;"><a href="<?= BASE_URL ?>pelanggan/bayar_denda.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Bayar Denda Sekarang</a></div>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>
@@ -294,58 +219,55 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
 <div class="detail-actions">
     <button onclick="window.print();" class="btn btn-info">Cetak</button>
 
-    <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
-        <?php if ($pemesanan['status_pembayaran'] === 'Menunggu Verifikasi'): ?>
-            <form action="<?= BASE_URL ?>actions/pembayaran/verifikasi.php" method="POST" onsubmit="return confirm('Verifikasi pembayaran ini?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-primary">Verifikasi</button></form>
-        <?php endif; ?>
+    <?php 
+    // --- Logika Tombol untuk Admin & Karyawan ---
+    if (in_array($role_session, ['Admin', 'Karyawan'])) {
+        
+        // Tombol Verifikasi Pembayaran SEWA
+        if ($pembayaran_sewa && $pembayaran_sewa['status_pembayaran'] === 'Menunggu Verifikasi') {
+            echo '<form action="'.BASE_URL.'actions/pembayaran/verifikasi.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="'.$pemesanan['id_pemesanan'].'"><input type="hidden" name="id_mobil" value="'.$pemesanan['id_mobil'].'"><button type="submit" class="btn btn-primary">Verifikasi Bayar Sewa</button></form>';
+        }
 
-        <?php
+        // Tombol Verifikasi Pembayaran DENDA
+        if ($pembayaran_denda && $pembayaran_denda['status_pembayaran'] === 'Menunggu Verifikasi') {
+            echo '<form action="'.BASE_URL.'actions/pembayaran/verifikasi_denda.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pembayaran" value="'.$pembayaran_denda['id_pembayaran'].'"><input type="hidden" name="id_pemesanan" value="'.$pemesanan['id_pemesanan'].'"><input type="hidden" name="id_mobil" value="'.$pemesanan['id_mobil'].'"><button type="submit" class="btn btn-success">Verifikasi Denda</button></form>';
+        }
+        
+        // Tombol Konfirmasi Bayar Denda di Tempat
+        if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda' && !$pembayaran_denda) {
+            echo '<form action="'.BASE_URL.'actions/pembayaran/konfirmasi_denda.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="'.$pemesanan['id_pemesanan'].'"><input type="hidden" name="id_mobil" value="'.$pemesanan['id_mobil'].'"><button type="submit" class="btn btn-success">Konfirmasi Bayar Denda</button></form>';
+        }
+
+        // Tombol Batalkan Pesanan
         $cancellable_statuses = ['Menunggu Pembayaran', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Pengajuan Ditolak'];
-        if (in_array($pemesanan['status_pemesanan'], $cancellable_statuses)):
-        ?>
-            <form action="<?= BASE_URL ?>actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini secara permanen?');">
-                <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
-                <button type="submit" class="btn btn-danger">Batalkan Pesanan</button>
-            </form>
-        <?php endif; ?>
-
-        <?php if (in_array($role_session, ['Admin', 'Karyawan']) && $pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda'): ?>
-            <form action="<?= BASE_URL ?>actions/pemesanan/proses_penyelesaian.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Konfirmasi selesaikan penyewaan?');">
-                <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
-                <input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>">
-                <button type="submit" class="btn btn-success">Selesaikan Sewa</button>
-            </form>
-        <?php endif; ?>
-
-    <?php elseif ($role_session === 'Pelanggan'): ?>
-
-        <?php
-        // Tampilkan tombol berdasarkan status pemesanan
-
-        // 1. Jika status 'Menunggu Pembayaran' dan belum ada bukti bayar
-        if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && empty($pemesanan['bukti_pembayaran'])): ?>
-            <a href="<?= BASE_URL ?>pelanggan/pembayaran.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Bayar Sekarang</a>
-
-        <?php
-        // 2. Jika status 'Dikonfirmasi', tampilkan tombol aksi yang relevan
-        elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi'): ?>
-            <a href="<?= BASE_URL ?>pelanggan/ajukan_pembatalan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Ajukan Pembatalan</a>
-            <a href="<?= BASE_URL ?>pelanggan/ajukan_ambil_cepat.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-info">Ambil Lebih Cepat</a>
-
-            <?php
-        // 3. Jika status 'Selesai', tampilkan tombol untuk ulasan
-        elseif ($pemesanan['status_pemesanan'] === 'Selesai'):
-            // Cek apakah ulasan sudah ada atau belum
-            if (empty($pemesanan['review_pelanggan'])): ?>
-                <a href="<?= BASE_URL ?>pelanggan/beri_ulasan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-primary">Beri Review</a>
-            <?php else: ?>
-                <a href="<?= BASE_URL ?>pelanggan/beri_ulasan.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-secondary">Edit Ulasan</a>
-            <?php endif; ?>
-
-        <?php endif; ?>
-
-    <?php endif; ?>
-
+        if (in_array($pemesanan['status_pemesanan'], $cancellable_statuses)) {
+            echo '<form action="'.BASE_URL.'actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm(\'Anda yakin ingin membatalkan pesanan ini?\');"><input type="hidden" name="id_pemesanan" value="'.$pemesanan['id_pemesanan'].'"><button type="submit" class="btn btn-danger">Batalkan Pesanan</button></form>';
+        }
+    } 
+    
+    // --- Logika Tombol untuk Pelanggan ---
+    elseif ($role_session === 'Pelanggan') {
+        
+        if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && empty($pembayaran_sewa)) {
+            echo '<a href="'.BASE_URL.'pelanggan/pembayaran.php?id='.$pemesanan['id_pemesanan'].'" class="btn btn-primary">Bayar Sekarang</a>';
+        } 
+        elseif ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda' && empty($pembayaran_denda)) {
+            echo '<a href="'.BASE_URL.'pelanggan/bayar_denda.php?id='.$pemesanan['id_pemesanan'].'" class="btn btn-danger">Bayar Denda</a>';
+        } 
+        elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi') {
+            echo '<a href="'.BASE_URL.'pelanggan/ajukan_pembatalan.php?id='.$pemesanan['id_pemesanan'].'" class="btn btn-danger">Ajukan Pembatalan</a> ';
+            echo '<a href="'.BASE_URL.'pelanggan/ajukan_ambil_cepat.php?id='.$pemesanan['id_pemesanan'].'" class="btn btn-info">Ambil Lebih Cepat</a>';
+        } 
+        elseif ($pemesanan['status_pemesanan'] === 'Selesai') {
+            if (empty($pemesanan['review_pelanggan'])) {
+                echo '<a href="'.BASE_URL.'pelanggan/beri_ulasan.php?id='.$pemesanan['id_pemesanan'].'" class="btn btn-primary">Beri Review</a>';
+            } else {
+                echo '<a href="'.BASE_URL.'pelanggan/beri_ulasan.php?id='.$pemesanan['id_pemesanan'].'" class="btn btn-secondary">Edit Ulasan</a>';
+            }
+        }
+    } 
+    ?>
+    
     <a href="<?= BASE_URL . strtolower($role_session) ?>/dashboard.php" class="btn btn-secondary">Kembali</a>
 </div>
 
