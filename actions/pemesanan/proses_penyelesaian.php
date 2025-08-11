@@ -18,10 +18,13 @@ if ($id_pemesanan === 0 || $id_mobil === 0) {
 
 try {
     $pdo->beginTransaction();
-    // 1. Update status pemesanan menjadi 'Selesai'
+    // 1. Catat pembayaran denda sebagai 'Bayar Ditempat'
+    $stmt_pay = $pdo->prepare("INSERT INTO pembayaran (id_pemesanan, tipe_pembayaran, jumlah_bayar, metode_pembayaran, status_pembayaran, id_karyawan_verif) VALUES (?, 'Denda', (SELECT total_denda FROM pemesanan WHERE id_pemesanan=?), 'Bayar Ditempat', 'Diverifikasi', ?)");
+    $stmt_pay->execute([$id_pemesanan, $id_pemesanan, $_SESSION['id_pengguna']]);
+
+    // 2. Selesaikan sewa & kembalikan mobil
     $stmt_order = $pdo->prepare("UPDATE pemesanan SET status_pemesanan = 'Selesai', waktu_pengembalian = NOW() WHERE id_pemesanan = ?");
     $stmt_order->execute([$id_pemesanan]);
-    // 2. Update status mobil kembali menjadi 'Tersedia'
     $stmt_car = $pdo->prepare("UPDATE mobil SET status = 'Tersedia' WHERE id_mobil = ?");
     $stmt_car->execute([$id_mobil]);
     $pdo->commit();

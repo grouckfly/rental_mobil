@@ -28,6 +28,11 @@ try {
             LEFT JOIN pembayaran pay ON p.id_pemesanan = pay.id_pemesanan
             WHERE p.id_pemesanan = ?";
 
+    // Ambil data pembayaran DENDA
+    $stmt_denda = $pdo->prepare("SELECT * FROM pembayaran WHERE id_pemesanan = ? AND tipe_pembayaran = 'Denda'");
+    $stmt_denda->execute([$id_pemesanan]);
+    $pembayaran_denda = $stmt_denda->fetch();
+
     $params = [$id_pemesanan];
     if ($role_session === 'Pelanggan') {
         $sql .= " AND p.id_pengguna = ?";
@@ -41,6 +46,22 @@ try {
     }
 } catch (PDOException $e) {
     die("Terjadi kesalahan pada database: " . $e->getMessage());
+}
+
+// Hitung denda secara real-time jika status 'Berjalan' dan terlambat
+$denda_realtime = 0;
+$hari_terlambat = 0;
+if ($pemesanan['status_pemesanan'] === 'Berjalan' && (new DateTime() > new DateTime($pemesanan['tanggal_selesai']))) {
+    $jadwal_selesai = new DateTime($pemesanan['tanggal_selesai']);
+    $waktu_sekarang = new DateTime();
+    $selisih_terlambat = $jadwal_selesai->diff($waktu_sekarang);
+    $hari_terlambat = (int)$selisih_terlambat->days;
+    if ($selisih_terlambat->h >= 2) {
+        $hari_terlambat += 1;
+    }
+    if ($hari_terlambat > 0) {
+        $denda_realtime = $hari_terlambat * $pemesanan['denda_per_hari'];
+    }
 }
 
 $page_title = 'Detail Pemesanan #' . htmlspecialchars($pemesanan['kode_pemesanan']);
@@ -99,7 +120,6 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         <hr>
         <h3>Informasi Pembayaran</h3>
         <div class="info-item"><span class="label">Total Biaya Sewa</span><span class="value price"><?= format_rupiah($pemesanan['total_biaya']) ?></span></div>
-        <div class="info-item"><span class="label">Denda Keterlambatan</span><span class="value price"><?= format_rupiah($pemesanan['total_denda']) ?></span></div>
         <div class="info-item"><span class="label">Status Pembayaran</span><span class="value"><?= htmlspecialchars($pemesanan['status_pembayaran'] ?: 'Belum Bayar') ?></span></div>
         <?php if ($pemesanan['tanggal_bayar']): ?>
             <div class="info-item"><span class="label">Tanggal Bayar</span><span class="value"><?= date('d M Y, H:i', strtotime($pemesanan['tanggal_bayar'])) ?></span></div>
@@ -150,6 +170,61 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
             <div class="timer-container">
                 <h4>Sisa Waktu Sewa</h4>
                 <div id="countdown-timer" data-end-time="<?= $pemesanan['tanggal_selesai'] ?>"></div>
+            </div>
+        <?php endif; ?>
+
+        <?php
+        // Tampilkan bagian ini HANYA jika ada denda yang tercatat atau sedang dihitung
+        if ($pemesanan['total_denda'] > 0 || $denda_realtime > 0):
+        ?>
+            <div class="cancellation-info" style="border-color: var(--danger-color); margin-top: 20px;">
+                <h4>Informasi Pembayaran Denda</h4>
+
+                <div class="info-item">
+                    <span class="label">Perhitungan Denda</span>
+                    <div class="value">
+                        <?php
+                        if ($pemesanan['status_pemesanan'] === 'Berjalan' && $hari_terlambat > 0) {
+                            echo htmlspecialchars($hari_terlambat) . " hari x " . format_rupiah($pemesanan['denda_per_hari']);
+                        } else {
+                            echo "Denda final tercatat";
+                        }
+                        ?>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">Total Tagihan Denda</span>
+                    <div class="value price">
+                        <?= format_rupiah($pemesanan['total_denda'] > 0 ? $pemesanan['total_denda'] : $denda_realtime) ?>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">Status Pembayaran Denda</span>
+                    <div class="value">
+                        <?php // Variabel $pembayaran_denda sudah kita ambil di atas file 
+                        ?>
+                        <?= htmlspecialchars($pembayaran_denda['status_pembayaran'] ?? 'Belum Dibayar') ?>
+                    </div>
+                </div>
+
+                <div class="info-item bukti-pembayaran-item">
+                    <span class="label">Bukti Pembayaran Denda</span>
+                    <div class="value">
+                        <?php if (!empty($pembayaran_denda['bukti_pembayaran'])): ?>
+                            <a href="<?= BASE_URL ?>assets/img/bukti_pembayaran/<?= htmlspecialchars($pembayaran_denda['bukti_pembayaran']) ?>" target="_blank">Lihat Bukti</a>
+                        <?php else: ?>
+                            Belum ada bukti pembayaran.
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <?php if ($role_session === 'Pelanggan' && $pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda' && !$pembayaran_denda): ?>
+                    <div class="detail-actions" style="border-top:none; padding-top:15px; margin-top:15px;">
+                        <a href="<?= BASE_URL ?>pelanggan/bayar_denda.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Bayar Denda Sekarang</a>
+                    </div>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
 
@@ -222,17 +297,23 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
     <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
         <?php if ($pemesanan['status_pembayaran'] === 'Menunggu Verifikasi'): ?>
             <form action="<?= BASE_URL ?>actions/pembayaran/verifikasi.php" method="POST" onsubmit="return confirm('Verifikasi pembayaran ini?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-primary">Verifikasi</button></form>
-        <?php elseif ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda'): ?>
-            <form action="<?= BASE_URL ?>actions/pemesanan/proses_penyelesaian.php" method="POST" onsubmit="return confirm('Konfirmasi denda telah dibayar dan selesaikan penyewaan?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-success">Selesaikan Sewa</button></form>
         <?php endif; ?>
 
         <?php
-        $cancellable_statuses = ['Menunggu Pembayaran', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Menunggu Pembayaran Denda', 'Pengajuan Ditolak'];
+        $cancellable_statuses = ['Menunggu Pembayaran', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Pengajuan Ditolak'];
         if (in_array($pemesanan['status_pemesanan'], $cancellable_statuses)):
         ?>
             <form action="<?= BASE_URL ?>actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini secara permanen?');">
                 <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
                 <button type="submit" class="btn btn-danger">Batalkan Pesanan</button>
+            </form>
+        <?php endif; ?>
+
+        <?php if (in_array($role_session, ['Admin', 'Karyawan']) && $pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda'): ?>
+            <form action="<?= BASE_URL ?>actions/pemesanan/proses_penyelesaian.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Konfirmasi selesaikan penyewaan?');">
+                <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
+                <input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>">
+                <button type="submit" class="btn btn-success">Selesaikan Sewa</button>
             </form>
         <?php endif; ?>
 

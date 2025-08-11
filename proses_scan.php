@@ -81,24 +81,22 @@ try {
         // b. Cek apakah ada denda untuk menentukan alur
         if ($denda > 0) {
             // JIKA ADA DENDA: Update status ke 'Menunggu Pembayaran Denda'
-            $stmt_denda = $pdo->prepare("UPDATE pemesanan SET status_pemesanan = 'Menunggu Pembayaran Denda', total_denda = ? WHERE id_pemesanan = ?");
-            $stmt_denda->execute([$denda, $pemesanan['id_pemesanan']]);
-
+            $stmt_update = $pdo->prepare("UPDATE pemesanan SET status_pemesanan = 'Menunggu Pembayaran Denda', total_denda = ? WHERE id_pemesanan = ?");
+            $stmt_update->execute([$denda, $pemesanan['id_pemesanan']]);
             $pdo->commit();
             echo json_encode([
                 'success' => true,
-                'message' => 'Mobil dikembalikan terlambat! Mengarahkan ke halaman konfirmasi denda.',
-                'redirect_url' => BASE_URL . 'karyawan/konfirmasi_pengembalian.php?id=' . $pemesanan['id_pemesanan']
+                'message' => 'Mobil dikembalikan terlambat! Denda telah tercatat.',
+                'redirect_url' => BASE_URL . 'actions/pemesanan/detail.php?id=' . $pemesanan['id_pemesanan']
             ]);
         } else {
-            // JIKA TIDAK ADA DENDA: Langsung selesaikan sewa
+            // JIKA TEPAT WAKTU: Langsung selesaikan
             $stmt_order = $pdo->prepare("UPDATE pemesanan SET status_pemesanan = 'Selesai', waktu_pengembalian = NOW(), total_denda = 0 WHERE id_pemesanan = ?");
             $stmt_order->execute([$pemesanan['id_pemesanan']]);
             $stmt_car = $pdo->prepare("UPDATE mobil SET status = 'Tersedia' WHERE id_mobil = ?");
             $stmt_car->execute([$pemesanan['id_mobil']]);
-
             $pdo->commit();
-            echo json_encode(['success' => true, 'message' => 'Mobil berhasil dikembalikan tepat waktu. Proses selesai.']);
+            echo json_encode(['success' => true, 'message' => 'Mobil berhasil dikembalikan tepat waktu.']);
         }
         exit;
     }

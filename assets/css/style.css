@@ -346,6 +346,8 @@ tbody tr:hover {
 .status-disewa,
 .status-berjalan,
 .status-menunggu-verifikasi,
+.status-menunggu-pembayaran,
+.status-menunggu-pembayaran-denda,
 .status-belum-dibaca {
     background-color: var(--warning-color);
     color: var(--text-color); /* Teks diubah menjadi gelap */
@@ -370,8 +372,6 @@ tbody tr:hover {
 }
 
 /* Status Netral (Abu-abu) - Teks Gelap */
-.status-menunggu-pembayaran,
-.status-menunggu-pembayaran-denda,
 .status-tidak-aktif {
     background-color: var(--secondary-color);
 }
