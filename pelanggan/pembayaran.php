@@ -45,27 +45,46 @@ try {
     redirect_with_message('pemesanan.php', 'Terjadi kesalahan pada database.', 'error');
 }
 
-// Logika untuk memproses upload bukti pembayaran (tetap sama)
+// Logika untuk memproses upload bukti pembayaran
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_FILES['bukti_pembayaran']) && $_FILES['bukti_pembayaran']['error'] === UPLOAD_ERR_OK) {
         $upload_result = upload_file($_FILES['bukti_pembayaran'], '../assets/img/bukti_pembayaran/');
-        if (is_array($upload_result)) {
+
+        if (is_array($upload_result) && isset($upload_result['error'])) {
             redirect_with_message("pembayaran.php?id=$id_pemesanan", $upload_result['error'], 'error');
         } else {
             $nama_file_bukti = $upload_result;
             try {
-                $sql_pay = "INSERT INTO pembayaran (id_pemesanan, tanggal_bayar, jumlah_bayar, metode_pembayaran, bukti_pembayaran, status_pembayaran) 
-                            VALUES (?, NOW(), ?, ?, ?, 'Menunggu Verifikasi')";
+                // Gunakan transaksi untuk memastikan kedua query berhasil
+                $pdo->beginTransaction();
+
+                // 1. Masukkan data ke tabel pembayaran
+                $sql_pay = "INSERT INTO pembayaran (id_pemesanan, tipe_pembayaran, tanggal_bayar, jumlah_bayar, metode_pembayaran, bukti_pembayaran, status_pembayaran) 
+                            VALUES (?, 'Sewa', NOW(), ?, ?, ?, 'Menunggu Verifikasi')";
                 $stmt_pay = $pdo->prepare($sql_pay);
                 $stmt_pay->execute([$id_pemesanan, $booking['total_biaya'], 'Transfer Bank', $nama_file_bukti]);
-                redirect_with_message(BASE_URL . "pelanggan/pemesanan.php", 'Terima kasih! Bukti pembayaran Anda telah diunggah.');
-            } catch (PDOException $e) { 
-                // Error Handling
-             }
+
+                // 2. PERBAIKAN: Update status di tabel pemesanan
+                $sql_order = "UPDATE pemesanan SET status_pemesanan = 'Menunggu Verifikasi' WHERE id_pemesanan = ?";
+                $stmt_order = $pdo->prepare($sql_order);
+                $stmt_order->execute([$id_pemesanan]);
+
+                // Selesaikan transaksi
+                $pdo->commit();
+                
+                redirect_with_message(BASE_URL . "pelanggan/pemesanan.php", 'Terima kasih! Bukti pembayaran Anda telah diunggah dan sedang menunggu verifikasi.');
+
+            } catch (PDOException $e) {
+                $pdo->rollBack(); // Batalkan semua jika ada error
+                if ($e->getCode() == '23000') {
+                     redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Anda sudah pernah mengunggah bukti untuk pesanan ini.', 'error');
+                }
+                redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Gagal menyimpan data pembayaran.', 'error');
+            }
         }
-    } else { 
-        // Error Handling
-     }
+    } else {
+        redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Anda harus memilih file bukti pembayaran.', 'error');
+    }
 }
 
 $page_title = 'Pembayaran Pesanan #' . $booking['kode_pemesanan'];

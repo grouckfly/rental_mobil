@@ -163,9 +163,6 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
                 <?php if ($pembayaran_denda && !empty($pembayaran_denda['bukti_pembayaran'])): ?>
                     <div class="info-item bukti-pembayaran-item"><span class="label">Bukti Bayar Denda</span><span class="value"><a href="<?= BASE_URL ?>assets/img/bukti_pembayaran/<?= htmlspecialchars($pembayaran_denda['bukti_pembayaran']) ?>" target="_blank">Lihat Bukti</a></span></div>
                 <?php endif; ?>
-                <?php if ($role_session === 'Pelanggan' && $pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda' && !$pembayaran_denda): ?>
-                    <div class="detail-actions" style="border-top:none; padding-top:15px; margin-top:15px;"><a href="<?= BASE_URL ?>pelanggan/bayar_denda.php?id=<?= $pemesanan['id_pemesanan'] ?>" class="btn btn-danger">Bayar Denda Sekarang</a></div>
-                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>

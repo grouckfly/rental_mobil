@@ -22,7 +22,7 @@ try {
     $stmt = $pdo->prepare("
         SELECT p.*, m.merk, m.model
         FROM pemesanan p JOIN mobil m ON p.id_mobil = m.id_mobil
-        WHERE p.id_pengguna = ? AND p.status_pemesanan IN ('Menunggu Pembayaran', 'Dikonfirmasi', 'Berjalan', 'Menunggu Pembayaran Denda')
+        WHERE p.id_pengguna = ? AND p.status_pemesanan IN ('Menunggu Pembayaran', 'Dikonfirmasi', 'Berjalan', 'Menunggu Pembayaran Denda', 'Menunggu Verifikasi')
         ORDER BY p.tanggal_pemesanan DESC
     ");
     $stmt->execute([$id_pengguna]);
