@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Hapus token setelah berhasil digunakan untuk mencegah replay attack
                 unset($_SESSION['csrf_token']);
 
-                header('Location: login.php?status=register_success');
+                redirect_with_message('login.php', 'Pendaftaran berhasil! Silakan login.');
                 exit;
             }
         } catch (PDOException $e) {

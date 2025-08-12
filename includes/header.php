@@ -7,16 +7,6 @@
 // ===============================
 require_once __DIR__ . '/../actions/pemesanan/cek_kedaluwarsa.php';
 
-// ===================================
-// Menangkap semua notifikasi dari URL
-// ===================================
-$notification_script = '';
-if (isset($_GET['status_type']) && isset($_GET['status_msg'])) {
-    $message = addslashes(htmlspecialchars($_GET['status_msg']));
-    $type = htmlspecialchars($_GET['status_type']);
-    $notification_script = "<script>document.addEventListener('DOMContentLoaded', () => { showToast('{$message}', '{$type}'); });</script>";
-}
-
 // ===================
 // Fitur Pesan Bantuan
 // ===================

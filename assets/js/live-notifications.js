@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(error => console.error('Gagal memeriksa notifikasi pesan:', error));
         };
 
-        // Lakukan pengecekan setiap 5 detik
-        setInterval(checkMessages, 5000);
+        // Lakukan pengecekan setiap 15 detik
+        setInterval(checkMessages, 15000);
     }
 });

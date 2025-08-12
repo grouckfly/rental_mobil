@@ -1,6 +1,10 @@
 <?php
 // File: actions/cek_update.php (Versi dengan Pengecekan Detail)
 
+// Baris ini akan mencegah pesan Warning/Notice merusak output JSON
+error_reporting(0);
+ini_set('display_errors', 0);
+
 require_once '../includes/config.php';
 header('Content-Type: application/json');
 

@@ -117,7 +117,7 @@ function upload_file($file_input, $upload_dir, $allowed_types = ['jpg', 'jpeg', 
  * @return void
  */
 function redirect_with_message($url, $message, $type = 'success') {
-    // Cek apakah URL sudah memiliki parameter
+    // Cek apakah URL sudah memiliki parameter query
     $separator = (strpos($url, '?') === false) ? '?' : '&';
     
     // Bangun URL baru dengan parameter status
