@@ -36,33 +36,61 @@ function initializeTableSearch() {
  */
 function initializeDashboardChart() {
     const chartCanvas = document.getElementById('dashboardChart');
-    if (!chartCanvas) return; // Hanya berjalan jika ada elemen canvas
+    if (!chartCanvas) return;
 
-    // Mengambil data dari atribut data-* di elemen canvas
     const labels = JSON.parse(chartCanvas.dataset.labels || '[]');
-    const values = JSON.parse(chartCanvas.dataset.values || '[]');
+    const dataJumlah = JSON.parse(chartCanvas.dataset.valuesJumlah || '[]');
+    const dataPendapatan = JSON.parse(chartCanvas.dataset.valuesPendapatan || '[]');
     
     const ctx = chartCanvas.getContext('2d');
     
     new Chart(ctx, {
-        type: 'line',
+        type: 'bar', // Tipe grafik utama adalah bar
         data: {
             labels: labels,
-            datasets: [{
-                label: 'Jumlah Pemesanan',
-                data: values,
-                borderColor: 'rgba(0, 123, 255, 1)',
-                backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                fill: true,
-                tension: 0.3
-            }]
+            datasets: [
+                {
+                    label: 'Jumlah Pesanan',
+                    data: dataJumlah,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)', // Biru
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y' // Sumbu Y kiri untuk jumlah
+                },
+                {
+                    label: 'Pendapatan (Rp)',
+                    data: dataPendapatan,
+                    type: 'line', // Tipe dataset ini adalah garis
+                    borderColor: 'rgba(75, 192, 192, 1)', // Hijau
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    tension: 0.3,
+                    yAxisID: 'y1' // Sumbu Y kanan untuk Rupiah
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                y: {
-                    beginAtZero: true
+                y: { // Sumbu Y kiri (Jumlah)
+                    beginAtZero: true,
+                    position: 'left',
+                    ticks: {
+                        stepSize: 5
+                    }
+                },
+                y1: { // Sumbu Y kanan (Pendapatan)
+                    beginAtZero: true,
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false, // Hanya tampilkan garis grid dari sumbu Y kiri
+                    },
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                        }
+                    }
                 }
             }
         }

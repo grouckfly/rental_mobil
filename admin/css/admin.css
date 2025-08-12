@@ -31,6 +31,12 @@
     color: var(--primary-color);
 }
 
+.widget-details {
+    font-size: 0.85rem;
+    color: var(--muted-text-color);
+    margin-bottom: 10px;
+}
+
 /* 3. Style untuk Grafik */
 .chart-container {
     background-color: var(--surface-color);
