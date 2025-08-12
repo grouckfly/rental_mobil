@@ -15,9 +15,9 @@ require_once '../includes/header.php';
 $search_query = $_GET['q'] ?? '';
 $role_filter = $_GET['role'] ?? '';
 
-// ==========================================================
+// ====================
 // LOGIKA QUERY DINAMIS
-// ==========================================================
+// ====================
 $sql = "SELECT DISTINCT u.* FROM pengguna u
         LEFT JOIN pemesanan p ON u.id_pengguna = p.id_pengguna
         LEFT JOIN mobil m ON p.id_mobil = m.id_mobil
@@ -59,7 +59,7 @@ $role_list = ['Admin', 'Karyawan', 'Pelanggan'];
     <form action="" method="GET" class="filter-form">
         <div class="form-group" style="flex-grow: 1;">
             <label>Cari Pengguna</label>
-            <input type="text" name="q" placeholder="Cari berdasarkan Nama, NIK, Kode Pesanan, Mobil, dll..." value="<?= htmlspecialchars($search_query) ?>" class="form-control">
+            <input type="text" name="q" placeholder="Cari berdasarkan Nama, NIK, dll..." value="<?= htmlspecialchars($search_query) ?>" class="form-control">
         </div>
         <div class="form-group">
             <label>Role</label>
@@ -97,8 +97,13 @@ $role_list = ['Admin', 'Karyawan', 'Pelanggan'];
                         <td><?= htmlspecialchars($user['email']) ?></td>
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $user['role'])) ?>"><?= htmlspecialchars($user['role']) ?></span></td>
                         <td>
-                            <a href="../actions/pengguna/detail.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-info btn-sm">Detail</a>
-                            <a href="../actions/pengguna/edit.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-secondary btn-sm">Edit</a>
+                            <?php
+                            if ($user['id_pengguna'] === $_SESSION['id_pengguna']): 
+                            ?>
+                                <a href="<?= BASE_URL ?>pelanggan/profile.php" class="btn btn-info btn-sm">Profil Saya</a>
+                            <?php else: ?>
+                                <a href="../actions/pengguna/detail.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-info btn-sm">Detail</a>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
