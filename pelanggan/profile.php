@@ -11,6 +11,11 @@ $id_pengguna = $_SESSION['id_pengguna'];
 $page_title = 'Profil Saya';
 require_once '../includes/header.php';
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['csrf_token'];
+
 try {
     $stmt = $pdo->prepare("SELECT * FROM pengguna WHERE id_pengguna = ?");
     $stmt->execute([$id_pengguna]);
@@ -60,7 +65,10 @@ try {
 </div>
 
 <div class="detail-actions">
-    <form action="<?= BASE_URL ?>actions/pengguna/hapus_akun.php" method="POST" onsubmit="return confirm('PERINGATAN: Anda akan menghapus akun Anda secara permanen. Lanjutkan?');">
+    <form action="<?= BASE_URL ?>actions/pengguna/hapus_akun.php" method="POST" onsubmit="return confirm('PERINGATAN: Anda akan menghapus akun Anda. Lanjutkan?');">
+        
+        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+        
         <button type="submit" class="btn btn-danger">Hapus Akun Saya</button>
     </form>
 </div>

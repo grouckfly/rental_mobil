@@ -11,6 +11,11 @@ if ($id_user === 0) {
     redirect_with_message('../../admin/user.php', 'ID pengguna tidak valid.', 'error');
 }
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['csrf_token'];
+
 try {
     // Ambil data utama pengguna
     $stmt_user = $pdo->prepare("SELECT * FROM pengguna WHERE id_pengguna = ?");
@@ -49,9 +54,23 @@ require_once '../../includes/header.php';
         <h1>Detail Pengguna</h1>
     </div>
     <div class="detail-actions">
-        <a href="../../admin/user.php" class="btn btn-secondary">Kembali</a>
-        <a href="edit.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-secondary">Edit</a>
-        <a href="<?= BASE_URL ?>actions/pesan/tulis.php" class="btn btn-primary">Kirim Pesan</a>
+
+        <a href="edit.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-secondary">Edit Profil</a>
+
+        <?php // Tombol hanya muncul jika tidak melihat profil sendiri
+        if ($user['id_pengguna'] !== $_SESSION['id_pengguna']): ?>
+            <a href="../pesan/mulai_percakapan.php?id=<?= $user['id_pengguna'] ?>" class="btn btn-primary">Kirim Pesan</a>
+
+            <form action="hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Peringatan: Yakin ingin menghapus pengguna ini?');">
+
+                <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+
+                <input type="hidden" name="id_pengguna" value="<?= $user['id_pengguna'] ?>">
+                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+            </form>
+        <?php else: ?>
+            <a href="../../pelanggan/profile.php" class="btn btn-primary">Edit Profil</a>
+        <?php endif; ?>
     </div>
 </div>
 
