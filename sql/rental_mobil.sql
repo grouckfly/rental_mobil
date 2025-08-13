@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 12, 2025 at 09:36 AM
+-- Generation Time: Aug 13, 2025 at 06:42 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -144,15 +144,15 @@ CREATE TABLE `pembayaran` (
 --
 
 INSERT INTO `pembayaran` (`id_pembayaran`, `id_pemesanan`, `tipe_pembayaran`, `tanggal_bayar`, `jumlah_bayar`, `metode_pembayaran`, `bukti_pembayaran`, `status_pembayaran`, `keterangan`, `id_karyawan_verif`) VALUES
-(1, 4, 'Sewa', '2025-07-20 00:42:54', 275000.00, 'Transfer Bank', '687bd91e76a9b5.62795549.jpg', 'Diverifikasi', NULL, 1),
-(2, 16, 'Sewa', '2025-08-08 23:47:39', 550000.00, 'Transfer Bank', '68962a2b728212.74192769.jpg', 'Diverifikasi', NULL, 1),
-(3, 17, 'Sewa', '2025-08-09 09:59:31', 4000000.00, 'Transfer Bank', '6896b993ae53f7.21579575.jpg', 'Diverifikasi', NULL, 1),
-(8, 16, 'Denda', '2025-08-11 21:49:14', 120000.00, 'Transfer Bank', '689a02eac160d8.20397349.jpg', 'Diverifikasi', NULL, 1),
+(1, 4, 'Sewa', '2025-07-20 00:42:54', 275000.00, 'Transfer Bank', '687bd91e76a9b5.62795549.jpg', 'Diverifikasi', NULL, NULL),
+(2, 16, 'Sewa', '2025-08-08 23:47:39', 550000.00, 'Transfer Bank', '68962a2b728212.74192769.jpg', 'Diverifikasi', NULL, NULL),
+(3, 17, 'Sewa', '2025-08-09 09:59:31', 4000000.00, 'Transfer Bank', '6896b993ae53f7.21579575.jpg', 'Diverifikasi', NULL, NULL),
+(8, 16, 'Denda', '2025-08-11 21:49:14', 120000.00, 'Transfer Bank', '689a02eac160d8.20397349.jpg', 'Diverifikasi', NULL, NULL),
 (9, 16, 'Denda', '2025-08-11 22:15:32', 120000.00, 'Transfer Bank', '689a0914ea2ba4.02078717.jpg', 'Menunggu Verifikasi', NULL, NULL),
-(10, 16, 'Denda', '0000-00-00 00:00:00', 120000.00, 'Bayar Ditempat', NULL, 'Diverifikasi', NULL, 1),
-(11, 18, 'Sewa', '2025-08-11 23:19:02', 450000.00, 'Transfer Bank', '689a17f664e544.79631643.png', 'Diverifikasi', NULL, 1),
-(12, 18, 'Sewa', '2025-08-11 23:27:37', 450000.00, 'Transfer Bank', '689a19f99ae869.95852186.png', 'Diverifikasi', NULL, 1),
-(13, 18, 'Denda', '2025-08-12 23:37:04', 60000.00, 'Transfer Bank', '689b6db02c18c4.73035086.png', 'Diverifikasi', NULL, 1);
+(10, 16, 'Denda', '0000-00-00 00:00:00', 120000.00, 'Bayar Ditempat', NULL, 'Diverifikasi', NULL, NULL),
+(11, 18, 'Sewa', '2025-08-11 23:19:02', 450000.00, 'Transfer Bank', '689a17f664e544.79631643.png', 'Diverifikasi', NULL, NULL),
+(12, 18, 'Sewa', '2025-08-11 23:27:37', 450000.00, 'Transfer Bank', '689a19f99ae869.95852186.png', 'Diverifikasi', NULL, NULL),
+(13, 18, 'Denda', '2025-08-12 23:37:04', 60000.00, 'Transfer Bank', '689b6db02c18c4.73035086.png', 'Diverifikasi', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -234,11 +234,12 @@ CREATE TABLE `pengguna` (
 --
 
 INSERT INTO `pengguna` (`id_pengguna`, `username`, `password`, `nama_lengkap`, `nik`, `foto_ktp`, `email`, `no_telp`, `alamat`, `role`, `created_at`) VALUES
-(1, 'admin', '$2y$10$XVska1TxhC3PoqFFdG662u7z92jXpCt2R0sFFHUjENdojZqnLeiNi', 'admin', '1234567890123456', '68961d2f8b1631.91525619.jpg', 'admin@email.com', '081234567890', 'yo ndak tau ler', 'Admin', '2025-07-13 07:17:20'),
-(2, 'kancut', '$2y$10$Vp9b4.pFgY9isyEpByHjP.14LjyI3Keq6CT.kyrdTrHXHElneO9TS', 'Kancut Anjay', '9876123467679999', '689b7018a3c098.27063690.jpg', 'karyawan@email.com', '080987654321', 'Jl. Gtw le awokawokawokow', 'Karyawan', '2025-07-13 07:19:46'),
+(2, 'kancut', '$2y$10$Vp9b4.pFgY9isyEpByHjP.14LjyI3Keq6CT.kyrdTrHXHElneO9TS', 'Kancut Anjay', '9876123467679999', '689b7018a3c098.27063690.jpg', 'kancut@email.com', '080987654321', 'Jl. Gtw le awokawokawokow', 'Karyawan', '2025-07-13 07:19:46'),
 (3, 'udin', '$2y$10$OMOPWI8SLcN/UPQ0ssoLZ.qc9dH2XPVu4w.AV9W7vsfMFMdl7MmTq', 'Udin Samsudin', '1234567890654321', '6896b9646d0aa9.91511913.jpg', 'udin@email.com', '088765123490', 'JL tugu pahlawan no f 88', 'Pelanggan', '2025-07-13 07:20:33'),
-(6, 'pelanggan2', '$2y$10$mI98taoejY2Z31EOxRVbwesOcRYAcWgp6ptv.vqQbhjxomQF3XBUS', 'Pudidi', NULL, NULL, 'pelanggan2@email.com', '089012368173', 'Jl. Pudidi Jaya 3X', 'Pelanggan', '2025-07-13 11:52:43'),
-(8, 'cibi', '$2y$10$.iycQdIoitNpouW9dYsxPekI2n3OqIojY9KosANms6HCmMxmxsGUa', 'cibi maruko chan', '5234987012340006', '687c9264c295c5.44355234.jpg', 'cibi@email.com', '081234753200', 'Jl. moroko 22', 'Pelanggan', '2025-07-20 06:51:26');
+(6, 'deleted_1755058621_6', '$2y$10$O/naz1wNAwo20s2UjfeznORS5ALu61PGSrxoq9CPZRtPZ7nT09lSO', 'Pengguna Dihapus oleh Admin', NULL, NULL, 'deleted_1755058621_6@deleted.com', '', NULL, 'Pelanggan', '2025-07-13 11:52:43'),
+(8, 'cibi', '$2y$10$.iycQdIoitNpouW9dYsxPekI2n3OqIojY9KosANms6HCmMxmxsGUa', 'cibi maruko chan', '5234987012340006', '687c9264c295c5.44355234.jpg', 'cibi@email.com', '081234753200', 'Jl. moroko 22', 'Pelanggan', '2025-07-20 06:51:26'),
+(11, 'admin', '$2y$10$Q3.rF.Cz14ead2GOExOBcO71.V1vJun9mtiUMTJL1GbdVGdfXe6Rm', 'Admin', NULL, NULL, 'admin@email.com', '', '', 'Admin', '2025-08-12 09:39:57'),
+(12, 'bobi', '$2y$10$CUwUe9rYe.yJKZ7ZapPsx.FmZ15uUdX22OW6j0oKivpSR5yeJCZ/2', 'bobi slam dunk', NULL, NULL, 'bobi@email.com', '089032741234', 'Jl. kucluk ege 1', 'Karyawan', '2025-08-13 04:40:07');
 
 -- --------------------------------------------------------
 
@@ -257,18 +258,6 @@ CREATE TABLE `pesan_bantuan` (
   `status_pesan` enum('Belum Dibaca','Sudah Dibaca','Dibalas') NOT NULL DEFAULT 'Belum Dibaca',
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `pesan_bantuan`
---
-
-INSERT INTO `pesan_bantuan` (`id_pesan`, `id_pengirim`, `id_penerima`, `parent_id`, `subjek`, `isi_pesan`, `waktu_kirim`, `status_pesan`, `updated_at`) VALUES
-(2, 1, 3, 1, '', 'Yaws ngunu kae cak piye mane', '2025-08-09 07:17:39', 'Sudah Dibaca', '2025-08-09 07:35:53'),
-(4, 1, 3, 1, 'Re:', 'Gacor lek isk e', '2025-08-09 07:28:55', 'Sudah Dibaca', '2025-08-09 07:35:53'),
-(6, 1, 3, 1, 'Re:', 'Isok lek gacorrr', '2025-08-09 07:40:51', 'Belum Dibaca', '2025-08-09 07:40:51'),
-(8, 1, 3, 1, 'Re:', 'Mashok masseh', '2025-08-09 07:57:58', 'Belum Dibaca', '2025-08-09 07:57:58'),
-(10, 1, 3, 1, 'Re:', 'Okeh mashok', '2025-08-09 08:25:21', 'Belum Dibaca', '2025-08-09 08:25:21'),
-(13, 1, 3, NULL, 'Test din udindindin', 'test din inidnainanwid', '2025-08-09 09:10:12', 'Sudah Dibaca', '2025-08-09 09:10:23');
 
 --
 -- Indexes for dumped tables
@@ -331,7 +320,7 @@ ALTER TABLE `pesan_bantuan`
 -- AUTO_INCREMENT for table `login_attempts`
 --
 ALTER TABLE `login_attempts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `mobil`
@@ -355,13 +344,13 @@ ALTER TABLE `pemesanan`
 -- AUTO_INCREMENT for table `pengguna`
 --
 ALTER TABLE `pengguna`
-  MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `pesan_bantuan`
 --
 ALTER TABLE `pesan_bantuan`
-  MODIFY `id_pesan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_pesan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables
