@@ -1,13 +1,11 @@
 <?php
-// File: admin/user.php (Versi dengan Filter Role)
+// File: admin/user.php
 
 require_once '../includes/config.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Fitur ini hanya untuk Admin
 check_auth('Admin');
-
 $page_title = 'Kelola Pengguna';
 require_once '../includes/header.php';
 
@@ -15,16 +13,14 @@ require_once '../includes/header.php';
 $search_query = $_GET['q'] ?? '';
 $role_filter = $_GET['role'] ?? '';
 
-// ====================
 // LOGIKA QUERY DINAMIS
-// ====================
 $sql = "SELECT DISTINCT u.* FROM pengguna u
         LEFT JOIN pemesanan p ON u.id_pengguna = p.id_pengguna
         LEFT JOIN mobil m ON p.id_mobil = m.id_mobil
         WHERE 1=1";
 $params = [];
 
-// Terapkan filter pencarian teks (semua yang berkaitan)
+// Terapkan filter pencarian teks
 if (!empty($search_query)) {
     $sql .= " AND (u.nama_lengkap LIKE :q OR u.username LIKE :q OR u.email LIKE :q OR u.nik LIKE :q OR p.kode_pemesanan LIKE :q OR m.merk LIKE :q OR m.model LIKE :q)";
     $params[':q'] = "%$search_query%";
@@ -32,8 +28,16 @@ if (!empty($search_query)) {
 
 // Terapkan filter role
 if (!empty($role_filter)) {
-    $sql .= " AND u.role = :role";
-    $params[':role'] = $role_filter;
+    // Jika user memilih 'Pengguna Dihapus', cari nama_lengkap yang spesifik
+    if ($role_filter === 'dihapus') {
+        $sql .= " AND u.nama_lengkap = 'Pengguna Dihapus oleh Admin'";
+    } else {
+        $sql .= " AND u.role = :role";
+        $params[':role'] = $role_filter;
+    }
+} else {
+    // PERBAIKAN: Secara default, sembunyikan pengguna yang sudah dihapus
+    $sql .= " AND u.nama_lengkap NOT LIKE 'Pengguna Dihapus%'";
 }
 
 $sql .= " ORDER BY u.role, u.nama_lengkap";
@@ -64,10 +68,11 @@ $role_list = ['Admin', 'Karyawan', 'Pelanggan'];
         <div class="form-group">
             <label>Role</label>
             <select name="role" class="form-control">
-                <option value="">Semua Role</option>
+                <option value="">Semua</option>
                 <?php foreach ($role_list as $role): ?>
                     <option value="<?= $role ?>" <?= ($role_filter === $role) ? 'selected' : '' ?>><?= $role ?></option>
                 <?php endforeach; ?>
+                <option value="dihapus" <?= ($role_filter === 'dihapus') ? 'selected' : '' ?>>Pengguna Dihapus</option>
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Cari</button>
@@ -98,7 +103,7 @@ $role_list = ['Admin', 'Karyawan', 'Pelanggan'];
                         <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $user['role'])) ?>"><?= htmlspecialchars($user['role']) ?></span></td>
                         <td>
                             <?php
-                            if ($user['id_pengguna'] === $_SESSION['id_pengguna']): 
+                            if ($user['id_pengguna'] === $_SESSION['id_pengguna']):
                             ?>
                                 <a href="<?= BASE_URL ?>pelanggan/profile.php" class="btn btn-info btn-sm">Profil Saya</a>
                             <?php else: ?>
