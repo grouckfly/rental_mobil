@@ -61,6 +61,10 @@ if (!empty($tgl_awal) && !empty($tgl_akhir)) {
     $params[] = $tgl_awal;
     $params[] = $tgl_akhir;
 }
+if (empty($tgl_awal) && empty($tgl_akhir)) {
+    $tgl_awal = date('Y-m-d');
+    $tgl_akhir = date('Y-m-d');
+}
 if (!empty($status_filter)) {
     $sql .= " AND p.status_pemesanan = ?";
     $params[] = $status_filter;
