@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inisialisasi semua fungsi setelah halaman dimuat
     initializeTableSearch();
     initializeDashboardChart();
+    initializeFilterToggle();
 });
 
 /**
@@ -95,4 +96,31 @@ function initializeDashboardChart() {
             }
         }
     });
+}
+
+/**
+ * Fungsi untuk menampilkan/menyembunyikan filter lanjutan
+ */
+function initializeFilterToggle() {
+    const toggleBtn = document.getElementById('toggle-filter-btn');
+    const filterContainer = document.getElementById('advanced-filter-container');
+
+    if (toggleBtn && filterContainer) {
+        toggleBtn.addEventListener('click', () => {
+            // Cek apakah filter sedang tersembunyi
+            if (filterContainer.style.display === 'none') {
+                // Tampilkan filter
+                filterContainer.style.display = 'block';
+                toggleBtn.textContent = 'Sembunyikan Filter';
+                toggleBtn.classList.remove('btn-secondary');
+                toggleBtn.classList.add('btn-primary');
+            } else {
+                // Sembunyikan filter
+                filterContainer.style.display = 'none';
+                toggleBtn.textContent = 'Filter Lanjutan';
+                toggleBtn.classList.remove('btn-primary');
+                toggleBtn.classList.add('btn-secondary');
+            }
+        });
+    }
 }

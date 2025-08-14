@@ -178,3 +178,32 @@ body.dark-mode .cancellation-info {
     max-width: 800px;
     margin: auto;
 }
+
+/* ========================================= */
+/* Style untuk Bar Pencarian History         */
+/* ========================================= */
+.main-search-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--surface-color);
+    padding: 8px 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 20px;
+}
+.main-search-bar .search-icon {
+    font-size: 1.2rem;
+    color: var(--muted-text-color);
+    margin-right: 10px;
+}
+.main-search-bar input[type="text"] {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    background: none;
+}
+.filter-form .action-group {
+    display: flex;
+    align-items: flex-end;
+}

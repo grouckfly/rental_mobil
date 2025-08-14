@@ -18,7 +18,6 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script src="<?= BASE_URL ?>assets/js/script.js"></script>
-
 <script src="<?= BASE_URL ?>assets/js/dark-mode.js"></script>
 <script src="<?= BASE_URL ?>assets/js/live-update.js"></script>
 <script src="<?= BASE_URL ?>assets/js/live-notifications.js"></script>
@@ -27,10 +26,11 @@
 <script src="<?= BASE_URL ?>assets/js/rental-timer.js"></script>
 
 <?php
-// 4. Script spesifik per role (jika ada)
+// Memuat JS spesifik per role
 if (isset($_SESSION['role'])) {
     $role_folder = strtolower($_SESSION['role']);
     $role_js_path = $role_folder . '/js/' . $role_folder . '.js';
+    // Pengecekan file_exists yang lebih andal
     if (file_exists(dirname(__DIR__) . '/' . $role_js_path)) {
         echo "<script src=\"" . BASE_URL . $role_js_path . "\"></script>";
     }
