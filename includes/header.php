@@ -124,15 +124,10 @@ if (isset($_SESSION['role'])) {
                     <?php endif; ?>
 
                     <span class="welcome-user">Halo, <?= htmlspecialchars($sapaan) ?></span>
-                    <a href="<?= BASE_URL ?>logout.php" class="btn btn-secondary">Logout</a>
                 <?php else: ?>
                     <a href="<?= BASE_URL ?>login.php" class="btn">Login</a>
                 <?php endif; ?>
                 <button id="dark-mode-toggle" class="icon-btn">🌙</button>
-
-                <?php if (!isset($_SESSION['id_pengguna'])): ?>
-                    <button class="mobile-menu-toggle icon-btn">☰</button>
-                <?php endif; ?>
             </div>
         </div>
     </header>

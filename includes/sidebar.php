@@ -117,6 +117,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                 </li>
 
             <?php endif; ?>
+            <li class="sidebar-logout">
+                <a href="<?= BASE_URL ?>logout.php">
+                    <span class="icon">&#10162;</span> Logout
+                </a>
+            </li>
         </ul>
     </nav>
 </aside>

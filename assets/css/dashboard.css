@@ -326,3 +326,29 @@ body.dark-mode .my-message {
         display: block;
     }
 }
+
+/* ========================================= */
+/* Style untuk Tombol Logout di Sidebar      */
+/* ========================================= */
+.sidebar-logout {
+    margin-top: 20px; /* Memberi jarak dari menu di atasnya */
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.sidebar-logout a {
+    background-color: #f8d7da; /* Latar belakang merah samar */
+    color: var(--danger-color) !important; /* Teks berwarna merah */
+    font-weight: 600 !important;
+    text-align: center;
+}
+
+.sidebar-logout a:hover {
+    background-color: var(--danger-color) !important; /* Latar belakang merah solid saat disentuh */
+    color: #fff !important; /* Teks menjadi putih */
+}
+
+/* Style untuk ikon di dalam link (opsional) */
+.sidebar-logout a .icon {
+    margin-right: 8px;
+}
