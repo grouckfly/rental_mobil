@@ -1,128 +1,99 @@
-// File: assets/js/script.js
+// File: assets/js/script.js (Versi Final & Lengkap)
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    // Logika untuk Menu Mobile (Hamburger Menu)
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const mainNav = document.querySelector('.main-nav');
-
-    if (mobileMenuToggle && mainNav) {
-        mobileMenuToggle.addEventListener('click', () => {
-            // Menambahkan atau menghapus class 'nav-open' pada navigasi utama
-            mainNav.classList.toggle('nav-open');
-        });
-    }
-
-    // Menutup menu jika user mengklik di luar area menu
-    document.addEventListener('click', (event) => {
-        if (mainNav && mainNav.classList.contains('nav-open')) {
-            const isClickInsideNav = mainNav.contains(event.target);
-            const isClickOnToggle = mobileMenuToggle.contains(event.target);
-
-            if (!isClickInsideNav && !isClickOnToggle) {
-                mainNav.classList.remove('nav-open');
-            }
-        }
-    });
-
+    // Panggil semua fungsi inisialisasi setelah halaman dimuat
+    initializeMainMenuToggle(); // <-- FUNGSI YANG HILANG DITAMBAHKAN
+    initializeSidebarToggle();
     initializeStarRatings();
     initializeSearchableSelect();
-    initializeSidebarToggle();
-
 });
 
 /**
- * Fungsi untuk menampilkan notifikasi toast.
- * @param {string} message - Pesan yang akan ditampilkan.
- * @param {string} type - Tipe notifikasi ('success' atau 'error').
+ * Fungsi untuk menu navigasi utama (publik) di layar kecil
  */
-function showToast(message, type = 'success') {
-    // 1. Buat elemen div baru untuk toast
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-
-    // 2. Tambahkan toast ke dalam body
-    document.body.appendChild(toast);
-
-    // 3. Tampilkan toast dengan animasi
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 100); // Sedikit delay agar transisi CSS berjalan
-
-    // 4. Sembunyikan dan hapus toast setelah 5 detik
-    setTimeout(() => {
-        toast.classList.remove('show');
-        // Hapus elemen dari DOM setelah animasi fade out selesai
-        setTimeout(() => {
-            toast.remove();
-        }, 500); // Waktu ini harus cocok dengan durasi transisi di CSS
-    }, 2500);
-}
-
-
-/**
- * Fungsi baru untuk menampilkan rating bintang secara dinamis.
- */
-function initializeStarRatings() {
-    // Cari semua elemen dengan class .star-rating
-    const starRatingElements = document.querySelectorAll('.star-rating');
-    
-    // Lakukan loop untuk setiap elemen yang ditemukan
-    starRatingElements.forEach(starElement => {
-        // Ambil nilai rating dari atribut data-rating
-        const rating = parseFloat(starElement.dataset.rating) || 0;
-        
-        // Hitung persentase lebar bintang kuning
-        const percentage = (rating / 5) * 100;
-
-        // Set variabel CSS --rating-percent pada elemen
-        starElement.style.setProperty('--rating-percent', percentage + '%');
-    });
-}
-
-function initializeSearchableSelect() {
-    // Gunakan jQuery untuk menargetkan elemen
-    const $selectElement = $('#filter-mobil');
-    
-    if ($selectElement.length) {
-        $selectElement.select2({
-            placeholder: 'Ketik untuk mencari mobil...',
-            allowClear: true,
-            ajax: {
-                url: BASE_URL + 'actions/mobil/cari_mobil.php',
-                dataType: 'json',
-                delay: 50,
-                processResults: function (data) {
-                    return {
-                        results: data.results
-                    };
-                },
-                cache: true
-            },
-            dropdownCssClass: "select2-dropdown-scrollable"
+function initializeMainMenuToggle() {
+    const mainMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const mainNav = document.querySelector('.main-nav');
+    if (mainMenuToggle && mainNav) {
+        mainMenuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('nav-open');
         });
     }
 }
 
 /**
- * Fungsi baru untuk menangani buka/tutup sidebar di layar kecil
+ * Fungsi untuk membuka/menutup sidebar di dashboard
  */
 function initializeSidebarToggle() {
-    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     const pageWrapper = document.querySelector('.page-wrapper');
     const overlay = document.querySelector('.sidebar-overlay');
 
-    // Cek apakah semua elemen yang dibutuhkan ada
-    if (toggleBtn && pageWrapper && overlay) {
-        // Event saat tombol hamburger di-klik
-        toggleBtn.addEventListener('click', () => {
+    // Kondisi ini akan berhasil jika ketiga elemen ditemukan di HTML
+    if (sidebarToggleBtn && pageWrapper && overlay) {
+        // Event saat tombol hamburger sidebar di-klik
+        sidebarToggleBtn.addEventListener('click', () => {
             pageWrapper.classList.toggle('sidebar-open');
         });
 
-        // Event saat area overlay di-klik
+        // Event saat area overlay di-klik untuk menutup
         overlay.addEventListener('click', () => {
             pageWrapper.classList.remove('sidebar-open');
         });
     }
+}
+
+/**
+ * Fungsi untuk menampilkan rating bintang secara dinamis
+ */
+function initializeStarRatings() {
+    const starRatingElements = document.querySelectorAll('.star-rating');
+    starRatingElements.forEach(starElement => {
+        const rating = parseFloat(starElement.dataset.rating) || 0;
+        const percentage = (rating / 5) * 100;
+        starElement.style.setProperty('--rating-percent', percentage + '%');
+    });
+}
+
+/**
+ * Fungsi untuk dropdown yang bisa dicari menggunakan Select2
+ */
+function initializeSearchableSelect() {
+    // Pastikan jQuery dan Select2 sudah dimuat
+    if (typeof jQuery !== 'undefined' && typeof jQuery.fn.select2 !== 'undefined') {
+        const $selectElement = $('#filter-mobil');
+        if ($selectElement.length) {
+            $selectElement.select2({
+                placeholder: 'Ketik untuk mencari mobil...',
+                allowClear: true,
+                ajax: {
+                    url: BASE_URL + 'actions/mobil/cari_mobil.php',
+                    dataType: 'json',
+                    delay: 250, // PERBAIKAN: Delay diperpanjang agar lebih efisien
+                    processResults: function (data) {
+                        return { results: data.results };
+                    },
+                    cache: true
+                }
+            });
+        }
+    }
+}
+
+/**
+ * Fungsi untuk menampilkan notifikasi toast
+ */
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => { toast.classList.add('show'); }, 100);
+    
+    // PERBAIKAN: Durasi notifikasi diperpanjang menjadi 4 detik
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => { toast.remove(); }, 500);
+    }, 4000); 
 }
