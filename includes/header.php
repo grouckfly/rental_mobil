@@ -47,6 +47,7 @@ if (isset($_SESSION['role'])) {
 
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dark-mode.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/fleksibel.css">
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
@@ -74,7 +75,10 @@ if (isset($_SESSION['role'])) {
     <header class="main-header">
         <div class="container header-container">
             <div class="logo-container">
-                <h2>Rental Mobil</h2>
+                <?php if (isset($_SESSION['id_pengguna'])): ?>
+                    <button id="sidebar-toggle-btn" class="icon-btn">&#9776;</button>
+                <?php endif; ?>
+                <h1 class="header-title">Rental Mobil</h1>
             </div>
 
             <?php if (!isset($_SESSION['id_pengguna'])): ?>

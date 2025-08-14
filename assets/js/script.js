@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initializeStarRatings();
     initializeSearchableSelect();
+    initializeSidebarToggle();
 
 });
 
@@ -100,6 +101,28 @@ function initializeSearchableSelect() {
                 cache: true
             },
             dropdownCssClass: "select2-dropdown-scrollable"
+        });
+    }
+}
+
+/**
+ * Fungsi baru untuk menangani buka/tutup sidebar di layar kecil
+ */
+function initializeSidebarToggle() {
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    const pageWrapper = document.querySelector('.page-wrapper');
+    const overlay = document.querySelector('.sidebar-overlay');
+
+    // Cek apakah semua elemen yang dibutuhkan ada
+    if (toggleBtn && pageWrapper && overlay) {
+        // Event saat tombol hamburger di-klik
+        toggleBtn.addEventListener('click', () => {
+            pageWrapper.classList.toggle('sidebar-open');
+        });
+
+        // Event saat area overlay di-klik
+        overlay.addEventListener('click', () => {
+            pageWrapper.classList.remove('sidebar-open');
         });
     }
 }

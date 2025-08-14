@@ -238,3 +238,91 @@ body.dark-mode .my-message {
     padding-bottom: 15px;
     border-bottom: 1px solid var(--border-color);
 }
+
+/* ========================================= */
+/* Style untuk Sidebar Buka/Tutup            */
+/* ========================================= */
+
+/* Tombol hamburger untuk sidebar */
+#sidebar-toggle-btn {
+    display: none; /* Sembunyi di desktop */
+    margin-right: 15px;
+}
+
+/* Overlay yang akan meredupkan konten */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1100;
+    opacity: 0;
+    visibility: hidden; /* Sembunyi total */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Aturan untuk Tampilan Layar Kecil (Tablet & HP) */
+@media (max-width: 992px) {
+    /* Tampilkan tombol hamburger sidebar */
+    #sidebar-toggle-btn {
+        display: block;
+    }
+
+    /* Posisikan sidebar di luar layar secara default */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 1200;
+        transform: translateX(-100%); /* Sembunyikan ke kiri */
+        transition: transform 0.3s ease-in-out;
+        border-right: 1px solid var(--border-color);
+    }
+    
+    /* Saat sidebar-open, tampilkan sidebar */
+    .page-wrapper.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+    
+    /* Saat sidebar-open, tampilkan overlay */
+    .page-wrapper.sidebar-open .sidebar-overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Geser konten utama saat sidebar terbuka (opsional, tapi bagus) */
+    .page-wrapper.sidebar-open .main-content {
+        margin-left: var(--sidebar-width); /* Aktifkan jika ingin konten terdorong */
+    }
+}
+
+/* ========================================= */
+/* Style untuk Judul Header & Sidebar        */
+/* ========================================= */
+
+/* Judul di dalam sidebar, sembunyi di layar besar (desktop) */
+.sidebar-title {
+    display: none; 
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+/* Aturan untuk Tampilan Layar Kecil (Tablet & HP) */
+@media (max-width: 992px) {
+    /* Sembunyikan judul di header utama */
+    .header-title {
+        display: none;
+    }
+
+    /* Tampilkan judul di dalam sidebar */
+    .sidebar-title {
+        display: block;
+    }
+}

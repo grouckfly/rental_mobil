@@ -30,6 +30,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
 
 <aside class="sidebar">
     <div class="sidebar-header">
+        <h1 class="sidebar-title">Rental Mobil</h1>
         <h3>Menu <?= htmlspecialchars($_SESSION['role']) ?></h3>
     </div>
     <nav class="sidebar-nav">
