@@ -5,7 +5,7 @@ require_once '../includes/config.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-check_auth('Admin');
+check_auth(['Admin', 'Karyawan']);
 
 $page_title = 'Kelola Pemesanan & Pembayaran';
 require_once '../includes/header.php';

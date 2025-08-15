@@ -6,8 +6,19 @@ require_once 'includes/functions.php';
 
 // Jika pengguna sudah login, langsung alihkan ke dashboard yang sesuai
 if (isset($_SESSION['id_pengguna'])) {
-    $role_dashboard = strtolower($_SESSION['role']);
-    header("Location: " . BASE_URL . "{$role_dashboard}/dashboard.php");
+    $role_folder = strtolower($_SESSION['role']);
+
+    // PERBAIKAN: Jika role adalah 'karyawan', arahkan ke folder 'admin'
+    if ($role_folder === 'karyawan') {
+        $role_folder = 'admin';
+    }
+
+    // Pastikan folder untuk role tersebut ada
+    if (is_dir($role_folder)) {
+        header("Location: " . BASE_URL . "{$role_folder}/dashboard.php");
+    } else {
+        header("Location: " . BASE_URL . "index.php");
+    }
     exit();
 }
 
@@ -86,9 +97,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header('Location: ' . $redirect_url);
                         exit;
                     } else {
-                        // Jika tidak ada, arahkan ke dashboard seperti biasa
+                        // Jika tidak ada URL tujuan, arahkan ke dashboard seperti biasa dengan pesan
                         $role_dashboard = strtolower($user['role']);
-                        redirect_with_message(BASE_URL . "{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($welcome_message) . "!");
+
+                        // PERBAIKAN: Jika role adalah 'karyawan', arahkan ke folder 'admin'
+                        if ($role_dashboard === 'karyawan') {
+                            $role_dashboard = 'admin';
+                        }
+
+                        $sapaan = !empty($user['nama_lengkap']) ? $user['nama_lengkap'] : $user['username'];
+                        redirect_with_message(BASE_URL . "{$role_dashboard}/dashboard.php", "Selamat datang kembali, " . htmlspecialchars($sapaan) . "!");
                     }
                 } else {
                     // JIKA LOGIN GAGAL: Catat percobaan dan beri pesan error
@@ -129,6 +147,4 @@ require_once 'includes/header.php';
 
 <?php
 require_once 'includes/footer.php';
-// Mencetak script notifikasi di akhir halaman jika ada
-echo $notification_script;
 ?>

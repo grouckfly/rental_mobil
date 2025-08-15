@@ -1,5 +1,5 @@
 <?php
-// File: includes/footer.php (Versi Final dengan Urutan Script Benar)
+// File: includes/footer.php (Versi Final dengan Pemuatan Script Cerdas)
 ?>
 </div>
 </main>
@@ -19,20 +19,48 @@
 
 <script src="<?= BASE_URL ?>assets/js/script.js"></script>
 <script src="<?= BASE_URL ?>assets/js/dark-mode.js"></script>
-<script src="<?= BASE_URL ?>assets/js/live-update.js"></script>
-<script src="<?= BASE_URL ?>assets/js/live-notifications.js"></script>
 <script src="<?= BASE_URL ?>assets/js/notification-handler.js"></script>
-<script src="<?= BASE_URL ?>assets/js/qr-generator.js"></script>
-<script src="<?= BASE_URL ?>assets/js/rental-timer.js"></script>
 
 <?php
-// Memuat JS spesifik per role
+// Ambil path skrip saat ini untuk pengecekan
+$current_script = $_SERVER['SCRIPT_NAME'];
+
+// ==========================================================
+// 3. LOGIKA PEMUATAN SCRIPT KONDISIONAL
+// ==========================================================
 if (isset($_SESSION['role'])) {
-    $role_folder = strtolower($_SESSION['role']);
-    $role_js_path = $role_folder . '/js/' . $role_folder . '.js';
-    // Pengecekan file_exists yang lebih andal
-    if (file_exists(dirname(__DIR__) . '/' . $role_js_path)) {
-        echo "<script src=\"" . BASE_URL . $role_js_path . "\"></script>";
+
+    // Skrip untuk notifikasi pesan real-time (hanya untuk yang login)
+    echo '<script src="' . BASE_URL . 'assets/js/live-notifications.js"></script>';
+
+    // Skrip auto-refresh untuk halaman daftar (admin, karyawan, pelanggan)
+    if (str_contains($current_script, 'history.php') || str_contains($current_script, 'mobil.php') || str_contains($current_script, 'user.php') || str_contains($current_script, 'pembayaran.php') || str_contains($current_script, 'pemesanan.php')) {
+        echo '<script src="' . BASE_URL . 'assets/js/live-update.js"></script>';
+    }
+
+    // Skrip untuk timer (hanya di halaman detail pesanan & pembayaran)
+    if (str_contains($current_script, 'actions/pemesanan/detail.php') || str_contains($current_script, 'pelanggan/pembayaran.php')) {
+        echo '<script src="' . BASE_URL . 'assets/js/rental-timer.js"></script>';
+    }
+
+    // Skrip untuk QR Code (hanya di halaman detail pesanan)
+    if (str_contains($current_script, 'actions/pemesanan/detail.php')) {
+        echo '<script src="' . BASE_URL . 'assets/js/qr-generator.js"></script>';
+    }
+
+    // Jika role adalah Admin atau Karyawan, muat file admin.js
+    if (in_array($role_session, ['Admin', 'Karyawan'])) {
+        $role_js_path = 'admin/js/admin.js';
+        if (file_exists(dirname(__DIR__) . '/' . $role_js_path)) {
+            echo "<script src=\"" . BASE_URL . $role_js_path . "\"></script>";
+        }
+    } 
+    // Jika role adalah Pelanggan, muat file pelanggan.js
+    elseif ($role_session === 'Pelanggan') {
+        $role_js_path = 'pelanggan/js/pelanggan.js';
+        if (file_exists(dirname(__DIR__) . '/' . $role_js_path)) {
+            echo "<script src=\"" . BASE_URL . $role_js_path . "\"></script>";
+        }
     }
 }
 ?>

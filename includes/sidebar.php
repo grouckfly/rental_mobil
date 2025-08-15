@@ -75,10 +75,10 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                     <a href="<?= BASE_URL ?>actions/pesan/inbox.php">Bantuan & Pesan</a>
                 </li>
                 <li <?= is_active('mobil.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>karyawan/mobil.php">Data Mobil</a>
+                    <a href="<?= BASE_URL ?>admin/mobil.php">Data Mobil</a>
                 </li>
                 <li <?= is_active('pembayaran.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>karyawan/pembayaran.php">Verifikasi Pembayaran</a>
+                    <a href="<?= BASE_URL ?>admin/pembayaran.php">Kelola Pemesanan</a>
                 </li>
                 <li <?= is_active('history.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>admin/history.php">Histori Sewa</a>

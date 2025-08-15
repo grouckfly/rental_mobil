@@ -43,7 +43,7 @@ require_once '../../includes/header.php';
     </div>
     <div class="detail-actions">
         <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
-            <a href="<?= BASE_URL . strtolower($role_session) ?>/mobil.php" class="btn btn-secondary">Kembali</a>
+            <a href="<?= BASE_URL ?>admin/mobil.php" class="btn btn-secondary">Kembali</a>
             <a href="edit.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Edit</a>
             <?php if ($role_session === 'Admin'): ?>
                 <form action="hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus mobil ini?');">

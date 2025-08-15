@@ -5,9 +5,13 @@ require_once '../includes/config.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-check_auth('Admin');
-$page_title = 'Dashboard Admin';
+// Hak akses untuk Admin dan Karyawan
+check_auth(['Admin', 'Karyawan']);
+
+$page_title = 'Dashboard';
 require_once '../includes/header.php';
+
+
 
 // --- DATA UNTUK WIDGET ---
 try {
@@ -100,6 +104,22 @@ try {
         <p class="widget-data"><?= $pengajuan_perubahan ?></p>
         <div class="widget-details"><span>Pembatalan atau perubahan jadwal</span></div>
         <a href="pembayaran.php">Tinjau Pengajuan &rarr;</a>
+    </div>
+</div>
+
+<div class="filter-container">
+    <div class="filter-form">
+        <div class="form-group" style="flex-grow: 1;">
+            <label for="kode-pesanan">Konfirmasi Pesanan Cepat</label>
+            <form action="konfirmasi.php" method="GET" style="display: flex; gap: 10px;">
+                <input type="text" name="kode" id="kode-pesanan" class="form-control" placeholder="Masukkan Kode Pemesanan..." required>
+                <button type="submit" class="btn btn-primary">Cari</button>
+            </form>
+        </div>
+        <div class="form-group">
+            <label>Scan di Lapangan</label>
+            <a href="scan_qr.php" class="btn btn-info" style="width:100%;">Buka Scanner QR</a>
+        </div>
     </div>
 </div>
 
