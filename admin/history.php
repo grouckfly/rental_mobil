@@ -37,7 +37,7 @@ try {
     $daftar_jenis = [];
 }
 
-$status_list = ['Selesai', 'Dibatalkan', 'Berjalan', 'Dikonfirmasi', 'Menunggu Verifikasi', 'Menunggu Pembayaran', 'Pengajuan Ditolak'];
+$status_list = ['Selesai', 'Dibatalkan'];
 $kelas_list = ['Low level', 'Mid level', 'High level', 'Luxury'];
 
 // ==========================================================
@@ -120,8 +120,14 @@ try {
             </div>
             <div class="form-group"><label>Mobil</label>
                 <select name="id_mobil" id="filter-mobil" style="width: 200px;">
-                    <?php if ($id_mobil > 0 && $mobil_pilihan = $pdo->query("SELECT merk, model FROM mobil WHERE id_mobil=$id_mobil")->fetch()): ?>
-                        <option value="<?= $id_mobil ?>" selected><?= htmlspecialchars($mobil_pilihan['merk'] . ' ' . $mobil_pilihan['model']) ?></option>
+                    <?php 
+                    // PERBAIKAN: Gunakan prepared statement agar aman
+                    if ($id_mobil > 0):
+                        $stmt_mobil_pilihan = $pdo->prepare("SELECT merk, model FROM mobil WHERE id_mobil = ?");
+                        $stmt_mobil_pilihan->execute([$id_mobil]);
+                        if ($mobil_pilihan = $stmt_mobil_pilihan->fetch()): ?>
+                            <option value="<?= $id_mobil ?>" selected><?= htmlspecialchars($mobil_pilihan['merk'] . ' ' . $mobil_pilihan['model']) ?></option>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </select>
             </div>
@@ -153,39 +159,16 @@ try {
 <?php endif; ?>
 
 <?php
-$live_context = ($role_session === 'Pelanggan') ? 'pelanggan_pemesanan' : 'admin_pemesanan';
+// Logika Penanda Auto-Refresh
+$live_context = 'admin_pemesanan';
 $live_last_update = !empty($histories) ? $histories[0]['updated_at'] : date('Y-m-d H:i:s');
 ?>
-<div class="table-container" data-live-context="<?= $live_context ?>" data-live-total="<?= count($histories) ?>" data-live-last-update="<?= $live_last_update ?>">
-    <table>
-        <thead>
-            <tr>
-                <th>Kode</th><?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?><th>Pelanggan</th><?php endif; ?><th>Mobil</th>
-                <th>Tanggal</th>
-                <th>Total Bayar</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($histories)): foreach ($histories as $history): ?>
-                    <tr>
-                        <td><strong><?= htmlspecialchars($history['kode_pemesanan']) ?></strong></td>
-                        <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?><td><?= htmlspecialchars($history['nama_lengkap']) ?></td><?php endif; ?>
-                        <td><?= htmlspecialchars($history['merk'] . ' ' . $history['model']) ?></td>
-                        <td><?= date('d M Y', strtotime($history['tanggal_pemesanan'])) ?></td>
-                        <td><?= format_rupiah($history['total_biaya'] + $history['total_denda']) ?></td>
-                        <td><span class="status-badge status-<?= strtolower(str_replace(' ', '-', $history['status_pemesanan'])) ?>"><?= htmlspecialchars($history['status_pemesanan']) ?></span></td>
-                        <td><a href="<?= BASE_URL ?>actions/pemesanan/detail.php?id=<?= $history['id_pemesanan'] ?>" class="btn btn-info btn-sm">Lihat Detail</a></td>
-                    </tr>
-                <?php endforeach;
-            else: ?>
-                <tr>
-                    <td colspan="7">Tidak ada riwayat yang ditemukan sesuai kriteria.</td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+
+<div id="history-table-wrapper" class="table-container" data-live-context="<?= $live_context ?>" data-live-last-update="<?= $live_last_update ?>">
+    <?php 
+    // Muat template tabel
+    include '_template_history_table.php'; 
+    ?>
 </div>
 
 <?php require_once '../includes/footer.php'; ?>

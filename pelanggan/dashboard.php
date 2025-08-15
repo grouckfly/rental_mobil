@@ -57,7 +57,7 @@ try {
     </div>
 </div>
 
-<div class="dashboard-wrapper" data-live-context="pelanggan_pemesanan" data-live-total="<?= $live_data['total'] ?>" data-live-last-update="<?= $live_data['last_update'] ?>">
+<div class="dashboard-wrapper">
     <div class="dashboard-widgets">
         <div class="widget">
             <h3>Pemesanan Aktif</h3>

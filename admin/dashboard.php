@@ -114,7 +114,7 @@ try {
     </div>
 </div>
 
-<div class="table-container" data-live-context="admin_pemesanan" data-live-total="..." data-live-last-update="...">
+<div class="table-container">
     <h2>Tugas & Tindakan Cepat</h2>
     <table>
         <thead>

@@ -80,7 +80,7 @@ $role_list = ['Admin', 'Karyawan', 'Pelanggan'];
     </form>
 </div>
 
-<div class="table-container" data-live-context="admin_user" data-live-total="..." data-live-last-update="...">
+<div class="table-container">
     <table>
         <thead>
             <tr>

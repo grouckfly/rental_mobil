@@ -1,72 +1,44 @@
-// File: assets/js/live-update.js (Versi Cerdas dengan Deteksi Interaksi)
+// File: assets/js/live-update.js (Versi AJAX Partial Update)
 
 document.addEventListener('DOMContentLoaded', () => {
     const liveUpdateElement = document.querySelector('[data-live-context]');
 
     if (liveUpdateElement) {
-        // 1. Buat variabel penanda apakah pengguna sedang berinteraksi dengan form
-        let isUserInteracting = false;
-
-        // 2. Tambahkan pendeteksi interaksi pada semua input di dalam form filter
-        const filterFormInputs = document.querySelectorAll('.filter-form input, .filter-form select');
-        filterFormInputs.forEach(input => {
-            // Jika pengguna mulai mengetik/memilih, set penanda ke true
-            input.addEventListener('focus', () => {
-                isUserInteracting = true;
-                console.log('User sedang mengetik, auto-refresh ditunda.');
-            });
-            // Jika pengguna selesai dan klik di tempat lain, set penanda ke false
-            input.addEventListener('blur', () => {
-                isUserInteracting = false;
-                console.log('User selesai mengetik, auto-refresh dilanjutkan.');
-            });
-        });
-
-        const context = liveUpdateElement.dataset.liveContext;
-        const id = liveUpdateElement.dataset.liveId || null;
-        
-        let currentTotal = liveUpdateElement.dataset.liveTotal;
-        let currentStatus = liveUpdateElement.dataset.liveStatus;
         let lastUpdate = liveUpdateElement.dataset.liveLastUpdate;
+        const context = liveUpdateElement.dataset.liveContext;
 
         setInterval(() => {
-            // 3. Tambahkan kondisi: JANGAN lakukan pengecekan jika pengguna sedang berinteraksi
-            if (isUserInteracting) {
-                return; // Lewati siklus pengecekan ini
-            }
-
             if (typeof BASE_URL === 'undefined') return;
 
-            let fetchUrl = `${BASE_URL}actions/cek_update.php?context=${context}`;
-            if (id) {
-                fetchUrl += `&id=${id}`;
-            }
-
-            fetch(fetchUrl)
+            // 1. Cek apakah ada update
+            fetch(`${BASE_URL}actions/cek_update.php?context=${context}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (!data) return;
-
-                    let needsRefresh = false;
-                    
-                    if (context === 'detail_pemesanan') {
-                        if (data.status_pemesanan && (data.status_pemesanan !== currentStatus || data.updated_at !== lastUpdate)) {
-                            needsRefresh = true;
+                    // 2. Jika ada update baru, minta konten baru
+                    if (data && data.last_update && data.last_update !== lastUpdate) {
+                        console.log('Perubahan terdeteksi! Memuat ulang konten...');
+                        
+                        // Tentukan konten apa yang harus diminta
+                        let contentContext = '';
+                        if (context === 'admin_pemesanan') {
+                            contentContext = 'admin_history_table';
                         }
-                    } else {
-                        if (data.total && (data.total != currentTotal || data.last_update != lastUpdate)) {
-                            needsRefresh = true;
-                        }
-                    }
+                        // Tambahkan if lain untuk context lain (misal: admin_mobil)
 
-                    if (needsRefresh) {
-                        console.log('Perubahan data terdeteksi! Me-refresh halaman...');
-                        liveUpdateElement.style.transition = 'opacity 0.5s';
-                        liveUpdateElement.style.opacity = '0.5';
-                        setTimeout(() => { location.reload(); }, 500);
+                        if (contentContext) {
+                            fetch(`${BASE_URL}actions/get_content.php?context=${contentContext}`)
+                                .then(response => response.text())
+                                .then(html => {
+                                    // 3. Ganti konten lama dengan konten baru
+                                    liveUpdateElement.innerHTML = html;
+                                    // 4. Perbarui waktu update terakhir
+                                    lastUpdate = data.last_update;
+                                    console.log('Konten berhasil diperbarui.');
+                                });
+                        }
                     }
                 })
                 .catch(error => console.error('Gagal memeriksa update:', error));
-        }, 15000);
+        }, 15000); // Cek setiap 15 detik
     }
 });

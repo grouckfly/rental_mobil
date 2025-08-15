@@ -31,11 +31,7 @@ try {
     <p>Halaman ini berisi daftar pemesanan yang menunggu pembayaran, konfirmasi, atau sedang berjalan.</p>
 </div>
 
-<div class="table-container"
-    data-live-context="admin_pemesanan"
-    data-live-total="<?= count($bookings) ?>"
-    data-live-last-update="<?= $pdo->query("SELECT MAX(tanggal_pemesanan) FROM pemesanan")->fetchColumn() ?>">
-    
+<div class="table-container">
     <table>
         <thead>
             <tr>
