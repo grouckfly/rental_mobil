@@ -63,13 +63,13 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
 
             <?php elseif ($_SESSION['role'] === 'Karyawan'): ?>
                 <li>
-                    <a href="<?= BASE_URL ?>karyawan/scan_qr.php">Scan QR Code</a>
+                    <a href="<?= BASE_URL ?>admin/scan_qr.php">Scan QR Code</a>
                 </li>
                 <li <?= is_active('profile.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>pelanggan/profile.php">Profil Saya</a>
                 </li>
                 <li <?= is_active('dashboard.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>karyawan/dashboard.php">Dashboard</a>
+                    <a href="<?= BASE_URL ?>admin/dashboard.php">Dashboard</a>
                 </li>
                 <li <?= is_active('inbox.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>actions/pesan/inbox.php">Bantuan & Pesan</a>
