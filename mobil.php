@@ -33,9 +33,18 @@ $sql_base = "FROM mobil WHERE status = 'Tersedia'";
 $params = [];
 
 // Terapkan filter
-if (!empty($search_query)) { $sql_base .= " AND (merk LIKE :q OR model LIKE :q)"; $params[':q'] = "%$search_query%"; }
-if (!empty($kelas_filter)) { $sql_base .= " AND kelas_mobil = :kelas"; $params[':kelas'] = $kelas_filter; }
-if (!empty($jenis_filter)) { $sql_base .= " AND jenis_mobil = :jenis"; $params[':jenis'] = $jenis_filter; }
+if (!empty($search_query)) {
+    $sql_base .= " AND (merk LIKE :q OR model LIKE :q)";
+    $params[':q'] = "%$search_query%";
+}
+if (!empty($kelas_filter)) {
+    $sql_base .= " AND kelas_mobil = :kelas";
+    $params[':kelas'] = $kelas_filter;
+}
+if (!empty($jenis_filter)) {
+    $sql_base .= " AND jenis_mobil = :jenis";
+    $params[':jenis'] = $jenis_filter;
+}
 
 // 4. Query untuk MENGHITUNG TOTAL DATA (untuk pagination)
 $sql_count = "SELECT COUNT(*) " . $sql_base;
@@ -73,7 +82,7 @@ $cars = $stmt_data->fetchAll();
             <label>Jenis</label>
             <select name="jenis">
                 <option value="">Semua Jenis</option>
-                <?php foreach($daftar_jenis as $jenis): ?>
+                <?php foreach ($daftar_jenis as $jenis): ?>
                     <option value="<?= htmlspecialchars($jenis) ?>" <?= ($jenis_filter === $jenis) ? 'selected' : '' ?>><?= htmlspecialchars($jenis) ?></option>
                 <?php endforeach; ?>
             </select>
@@ -82,7 +91,7 @@ $cars = $stmt_data->fetchAll();
             <label>Kelas</label>
             <select name="kelas">
                 <option value="">Semua Kelas</option>
-                <?php foreach($kelas_list as $k): ?>
+                <?php foreach ($kelas_list as $k): ?>
                     <option value="<?= $k ?>" <?= ($kelas_filter === $k) ? 'selected' : '' ?>><?= $k ?></option>
                 <?php endforeach; ?>
             </select>
@@ -119,16 +128,41 @@ $cars = $stmt_data->fetchAll();
 
         <nav class="pagination-container">
             <ul class="pagination">
-                <?php if ($total_pages > 1): ?>
-                    <?php for ($i = 1; $i <= $total_pages; $i++): 
-                        // Pertahankan filter saat berpindah halaman
-                        $query_params = $_GET;
-                        $query_params['page'] = $i;
-                    ?>
-                        <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
-                            <a class="page-link" href="?<?= http_build_query($query_params) ?>"><?= $i ?></a>
-                        </li>
-                    <?php endfor; ?>
+                <?php
+                if ($total_pages > 1):
+                    $window = 2 ; // Jumlah link di kiri & kanan halaman aktif
+
+                    // Tombol "Sebelumnya"
+                    if ($page > 1):
+                        $query_params['page'] = $page - 1; ?>
+                        <li class="page-item"><a class="page-link" href="?<?= http_build_query($query_params) ?>">«</a></li>
+                        <?php endif;
+
+                    // Tampilkan nomor halaman
+                    for ($i = 1; $i <= $total_pages; $i++):
+                        // Tentukan kapan harus menampilkan link:
+                        // 1. Selalu tampilkan halaman pertama & terakhir
+                        // 2. Tampilkan link di dalam "jendela" di sekitar halaman aktif
+                        if ($i == 1 || $i == $total_pages || ($i >= $page - $window && $i <= $page + $window)):
+                        ?>
+                            <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                                <a class="page-link" href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>"><?= $i ?></a>
+                            </li>
+                        <?php
+                        // Tampilkan elipsis (...) jika ada jeda
+                        elseif ($i == 2 && $page > $window + 2 || $i == $total_pages - 1 && $page < $total_pages - $window - 1):
+                        ?>
+                            <li class="page-item disabled"><span class="page-link page-item-ellipsis">...</span></li>
+                        <?php
+                        endif;
+                    endfor;
+
+                    // Tombol "Berikutnya"
+                    if ($page < $total_pages):
+                        $query_params['page'] = $page + 1; ?>
+                        <li class="page-item"><a class="page-link" href="?<?= http_build_query($query_params) ?>">»</a></li>
+                    <?php endif; ?>
+
                 <?php endif; ?>
             </ul>
         </nav>

@@ -1026,3 +1026,13 @@ tbody tr:hover {
     color: #fff;
     border-color: var(--primary-color);
 }
+
+.page-item.disabled .page-link {
+    color: var(--muted-text-color);
+    pointer-events: none;
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+}
+.page-item-ellipsis {
+    letter-spacing: 2px;
+}
