@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 13, 2025 at 06:42 AM
+-- Generation Time: Aug 17, 2025 at 10:24 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,7 +61,7 @@ CREATE TABLE `mobil` (
 --
 
 INSERT INTO `mobil` (`id_mobil`, `plat_nomor`, `merk`, `model`, `tahun`, `jenis_mobil`, `harga_sewa_harian`, `denda_per_hari`, `status`, `gambar_mobil`, `spesifikasi`, `kelas_mobil`, `updated_at`) VALUES
-(3, 'W 4 NI', 'Ford', 'Everest Titanium', '2024', 'SUV', 650000.00, 50000.00, 'Tersedia', '68737c74e045a3.41489030.jpg', 'America aaaaa', 'Mid level', '2025-07-25 10:39:14'),
+(3, 'W 4 NI', 'Ford', 'Everest Titanium', '2024', 'SUV', 650000.00, 50000.00, 'Tidak Aktif', '68737c74e045a3.41489030.jpg', 'America aaaaa', 'Mid level', '2025-08-17 08:22:44'),
 (4, 'M 45 DA', 'Mazda', 'CX-5', '2024', 'SUV', 700000.00, 70000.00, 'Tidak Aktif', '68737fcdb2bf74.16132469.jpg', 'Mazda vrummm', 'Mid level', '2025-07-19 08:00:26'),
 (18, 'B 1101 TY', 'Toyota', 'Avanza G', '2023', 'MPV', 400000.00, 50000.00, 'Tersedia', '687bb636314b54.12310854.jpg', '7 Seater, Bensin, Otomatis', 'Low level', '2025-08-08 16:27:24'),
 (19, 'B 1102 TY', 'Toyota', 'Kijang Innova Zenix', '2024', 'MPV', 750000.00, 100000.00, 'Tersedia', 'innova.jpg', '7 Seater, Hybrid, Otomatis, Captain Seat', 'Mid level', '2025-07-19 08:28:15'),
@@ -103,7 +103,7 @@ INSERT INTO `mobil` (`id_mobil`, `plat_nomor`, `merk`, `model`, `tahun`, `jenis_
 (55, 'B 1 LMBO', 'Lamborghini', 'Huracan Tecnica', '2023', 'Supercar', 15000000.00, 3000000.00, 'Tersedia', 'huracan.jpg', '2 Seater, Bensin V10, High Performance', 'Luxury', '2025-07-19 08:28:15'),
 (56, 'B 2 FRRI', 'Ferrari', '296 GTB', '2024', 'Supercar', 18000000.00, 3500000.00, 'Tersedia', 'ferrari296.jpg', '2 Seater, Hybrid V6, Italian Icon', 'Luxury', '2025-07-19 08:28:15'),
 (57, 'B 111 FO', 'Ford', 'Everest Titanium', '2023', 'SUV', 900000.00, 120000.00, 'Tersedia', '687c4fa5245db0.16161607.jpg', '7 Seater, Diesel Bi-Turbo, 4x4', 'High level', '2025-07-20 02:08:37'),
-(58, 'B 222 FO', 'Ford', 'Ranger Raptor', '2024', 'Double Cabin', 1200000.00, 150000.00, 'Tersedia', 'raptor.jpg', '5 Seater, Diesel, Off-road Performance', 'High level', '2025-07-19 08:28:15'),
+(58, 'B 222 FO', 'Ford', 'Ranger Raptor', '2024', 'Double Cabin', 1200000.00, 150000.00, 'Tersedia', '68a18da167f036.16664547.jpg', '5 Seater, Diesel, Off-road Performance', 'High level', '2025-08-17 08:06:57'),
 (59, 'B 333 CH', 'Chevrolet', 'Trax', '2024', 'SUV Compact', 500000.00, 60000.00, 'Tersedia', 'trax.jpg', '5 Seater, Bensin, Modern Design', 'Mid level', '2025-07-19 08:28:15'),
 (60, 'B 444 JP', 'Jeep', 'Wrangler Rubicon', '2022', 'SUV Off-road', 1500000.00, 200000.00, 'Tersedia', 'wrangler.jpg', '4 Seater, Bensin, Open Roof', 'Luxury', '2025-07-19 08:47:39'),
 (61, 'B 555 JP', 'Jeep', 'Grand Cherokee', '2023', 'SUV', 2300000.00, 280000.00, 'Tersedia', 'cherokee.jpg', '7 Seater, Bensin, American Luxury', 'Luxury', '2025-07-19 08:28:15'),
