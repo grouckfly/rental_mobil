@@ -58,16 +58,10 @@ if (isset($_GET['status_type']) && isset($_GET['status_msg'])) {
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dark-mode.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <?php
-    if ($role_session) {
-        echo "<link rel=\"stylesheet\" href=\"" . BASE_URL . "assets/css/dashboard.css\">";
-        $role_css_path = strtolower($role_session) . '/css/' . strtolower($role_session) . '.css';
-        if (file_exists(dirname(__DIR__) . '/' . $role_css_path)) {
-            echo "<link rel=\"stylesheet\" href=\"" . BASE_URL . $role_css_path . "\">";
-        }
-    }
-    echo "<link rel=\"stylesheet\" href=\"" . BASE_URL . "assets/css/fleksibel.css\">";
-    ?>
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>admin/css/admin.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>pelanggan/css/pelanggan.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/fleksibel.css">
 </head>
 
 <body>
@@ -77,7 +71,7 @@ if (isset($_GET['status_type']) && isset($_GET['status_msg'])) {
                 <?php if (isset($_SESSION['id_pengguna'])): ?>
                     <button id="sidebar-toggle-btn" class="icon-btn">&#9776;</button>
                 <?php endif; ?>
-                    <h1 class="header-title">Rental Mobil</h1>
+                <h1 class="header-title">Rental Mobil</h1>
             </div>
 
             <?php if (!$id_pengguna_session): // Tampilkan navigasi hanya jika belum login 
