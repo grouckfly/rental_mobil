@@ -51,7 +51,7 @@ ini_set('session.use_only_cookies', 1);
 ini_set('session.use_strict_mode', 1);
 
 session_set_cookie_params([
-    'lifetime' => 0, // Sesi berakhir saat browser ditutup
+    'lifetime' => 28800, // Sesi berakhir dalam 8 jam
     'path' => '/',
     'domain' => '', // Untuk localhost, biarkan kosong. Untuk domain online, isi dengan '.domainanda.com'
     'secure' => isset($_SERVER['HTTPS']), // Wajib TRUE jika sudah online (HTTPS)
