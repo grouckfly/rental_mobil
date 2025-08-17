@@ -14,6 +14,11 @@ if ($id_mobil === 0) {
 $role_session = $_SESSION['role'] ?? null;
 $user_data = null;
 
+// Cek dan buat token CSRF jika belum ada
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Jika yang melihat pelanggan, ambil data profilnya
 if ($role_session === 'Pelanggan') {
     $stmt_user = $pdo->prepare("SELECT nik, foto_ktp FROM pengguna WHERE id_pengguna = ?");
@@ -46,9 +51,10 @@ require_once '../../includes/header.php';
             <a href="<?= BASE_URL ?>admin/mobil.php" class="btn btn-secondary">Kembali</a>
             <a href="edit.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Edit</a>
             <?php if ($role_session === 'Admin'): ?>
-                <form action="hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus mobil ini?');">
+                <form action="<?= BASE_URL ?>actions/mobil/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Anda yakin? Mobil yang belum pernah disewa akan dihapus permanen, sedangkan yang sudah memiliki riwayat akan dinonaktifkan.');">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
                     <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
-                    <button type="submit" class="btn btn-danger">Hapus</button>
+                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                 </form>
             <?php endif; ?>
         <?php endif; ?>
