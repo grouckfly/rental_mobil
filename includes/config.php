@@ -1,19 +1,34 @@
 <?php
-// File: includes/config.php
+// File: includes/config.php (Versi Final & Disempurnakan)
 
-// ====================================================================
-// Atur zona waktu default untuk semua fungsi tanggal di PHP
-// ====================================================================
+// ===================================================================
+// 1. PENGATURAN LINGKUNGAN & ERROR REPORTING
+// ===================================================================
+// Ubah menjadi 'development' saat Anda sedang coding untuk melihat semua error.
+// Ubah menjadi 'production' saat website sudah online untuk menyembunyikan error teknis.
+define('ENVIRONMENT', 'development');
+
+if (ENVIRONMENT === 'development') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+    // Di mode production, error akan dicatat ke file log server, bukan ditampilkan.
+}
+
+// ===================================================================
+// 2. KONSTANTA & PENGATURAN DASAR
+// ===================================================================
+// Atur zona waktu default
 date_default_timezone_set('Asia/Jakarta');
 
-// ====================================================================
-// Tentukan Base URL Anda secara manual di sini.
-// Pastikan ada tanda '/' di akhir.
-// ====================================================================
+// Tentukan Base URL
 define('BASE_URL', 'http://localhost/rental_mobil/');
 
-
-// PENGATURAN KONEKSI DATABASE (tetap sama)
+// ===================================================================
+// 3. KONEKSI DATABASE
+// ===================================================================
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'rental_mobil');
 define('DB_USER', 'root');
@@ -24,28 +39,35 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("Koneksi ke database gagal: " . $e->getMessage());
+    // PERBAIKAN: Jangan tampilkan pesan error database yang detail ke pengguna.
+    error_log("Database Connection Error: " . $e->getMessage()); // Catat error ke log server
+    die("Terjadi masalah koneksi ke database. Silakan coba lagi nanti."); // Pesan umum untuk pengguna
 }
 
-// PENGATURAN KEAMANAN SESSION
-ini_set('session.use_only_cookies', 1); // Hanya gunakan cookie untuk session
-ini_set('session.use_strict_mode', 1); // Pastikan session ID dibuat oleh server
+// ===================================================================
+// 4. PENGATURAN KEAMANAN SESSION
+// ===================================================================
+ini_set('session.use_only_cookies', 1);
+ini_set('session.use_strict_mode', 1);
 
 session_set_cookie_params([
-    'lifetime' => 1800, // Durasi session 30 menit
+    'lifetime' => 0, // Sesi berakhir saat browser ditutup
     'path' => '/',
-    'domain' => '', // Sesuaikan dengan domain Anda jika sudah online
-    'secure' => isset($_SERVER['HTTPS']), // Kirim cookie hanya melalui HTTPS
-    'httponly' => true, // Cegah akses cookie dari JavaScript
-    'samesite' => 'Lax'
+    'domain' => '', // Untuk localhost, biarkan kosong. Untuk domain online, isi dengan '.domainanda.com'
+    'secure' => isset($_SERVER['HTTPS']), // Wajib TRUE jika sudah online (HTTPS)
+    'httponly' => true, // Mencegah akses cookie dari JavaScript (Melawan XSS)
+    'samesite' => 'Lax' // Mencegah beberapa serangan CSRF
 ]);
 
-// MEMULAI SESSION (tetap sama)
+// Mulai session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// ===================================================================
+// 5. MENJALANKAN TUGAS OTOMATIS (JIKA PERLU)
+// ===================================================================
+// Memanggil skrip pengecekan pesanan kedaluwarsa.
 if (isset($pdo)) {
     require_once __DIR__ . '/../actions/pemesanan/cek_kedaluwarsa.php';
 }
-?>

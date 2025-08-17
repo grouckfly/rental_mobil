@@ -81,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['role'] = $user['role'];
                     $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
+                    $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
 
                     // Hapus catatan percobaan gagal untuk IP ini
                     $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$ip_address]);
