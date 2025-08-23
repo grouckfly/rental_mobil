@@ -45,9 +45,6 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                 <li <?= is_active('dashboard.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>admin/dashboard.php">Dashboard</a>
                 </li>
-                <li <?= is_active('inbox.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>actions/pesan/inbox.php">Bantuan & Pesan</a>
-                </li>
                 <li <?= is_active('mobil.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>admin/mobil.php">Kelola Mobil</a>
                 </li>
@@ -57,8 +54,14 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                 <li <?= is_active('pembayaran.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>admin/pembayaran.php">Kelola Pemesanan</a>
                 </li>
+                <li <?= is_active('inbox.php', $current_page) ?>>
+                    <a href="<?= BASE_URL ?>actions/pesan/inbox.php">Bantuan & Pesan</a>
+                </li>
                 <li <?= is_active('history.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>admin/history.php">Riwayat Transaksi</a>
+                    <a href="<?= BASE_URL ?>admin/history.php">Riwayat Sewa</a>
+                </li>
+                <li <?= is_active('laporan.php', $current_page) ?>>
+                    <a href="<?= BASE_URL ?>admin/laporan.php">Laporan & Analisa</a>
                 </li>
 
             <?php elseif ($_SESSION['role'] === 'Karyawan'): ?>
@@ -71,17 +74,20 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                 <li <?= is_active('dashboard.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>admin/dashboard.php">Dashboard</a>
                 </li>
-                <li <?= is_active('inbox.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>actions/pesan/inbox.php">Bantuan & Pesan</a>
-                </li>
                 <li <?= is_active('mobil.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>admin/mobil.php">Data Mobil</a>
+                    <a href="<?= BASE_URL ?>admin/mobil.php">Kelola Mobil</a>
                 </li>
                 <li <?= is_active('pembayaran.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>admin/pembayaran.php">Kelola Pemesanan</a>
                 </li>
+                <li <?= is_active('inbox.php', $current_page) ?>>
+                    <a href="<?= BASE_URL ?>actions/pesan/inbox.php">Bantuan & Pesan</a>
+                </li>
                 <li <?= is_active('history.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>admin/history.php">Histori Sewa</a>
+                    <a href="<?= BASE_URL ?>admin/history.php">Riwayat Sewa</a>
+                </li>
+                <li <?= is_active('laporan.php', $current_page) ?>>
+                    <a href="<?= BASE_URL ?>admin/laporan.php">Laporan & Analisa</a>
                 </li>
 
             <?php elseif ($_SESSION['role'] === 'Pelanggan'): ?>
@@ -110,7 +116,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                     </li>
                 <?php endif; ?>
                 <li <?= is_active('history.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>admin/history.php">Histori Sewa</a>
+                    <a href="<?= BASE_URL ?>admin/history.php">Riwayat Sewa</a>
                 </li>
                 <li <?= is_active('inbox.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>actions/pesan/inbox.php">Bantuan & Pesan</a>
