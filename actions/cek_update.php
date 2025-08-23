@@ -8,9 +8,11 @@ ini_set('display_errors', 0);
 require_once '../includes/config.php';
 header('Content-Type: application/json');
 
-$context = $_GET['context'] ?? '';
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$response = [];
+// Periksa session hanya jika diperlukan
+if (empty($context) || !isset($_SESSION['role'])) {
+    echo json_encode($response);
+    exit;
+}
 
 try {
     $sql = '';
@@ -61,3 +63,4 @@ try {
 }
 
 echo json_encode($response ?: []); // Kirim array kosong jika tidak ada hasil
+exit;

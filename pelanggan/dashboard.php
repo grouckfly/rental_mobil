@@ -80,7 +80,7 @@ try {
         <h2>Pemesanan Anda</h2>
         <?php if ($booking_terbaru): ?>
             <div class="active-booking-card">
-                <img src="<?= BASE_URL ?>uploads/mobil/<?= htmlspecialchars($booking_terbaru['gambar_mobil'] ?: 'default-car.png') ?>" alt="Mobil">
+                <img src="<?= BASE_URL ?>assets/img/mobil/<?= htmlspecialchars($booking_terbaru['gambar_mobil'] ?: 'default-car.png') ?>" alt="Mobil">
                 <div class="booking-details">
                     <h3><?= htmlspecialchars($booking_terbaru['merk'] . ' ' . $booking_terbaru['model']) ?></h3>
                     <p><strong>Kode:</strong> <?= htmlspecialchars($booking_terbaru['kode_pemesanan']) ?></p>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // File: includes/config.php (Versi Final & Disempurnakan)
 
 // ===================================================================
@@ -27,7 +27,8 @@ $csp_directives = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://unpkg.com", // 'unsafe-inline' untuk script kecil
     "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net", // 'unsafe-inline' untuk <style>
-    "img-src 'self' data:",
+    "img-src 'self' data: blob:",
+    "media-src 'self' blob:",
     "font-src 'self'",
     "object-src 'none'",
     "frame-ancestors 'none'"
