@@ -107,3 +107,7 @@ body.dark-mode .dashboard-widgets .widget {
 body.dark-mode .chart-container {
     background-color: var(--surface-color);
 }
+
+body.dark-mode .icon-btn {
+    color: var(--text-color); /* Menggunakan variabel warna teks untuk dark mode (putih/terang) */
+}

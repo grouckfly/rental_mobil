@@ -1,45 +1,45 @@
 /* =================================================================== */
-/* FILE: assets/css/fleksibel.css (Untuk Responsive Design)             */
+/* FILE: assets/css/fleksibel.css (Versi Final)                        */
 /* =================================================================== */
 
 /* ========================================= */
-/* 1. Tampilan Tablet (Layar Sedang)         */
-/* Breakpoint: 992px ke bawah              */
+/* 1. Tampilan Tablet & HP (992px ke bawah)  */
 /* ========================================= */
 @media (max-width: 992px) {
-    /* Perkecil lebar sidebar */
-    :root {
-        --sidebar-width: 220px;
+
+    /* -- Pengaturan Umum -- */
+    .container {
+        width: 95%;
     }
 
-    /* Ubah layout grid dari 3-4 kolom menjadi 2 kolom */
-    .car-grid {
-        grid-template-columns: repeat(2, 1fr);
+    :root {
+        --sidebar-width: 240px;
     }
-    .dashboard-widgets {
-        grid-template-columns: repeat(2, 1fr);
-    }
+
+    /* -- Layout Grid -- */
+    /* Ubah layout dari 3-4 kolom menjadi 2 kolom */
+    .car-grid,
+    .dashboard-widgets,
     .services-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* Ubah layout 2 kolom di halaman detail menjadi 1 kolom */
-    .detail-container {
-        grid-template-columns: 1fr;
-    }
+    .detail-container,
     .payment-container {
         grid-template-columns: 1fr;
     }
 
-    /* Sembunyikan navigasi utama di header, tampilkan tombol menu mobile */
+    /* --- Logika Menu Navigasi Publik --- */
     .main-nav {
         display: none;
     }
+
     .mobile-menu-toggle {
         display: block;
+        /* Tombol hamburger publik */
     }
 
-    /* Aturan untuk menu mobile yang terbuka */
+    /* Aturan untuk menu mobile publik yang terbuka */
     .main-nav.nav-open {
         display: block;
         position: absolute;
@@ -47,44 +47,80 @@
         right: 0;
         width: 250px;
         background-color: var(--surface-color);
-        box-shadow: -5px 5px 15px rgba(0,0,0,0.1);
+        box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.1);
         border: 1px solid var(--border-color);
+        z-index: 1000;
     }
+
     .main-nav.nav-open ul {
         flex-direction: column;
         padding: 10px;
     }
+
     .main-nav.nav-open li a {
         display: block;
         padding: 15px;
         border-bottom: 1px solid var(--border-color);
     }
+
     .main-nav.nav-open li:last-child a {
         border-bottom: none;
+    }
+
+    /* --- Logika Sidebar Buka/Tutup Dashboard --- */
+    .page-wrapper {
+        display: block;
+    }
+
+    .main-content {
+        width: 100%;
+    }
+
+    /* Tampilkan tombol hamburger sidebar */
+    #sidebar-toggle-btn {
+        display: block;
+    }
+
+    .header-title {
+        display: none;
+    }
+
+    .sidebar-title {
+        display: block;
+    }
+
+    /* Posisikan sidebar di luar layar secara default */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 1200;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        border-right: 1px solid var(--border-color);
+        align-self: unset;
+    }
+
+    /* Saat sidebar-open, tampilkan sidebar */
+    .page-wrapper.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+    /* Saat sidebar-open, tampilkan overlay */
+    .page-wrapper.sidebar-open .sidebar-overlay {
+        opacity: 1;
+        visibility: visible;
     }
 }
 
 
 /* ========================================= */
-/* 2. Tampilan Handphone (Layar Kecil)       */
-/* Breakpoint: 768px ke bawah              */
+/* 2. Tampilan Handphone (768px ke bawah)    */
 /* ========================================= */
 @media (max-width: 768px) {
-    /* Perkecil font untuk judul utama */
-    h1 { font-size: 1.8rem; }
-    .hero-content h1 { font-size: 2.2rem; }
-
-    /* Buat layout dashboard menjadi vertikal */
-    .page-wrapper {
-        flex-direction: column;
-    }
-    .sidebar {
-        width: 100%;
-        min-height: auto;
-        position: static; /* Hapus sticky di mobile */
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
+    h1 {
+        font-size: 1.8rem;
     }
 
     /* Buat semua grid menjadi 1 kolom */
@@ -100,6 +136,7 @@
         flex-direction: column;
         align-items: stretch;
     }
+
     .filter-form .form-group {
         width: 100%;
     }
@@ -114,6 +151,7 @@
     .active-booking-card {
         flex-direction: column;
     }
+
     .active-booking-card img {
         width: 100%;
         height: 180px;

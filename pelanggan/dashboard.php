@@ -77,7 +77,7 @@ try {
     </div>
 
     <div class="section-container">
-        <h2>Pemesanan Paling Mendesak</h2>
+        <h2>Pemesanan Anda</h2>
         <?php if ($booking_terbaru): ?>
             <div class="active-booking-card">
                 <img src="<?= BASE_URL ?>uploads/mobil/<?= htmlspecialchars($booking_terbaru['gambar_mobil'] ?: 'default-car.png') ?>" alt="Mobil">
