@@ -82,8 +82,11 @@ require_once '../../includes/header.php';
 
     <div class="detail-full-width">
         <div class="info-item">
-            <span class="label">Spesifikasi & Fitur</span>
-            <div class="value description">
+            <div class="spec-header">
+                <span class="label">Spesifikasi & Fitur</span>
+                <button id="toggle-spec-btn" class="btn btn-sm btn-secondary">Lihat Selengkapnya</button>
+            </div>
+            <div id="spec-content" class="value description collapsed">
                 <?= nl2br(htmlspecialchars($mobil['spesifikasi'])) ?>
             </div>
         </div>
