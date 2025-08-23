@@ -178,12 +178,16 @@ img {
 .sidebar {
     /* Properti Kunci */
     position: sticky;
-    top: var(--header-height); /* Menempel persis di bawah header */
-    
+    top: var(--header-height);
+    /* Menempel persis di bawah header */
+
     /* Properti Pendukung */
-    height: calc(100vh - var(--header-height)); /* Mengatur tinggi sidebar agar penuh sesuai layar */
-    overflow-y: auto; /* Menambahkan scrollbar jika menu di sidebar sangat panjang */
-    align-self: flex-start; /* Mencegah sidebar meregang jika konten utama pendek */
+    height: calc(100vh - var(--header-height));
+    /* Mengatur tinggi sidebar agar penuh sesuai layar */
+    overflow-y: auto;
+    /* Menambahkan scrollbar jika menu di sidebar sangat panjang */
+    align-self: flex-start;
+    /* Mencegah sidebar meregang jika konten utama pendek */
     width: var(--sidebar-width);
     background-color: var(--surface-color);
     padding: 20px;
@@ -328,7 +332,8 @@ tbody tr:hover {
     border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #fff; /* Teks default putih */
+    color: #fff;
+    /* Teks default putih */
     text-transform: capitalize;
     white-space: nowrap;
 }
@@ -350,7 +355,8 @@ tbody tr:hover {
 .status-menunggu-pembayaran-denda,
 .status-belum-dibaca {
     background-color: var(--warning-color);
-    color: var(--text-color); /* Teks diubah menjadi gelap */
+    color: var(--text-color);
+    /* Teks diubah menjadi gelap */
 }
 
 /* Status Negatif (Merah) */
@@ -467,14 +473,17 @@ tbody tr:hover {
 
 .filter-form {
     display: flex;
-    align-items: flex-end; /* Membuat tombol dan input sejajar di bagian bawah */
+    align-items: flex-end;
+    /* Membuat tombol dan input sejajar di bagian bawah */
     gap: 20px;
-    flex-wrap: wrap; /* Agar responsif di layar kecil */
+    flex-wrap: wrap;
+    /* Agar responsif di layar kecil */
 }
 
 .filter-form .form-group {
     margin-bottom: 0;
-    flex: 1 1 180px; /* Fleksibel, basis 180px per item */
+    flex: 1 1 180px;
+    /* Fleksibel, basis 180px per item */
 }
 
 .filter-form .form-group label {
@@ -507,12 +516,15 @@ tbody tr:hover {
 /* Penyesuaian untuk layar lebih kecil (tablet & hp) */
 @media (max-width: 992px) {
     .car-grid {
-        grid-template-columns: repeat(2, 1fr); /* Jadi 2 kolom */
+        grid-template-columns: repeat(2, 1fr);
+        /* Jadi 2 kolom */
     }
 }
+
 @media (max-width: 576px) {
     .car-grid {
-        grid-template-columns: 1fr; /* Jadi 1 kolom */
+        grid-template-columns: 1fr;
+        /* Jadi 1 kolom */
     }
 }
 
@@ -520,17 +532,19 @@ tbody tr:hover {
 .car-grid::-webkit-scrollbar {
     height: 8px;
 }
+
 .car-grid::-webkit-scrollbar-thumb {
     background-color: var(--primary-color);
     border-radius: 10px;
 }
+
 .car-grid::-webkit-scrollbar-track {
     background: var(--border-color);
 }
 
 .car-card {
     /* Memberikan setiap kartu lebar yang tetap dan mencegahnya menyusut */
-    flex: 0 0 320px; 
+    flex: 0 0 320px;
     background: var(--surface-color);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
@@ -566,7 +580,8 @@ tbody tr:hover {
 
 .car-card-content .car-price {
     font-size: 1.15rem;
-    margin-top: auto; /* Mendorong harga dan tombol ke bawah */
+    margin-top: auto;
+    /* Mendorong harga dan tombol ke bawah */
     padding-top: 10px;
     border-top: 1px solid var(--border-color);
 }
@@ -582,7 +597,8 @@ tbody tr:hover {
 
 /* 4. Tampilan Jika Hasil Kosong */
 .empty-state {
-    grid-column: 1 / -1; /* Mengisi seluruh lebar grid */
+    grid-column: 1 / -1;
+    /* Mengisi seluruh lebar grid */
     text-align: center;
     padding: 40px;
     background: var(--surface-color);
@@ -636,6 +652,7 @@ tbody tr:hover {
     background-color: var(--info-color);
     color: #fff;
 }
+
 .btn-info:hover {
     background-color: #138496;
 }
@@ -646,7 +663,8 @@ tbody tr:hover {
 
 .detail-container {
     display: grid;
-    grid-template-columns: 1fr 1.5fr; /* Layout 2 kolom */
+    grid-template-columns: 1fr 1.5fr;
+    /* Layout 2 kolom */
     gap: 30px;
     background-color: var(--surface-color);
     padding: 30px;
@@ -705,7 +723,8 @@ tbody tr:hover {
     border-radius: var(--border-radius);
     font-size: 1rem;
     line-height: 1.7;
-    white-space: pre-wrap; /* Menjaga format teks dari textarea */
+    white-space: pre-wrap;
+    /* Menjaga format teks dari textarea */
 }
 
 .detail-actions {
@@ -717,7 +736,8 @@ tbody tr:hover {
 /* Responsiveness untuk halaman detail */
 @media (max-width: 992px) {
     .detail-container {
-        grid-template-columns: 1fr; /* Jadi 1 kolom di layar kecil */
+        grid-template-columns: 1fr;
+        /* Jadi 1 kolom di layar kecil */
     }
 }
 
@@ -725,7 +745,8 @@ tbody tr:hover {
 /* Style untuk Toast Notification        */
 /* ===================================== */
 .toast {
-    position: fixed; /* Kunci agar selalu menempel di layar */
+    position: fixed;
+    /* Kunci agar selalu menempel di layar */
     top: 20px;
     right: 20px;
     background-color: #333;
@@ -734,7 +755,7 @@ tbody tr:hover {
     border-radius: var(--border-radius);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     z-index: 9999;
-    
+
     /* Properti untuk animasi */
     opacity: 0;
     transform: translateY(-30px);
@@ -827,9 +848,11 @@ tbody tr:hover {
     text-align: center;
     border-radius: var(--border-radius);
 }
+
 .booking-code-item .label {
     font-size: 1rem;
 }
+
 .booking-code-item .value.code {
     font-size: 1.8rem;
     font-weight: 700;
@@ -842,6 +865,7 @@ tbody tr:hover {
 /* Style Khusus untuk Mencetak (Print)    */
 /* ====================================== */
 @media print {
+
     /* 1. Sembunyikan semua elemen yang tidak perlu dicetak */
     .main-header,
     .sidebar,
@@ -849,13 +873,15 @@ tbody tr:hover {
     .page-header,
     .detail-actions,
     .bukti-pembayaran,
-    .cancellation-info form { /* Sembunyikan form dan tombol aksi */
+    .cancellation-info form {
+        /* Sembunyikan form dan tombol aksi */
         display: none !important;
     }
 
     /* 2. Reset layout utama agar fokus pada konten yang akan dicetak */
     body {
-        background-color: #fff !important; /* Pastikan latar belakang putih */
+        background-color: #fff !important;
+        /* Pastikan latar belakang putih */
     }
 
     .page-wrapper,
@@ -872,7 +898,7 @@ tbody tr:hover {
         width: 100% !important;
         display: grid !important;
         /* Pertahankan layout 2 kolom dengan persentase agar pas di kertas */
-        grid-template-columns: 35% 1fr !important; 
+        grid-template-columns: 35% 1fr !important;
         box-shadow: none !important;
         border: none !important;
         padding: 0 !important;
@@ -881,9 +907,11 @@ tbody tr:hover {
 
     /* 4. Tambahkan judul di atas halaman cetak */
     .detail-container::before {
-        content: 'Bukti Detail Pemesanan'; /* Judul cetakan */
+        content: 'Bukti Detail Pemesanan';
+        /* Judul cetakan */
         display: block;
-        grid-column: 1 / -1; /* Membuat judul melintasi kedua kolom */
+        grid-column: 1 / -1;
+        /* Membuat judul melintasi kedua kolom */
         text-align: center;
         font-size: 18pt;
         font-weight: bold;
@@ -891,7 +919,7 @@ tbody tr:hover {
         border-bottom: 2px solid #000;
         padding-bottom: 15px;
     }
-    
+
     /* 5. Atur ulang warna untuk efisiensi tinta dan kejelasan */
     * {
         color: #000 !important;
@@ -921,18 +949,18 @@ tbody tr:hover {
         content: "" !important;
     }
 
-        .booking-code-item {
-            border: 2px dashed #000 !important;
-            text-align: center !important;
-            margin: 20px 0 !important;
-            padding: 10px !important;
-        }
-    
-        .booking-code-item .value.code {
-            font-size: 16pt !important;
-            font-weight: bold !important;
-            letter-spacing: 2px !important;
-        }
+    .booking-code-item {
+        border: 2px dashed #000 !important;
+        text-align: center !important;
+        margin: 20px 0 !important;
+        padding: 10px !important;
+    }
+
+    .booking-code-item .value.code {
+        font-size: 16pt !important;
+        font-weight: bold !important;
+        letter-spacing: 2px !important;
+    }
 }
 
 /* Ganti style .qr-code-container yang lama dengan ini */
@@ -948,6 +976,7 @@ tbody tr:hover {
     align-items: center;
     justify-content: center;
 }
+
 .qr-code-container h4 {
     margin-bottom: 15px;
     font-size: 0.9rem;
@@ -960,6 +989,7 @@ tbody tr:hover {
     background: white;
     display: inline-block;
 }
+
 #qrcode img {
     margin: auto;
 }
@@ -972,8 +1002,10 @@ tbody tr:hover {
 .star-rating {
     display: inline-block;
     position: relative;
-    font-size: 1.5rem; /* Ukuran bintang */
-    color: #ddd; /* Warna bintang latar belakang (abu-abu) */
+    font-size: 1.5rem;
+    /* Ukuran bintang */
+    color: #ddd;
+    /* Warna bintang latar belakang (abu-abu) */
     letter-spacing: 3px;
 }
 
@@ -988,7 +1020,8 @@ tbody tr:hover {
     position: absolute;
     top: 0;
     left: 0;
-    color: #ffc107; /* Warna bintang aktif (kuning) */
+    color: #ffc107;
+    /* Warna bintang aktif (kuning) */
     overflow: hidden;
     /* Lebar bintang kuning ini diatur oleh variabel --rating-percent dari JS */
     width: var(--rating-percent);
@@ -1002,12 +1035,14 @@ tbody tr:hover {
     display: flex;
     justify-content: center;
 }
+
 .pagination {
     list-style: none;
     display: flex;
     padding: 0;
     gap: 5px;
 }
+
 .page-item .page-link {
     display: block;
     padding: 10px 15px;
@@ -1017,10 +1052,12 @@ tbody tr:hover {
     background-color: var(--surface-color);
     transition: all 0.2s;
 }
+
 .page-item .page-link:hover {
     background-color: var(--bg-color);
     text-decoration: none;
 }
+
 .page-item.active .page-link {
     background-color: var(--primary-color);
     color: #fff;
@@ -1033,6 +1070,112 @@ tbody tr:hover {
     background-color: var(--surface-color);
     border-color: var(--border-color);
 }
+
 .page-item-ellipsis {
     letter-spacing: 2px;
+}
+
+/* ========================================= */
+/* Style untuk Bagian Ulasan Pelanggan       */
+/* ========================================= */
+.review-section {
+    padding: 40px 0;
+    margin-top: 30px;
+    background-color: var(--surface-color);
+}
+
+.rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.rating-summary .star-rating {
+    font-size: 2rem;
+}
+
+.summary-text strong {
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+.summary-text span {
+    display: block;
+    color: var(--muted-text-color);
+}
+
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    background-color: var(--bg-color);
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.review-header .star-rating {
+    font-size: 1rem;
+}
+
+.review-header strong {
+    font-weight: 600;
+}
+
+.review-body {
+    margin-bottom: 15px;
+}
+
+.review-date {
+    color: var(--muted-text-color);
+    font-size: 0.8rem;
+}
+
+.review-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.review-filter .btn {
+    text-decoration: none;
+}
+
+.review-list {
+    /* Membuat kontainer bisa di-scroll */
+    max-height: 400px;
+    /* Atur tinggi maksimal sebelum scroll muncul */
+    overflow-y: auto;
+
+    /* Style tambahan untuk scrollbar */
+    padding-right: 15px;
+    /* Memberi ruang untuk scrollbar */
+    scrollbar-width: thin;
+}
+
+.review-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.review-list::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+}
+
+.review-list::-webkit-scrollbar-track {
+    background: var(--border-color);
 }

@@ -38,6 +38,55 @@ try {
     redirect_with_message('../../admin/mobil.php', 'Terjadi kesalahan pada database.', 'error');
 }
 
+// Ambil data rating dan ulasan untuk mobil
+$rating_filter = isset($_GET['rating']) ? (int)$_GET['rating'] : 0;
+$reviews = [];
+$rating_summary = ['rata_rating' => 0, 'jumlah_review' => 0];
+
+try {
+    // 1. Ambil ringkasan (rata-rata & jumlah total ulasan), tidak terpengaruh filter
+    $stmt_summary = $pdo->prepare("
+        SELECT AVG(rating_pengguna) as rata_rating, COUNT(review_pelanggan) as jumlah_review
+        FROM pemesanan
+        WHERE id_mobil = ? AND rating_pengguna IS NOT NULL AND review_pelanggan IS NOT NULL AND review_pelanggan != ''
+    ");
+    $stmt_summary->execute([$id_mobil]);
+    $summary = $stmt_summary->fetch();
+    if ($summary && $summary['jumlah_review'] > 0) {
+        $rating_summary = $summary;
+    }
+
+    // 2. Siapkan query dasar untuk mengambil ulasan
+    $sql_reviews = "
+        SELECT p.rating_pengguna, p.review_pelanggan, p.updated_at, u.nama_lengkap
+        FROM pemesanan p
+        JOIN pengguna u ON p.id_pengguna = u.id_pengguna
+        WHERE p.id_mobil = ? AND p.review_pelanggan IS NOT NULL AND p.review_pelanggan != ''
+    ";
+    $params_reviews = [$id_mobil];
+
+    // Tambahkan filter rating jika dipilih oleh pengguna
+    if ($rating_filter >= 1 && $rating_filter <= 5) {
+        $sql_reviews .= " AND p.rating_pengguna = ?";
+        $params_reviews[] = $rating_filter;
+    }
+
+    $sql_reviews .= " ORDER BY p.updated_at DESC";
+
+    // Hanya batasi jumlah jika pengguna melihat 'Semua' ulasan
+    if ($rating_filter === 0) {
+        $sql_reviews .= " LIMIT 10"; // Batasi 10 ulasan terbaru untuk tampilan awal
+    }
+
+    // Eksekusi query ulasan yang sudah dinamis
+    $stmt_reviews = $pdo->prepare($sql_reviews);
+    $stmt_reviews->execute($params_reviews);
+    $reviews = $stmt_reviews->fetchAll();
+} catch (PDOException $e) {
+    // Biarkan array kosong jika terjadi error agar tidak merusak halaman
+    error_log("Gagal mengambil data ulasan: " . $e->getMessage());
+}
+
 $page_title = 'Detail Mobil: ' . htmlspecialchars($mobil['merk'] . ' ' . $mobil['model']);
 require_once '../../includes/header.php';
 ?>
@@ -92,6 +141,47 @@ require_once '../../includes/header.php';
         </div>
     </div>
 </div>
+
+<!-- Review Section -->
+<?php if ($rating_summary['jumlah_review'] > 0): ?>
+    <div class="review-section">
+        <div class="container">
+            <h3 class="section-title" style="text-align:left; font-size:1.8rem;">Ulasan Pelanggan</h3>
+            <div class="rating-summary">
+                <div class="star-rating" data-rating="<?= $rating_summary['rata_rating'] ?>"></div>
+                <div class="summary-text">
+                    <strong><?= number_format($rating_summary['rata_rating'], 1) ?></strong> dari 5 Bintang
+                    <span>(Berdasarkan <?= $rating_summary['jumlah_review'] ?> ulasan)</span>
+                </div>
+            </div>
+
+            <div class="review-filter">
+                <a href="?id=<?= $id_mobil ?>" class="btn btn-sm <?= ($rating_filter == 0) ? 'btn-primary' : 'btn-secondary' ?>">Semua</a>
+                <?php for ($i = 5; $i >= 1; $i--): ?>
+                    <a href="?id=<?= $id_mobil ?>&rating=<?= $i ?>" class="btn btn-sm <?= ($rating_filter == $i) ? 'btn-primary' : 'btn-secondary' ?>">&#9733; <?= $i ?></a>
+                <?php endfor; ?>
+            </div>
+
+            <div class="review-list">
+                <?php if (empty($reviews)): ?>
+                    <p>Tidak ada ulasan dengan rating ini.</p>
+                    <?php else: foreach ($reviews as $review): ?>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="star-rating" data-rating="<?= $review['rating_pengguna'] ?>"></div>
+                                <strong><?= htmlspecialchars($review['nama_lengkap']) ?></strong>
+                            </div>
+                            <p class="review-body">
+                                <?= nl2br(htmlspecialchars($review['review_pelanggan'])) ?>
+                            </p>
+                            <small class="review-date">Diulas pada <?= date('d F Y', strtotime($review['updated_at'])) ?></small>
+                        </div>
+                <?php endforeach;
+                endif; ?>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
 
 <div class="booking-section">
     <?php // --- Jika yang melihat adalah PELANGGAN dan mobil TERSEDIA ---
