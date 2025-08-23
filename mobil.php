@@ -13,6 +13,7 @@ require_once 'includes/header.php';
 $search_query = $_GET['q'] ?? '';
 $kelas_filter = $_GET['kelas'] ?? '';
 $jenis_filter = $_GET['jenis'] ?? '';
+$sort_order = $_GET['sort'] ?? 'nama_asc';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 6; // Menampilkan 6 mobil per halaman
 $offset = ($page - 1) * $limit;
@@ -46,6 +47,22 @@ if (!empty($jenis_filter)) {
     $params[':jenis'] = $jenis_filter;
 }
 
+$order_clause = "ORDER BY ";
+switch ($sort_order) {
+    case 'harga_asc':
+        $order_clause .= "harga_sewa_harian ASC";
+        break;
+    case 'harga_desc':
+        $order_clause .= "harga_sewa_harian DESC";
+        break;
+    case 'nama_desc':
+        $order_clause .= "merk DESC, model DESC";
+        break;
+    default: // nama_asc
+        $order_clause .= "merk ASC, model ASC";
+        break;
+}
+
 // 4. Query untuk MENGHITUNG TOTAL DATA (untuk pagination)
 $sql_count = "SELECT COUNT(*) " . $sql_base;
 $stmt_count = $pdo->prepare($sql_count);
@@ -54,7 +71,7 @@ $total_cars = $stmt_count->fetchColumn();
 $total_pages = ceil($total_cars / $limit);
 
 // 5. Query UTAMA untuk MENGAMBIL DATA sesuai halaman
-$sql_data = "SELECT * " . $sql_base . " ORDER BY merk ASC, model ASC LIMIT :limit OFFSET :offset";
+$sql_data = "SELECT * " . $sql_base . " " . $order_clause . " LIMIT :limit OFFSET :offset";
 $stmt_data = $pdo->prepare($sql_data);
 // Bind parameter filter dan pagination
 foreach ($params as $key => &$val) {
@@ -96,6 +113,15 @@ $cars = $stmt_data->fetchAll();
                 <?php endforeach; ?>
             </select>
         </div>
+        <div class="form-group">
+            <label>Urutkan</label>
+            <select name="sort">
+                <option value="nama_asc" <?= ($sort_order === 'nama_asc') ? 'selected' : '' ?>>Nama (A-Z)</option>
+                <option value="nama_desc" <?= ($sort_order === 'nama_desc') ? 'selected' : '' ?>>Nama (Z-A)</option>
+                <option value="harga_asc" <?= ($sort_order === 'harga_asc') ? 'selected' : '' ?>>Harga Terendah</option>
+                <option value="harga_desc" <?= ($sort_order === 'harga_desc') ? 'selected' : '' ?>>Harga Tertinggi</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Cari</button>
         <a href="mobil.php" class="btn btn-secondary">Reset</a>
     </form>
@@ -130,7 +156,7 @@ $cars = $stmt_data->fetchAll();
             <ul class="pagination">
                 <?php
                 if ($total_pages > 1):
-                    $window = 2 ; // Jumlah link di kiri & kanan halaman aktif
+                    $window = 2; // Jumlah link di kiri & kanan halaman aktif
 
                     // Tombol "Sebelumnya"
                     if ($page > 1):
