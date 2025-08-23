@@ -141,7 +141,7 @@ $cars = $stmt_data->fetchAll();
                             <p class="car-price">
                                 <strong><?= format_rupiah($car['harga_sewa_harian']) ?></strong> / hari
                             </p>
-                            <a href="<?= BASE_URL ?>actions/mobil/detail.php?id=<?= $car['id_mobil'] ?>" class="btn btn-secondary">Lihat Detail</a>
+                            <a href="<?= BASE_URL ?>mobil/<?= $car['id_mobil'] ?>/<?= generate_slug($car['merk'] . ' ' . $car['model']) ?>" class="btn btn-secondary">Lihat Detail</a>
                         </div>
                     </div>
                 <?php endforeach; ?>

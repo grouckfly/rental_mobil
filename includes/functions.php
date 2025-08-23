@@ -126,3 +126,19 @@ function redirect_with_message($url, $message, $type = 'success') {
     header("Location: " . $redirect_url);
     exit;
 }
+
+/**
+ * Mengubah string menjadi format "slug" yang ramah URL.
+ * Contoh: "Toyota Avanza Veloz" menjadi "toyota-avanza-veloz"
+ * @param string $text Teks yang akan diubah.
+ * @return string Teks dalam format slug.
+ */
+function generate_slug($text) {
+    // 1. Ubah ke huruf kecil
+    $text = strtolower($text);
+    // 2. Ganti semua yang bukan huruf atau angka dengan strip (-)
+    $text = preg_replace('/[^a-z0-9]+/', '-', $text);
+    // 3. Hapus strip di awal atau akhir
+    $text = trim($text, '-');
+    return $text;
+}

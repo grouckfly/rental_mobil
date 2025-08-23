@@ -1,0 +1,17 @@
+# File: .htaccess
+
+# Aktifkan mesin rewrite URL
+RewriteEngine On
+
+# Tentukan base path dari proyek Anda
+RewriteBase /rental_mobil/
+
+# Aturan 1: Arahkan URL mobil yang SEO-friendly ke file PHP yang sebenarnya
+# Contoh: mobil/5/toyota-avanza -> actions/mobil/detail.php?id=5
+RewriteRule ^mobil/([0-9]+)/([a-zA-Z0-9-]+)/?$ actions/mobil/detail.php?id=$1 [L,QSA]
+
+# Aturan 2: Jika file atau direktori yang diminta tidak ada, arahkan ke index.php
+# Ini adalah praktik umum untuk menangani error 404
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]

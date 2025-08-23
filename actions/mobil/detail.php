@@ -114,25 +114,28 @@ require_once '../../includes/header.php';
 <div class="page-top-bar">
     <div class="tab-nav">
         <a href="#detail-utama" class="tab-link active">Detail Utama</a>
-        <a href="#riwayat-perawatan" class="tab-link">Riwayat Perawatan (<?= count($riwayat_perawatan) ?>)</a>
-    </div>
-    <div class="detail-actions">
-        <?php // --- TOMBOL AKSI CERDAS UNTUK PERAWATAN ---
-        if ($mobil['status'] === 'Tersedia'): ?>
-            <a href="<?= BASE_URL ?>actions/mobil/mulai_perawatan.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-danger">Perawatan</a>
-        <?php elseif ($mobil['status'] === 'Perawatan'): ?>
-            <a href="<?= BASE_URL ?>actions/mobil/selesaikan_perawatan.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Selesaikan</a>
+
+        <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
+            <a href="#riwayat-perawatan" class="tab-link">Riwayat Perawatan (<?= count($riwayat_perawatan) ?>)</a>
         <?php endif; ?>
 
-        <?php if ($_SESSION['role'] === 'Admin'): ?>
-        <?php endif; ?>
+    </div>
+    <div class="detail-actions">
+
         <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
             <a href="edit.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Edit</a>
+            <?php // --- TOMBOL AKSI CERDAS UNTUK PERAWATAN ---
+            if ($mobil['status'] === 'Tersedia'): ?>
+                <a href="<?= BASE_URL ?>actions/mobil/mulai_perawatan.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-danger">Perawatan</a>
+            <?php elseif ($mobil['status'] === 'Perawatan'): ?>
+                <a href="<?= BASE_URL ?>actions/mobil/selesaikan_perawatan.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Selesaikan</a>
+            <?php endif; ?>
         <?php endif; ?>
+
     </div>
 </div>
 
-
+<!-- Detail Utama -->
 <div class="tab-content">
     <div id="detail-utama" class="tab-pane active">
 
@@ -188,42 +191,45 @@ require_once '../../includes/header.php';
         </div>
     </div>
 
-    <div id="riwayat-perawatan" class="tab-pane">
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tanggal Masuk</th>
-                        <th>Keterangan</th>
-                        <th>Biaya</th>
-                        <th>Nota</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($riwayat_perawatan)): ?>
+    <!-- Detail Perawatan -->
+    <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
+        <div id="riwayat-perawatan" class="tab-pane">
+            <div class="table-container">
+                <table>
+                    <thead>
                         <tr>
-                            <td colspan="5">Belum ada riwayat perawatan untuk mobil ini.</td>
+                            <th>Tanggal Masuk</th>
+                            <th>Keterangan</th>
+                            <th>Biaya</th>
+                            <th>Nota</th>
+                            <th>Status</th>
                         </tr>
-                        <?php else: foreach ($riwayat_perawatan as $item): ?>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($riwayat_perawatan)): ?>
                             <tr>
-                                <td><?= date('d M Y', strtotime($item['tanggal_masuk'])) ?></td>
-                                <td><?= htmlspecialchars($item['keterangan']) ?></td>
-                                <td><?= format_rupiah($item['biaya'] ?? 0) ?></td>
-                                <td>
-                                    <?php if (!empty($item['foto_nota'])): ?>
-                                        <a href="<?= BASE_URL ?>assets/img/nota_perawatan/<?= $item['foto_nota'] ?>" target="_blank">Lihat Nota</a>
-                                    <?php else: echo '-';
-                                    endif; ?>
-                                </td>
-                                <td><span class="status-badge status-<?= strtolower($item['status_perawatan']) ?>"><?= $item['status_perawatan'] ?></span></td>
+                                <td colspan="5">Belum ada riwayat perawatan untuk mobil ini.</td>
                             </tr>
-                    <?php endforeach;
-                    endif; ?>
-                </tbody>
-            </table>
+                            <?php else: foreach ($riwayat_perawatan as $item): ?>
+                                <tr>
+                                    <td><?= date('d M Y', strtotime($item['tanggal_masuk'])) ?></td>
+                                    <td><?= htmlspecialchars($item['keterangan']) ?></td>
+                                    <td><?= format_rupiah($item['biaya'] ?? 0) ?></td>
+                                    <td>
+                                        <?php if (!empty($item['foto_nota'])): ?>
+                                            <a href="<?= BASE_URL ?>assets/img/nota_perawatan/<?= $item['foto_nota'] ?>" target="_blank">Lihat Nota</a>
+                                        <?php else: echo '-';
+                                        endif; ?>
+                                    </td>
+                                    <td><span class="status-badge status-<?= strtolower($item['status_perawatan']) ?>"><?= $item['status_perawatan'] ?></span></td>
+                                </tr>
+                        <?php endforeach;
+                        endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Review Section -->
