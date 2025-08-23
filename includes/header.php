@@ -54,6 +54,7 @@ if (isset($_GET['status_type']) && isset($_GET['status_msg'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($page_title) ? htmlspecialchars($page_title) : 'Rental Mobil' ?></title>
+    <link rel="icon" href="assets/img/etc/Copyright.png">
 
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dark-mode.css">

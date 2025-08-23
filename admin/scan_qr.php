@@ -11,6 +11,7 @@ require_once '../includes/config.php';
     <title>Scan QR Code Pemesanan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+    <link rel="icon" href="assets/img/etc/Copyright.png">
     <style>
         body {
             display: flex;
