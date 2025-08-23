@@ -353,7 +353,8 @@ tbody tr:hover {
 .status-menunggu-verifikasi,
 .status-menunggu-pembayaran,
 .status-menunggu-pembayaran-denda,
-.status-belum-dibaca {
+.status-belum-dibaca,
+.status-dikerjakan {
     background-color: var(--warning-color);
     color: var(--text-color);
     /* Teks diubah menjadi gelap */

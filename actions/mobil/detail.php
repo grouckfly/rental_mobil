@@ -26,6 +26,16 @@ if ($role_session === 'Pelanggan') {
     $user_data = $stmt_user->fetch();
 }
 
+// Ambil data riwayat perbaikan
+try {
+    // Ambil SEMUA riwayat perawatan (baik yang aktif maupun selesai)
+    $stmt_history = $pdo->prepare("SELECT * FROM riwayat_perawatan WHERE id_mobil = ? ORDER BY tanggal_masuk DESC");
+    $stmt_history->execute([$id_mobil]);
+    $riwayat_perawatan = $stmt_history->fetchAll();
+} catch (PDOException $e) {
+    $riwayat_perawatan = [];
+}
+
 // Ambil semua data mobil dari database
 try {
     $stmt = $pdo->prepare("SELECT * FROM mobil WHERE id_mobil = ?");
@@ -102,8 +112,9 @@ require_once '../../includes/header.php';
 ?>
 
 <div class="page-top-bar">
-    <div class="page-header">
-        <h1>Detail Mobil</h1>
+    <div class="tab-nav">
+        <a href="#detail-utama" class="tab-link active">Detail Utama</a>
+        <a href="#riwayat-perawatan" class="tab-link">Riwayat Perawatan (<?= count($riwayat_perawatan) ?>)</a>
     </div>
     <div class="detail-actions">
         <?php // --- TOMBOL AKSI CERDAS UNTUK PERAWATAN ---
@@ -121,55 +132,98 @@ require_once '../../includes/header.php';
     </div>
 </div>
 
-<div class="detail-container">
-    <div class="detail-image">
-        <img src="<?= BASE_URL ?>assets/img/mobil/<?= htmlspecialchars($mobil['gambar_mobil'] ?: 'default-car.png') ?>" alt="Gambar <?= htmlspecialchars($mobil['merk']) ?>">
-    </div>
 
-    <div class="detail-info">
-        <h2><?= htmlspecialchars($mobil['merk'] . ' ' . $mobil['model']) ?></h2>
-        <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $mobil['status'])) ?>"><?= htmlspecialchars($mobil['status']) ?></span>
+<div class="tab-content">
+    <div id="detail-utama" class="tab-pane active">
 
-        <div class="info-grid">
-            <div class="info-item"><span class="label">Plat Nomor</span><span class="value"><?= htmlspecialchars($mobil['plat_nomor']) ?></span></div>
-            <div class="info-item"><span class="label">Tahun</span><span class="value"><?= htmlspecialchars($mobil['tahun']) ?></span></div>
-            <div class="info-item"><span class="label">Jenis Mobil</span><span class="value"><?= htmlspecialchars($mobil['jenis_mobil']) ?></span></div>
-            <div class="info-item"><span class="label">Kelas Mobil</span><span class="value"><?= htmlspecialchars($mobil['kelas_mobil']) ?></span></div>
-            <div class="info-item"><span class="label">Harga Sewa / Hari</span><span class="value price"><?= format_rupiah($mobil['harga_sewa_harian']) ?></span></div>
-            <div class="info-item"><span class="label">Denda / Hari</span><span class="value price"><?= format_rupiah($mobil['denda_per_hari']) ?></span></div>
-        </div>
-    </div>
+        <div class="detail-container">
+            <div class="detail-image">
+                <img src="<?= BASE_URL ?>assets/img/mobil/<?= htmlspecialchars($mobil['gambar_mobil'] ?: 'default-car.png') ?>" alt="Gambar <?= htmlspecialchars($mobil['merk']) ?>">
+            </div>
+
+            <div class="detail-info">
+                <h2><?= htmlspecialchars($mobil['merk'] . ' ' . $mobil['model']) ?></h2>
+                <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $mobil['status'])) ?>"><?= htmlspecialchars($mobil['status']) ?></span>
+
+                <div class="info-grid">
+                    <div class="info-item"><span class="label">Plat Nomor</span><span class="value"><?= htmlspecialchars($mobil['plat_nomor']) ?></span></div>
+                    <div class="info-item"><span class="label">Tahun</span><span class="value"><?= htmlspecialchars($mobil['tahun']) ?></span></div>
+                    <div class="info-item"><span class="label">Jenis Mobil</span><span class="value"><?= htmlspecialchars($mobil['jenis_mobil']) ?></span></div>
+                    <div class="info-item"><span class="label">Kelas Mobil</span><span class="value"><?= htmlspecialchars($mobil['kelas_mobil']) ?></span></div>
+                    <div class="info-item"><span class="label">Harga Sewa / Hari</span><span class="value price"><?= format_rupiah($mobil['harga_sewa_harian']) ?></span></div>
+                    <div class="info-item"><span class="label">Denda / Hari</span><span class="value price"><?= format_rupiah($mobil['denda_per_hari']) ?></span></div>
+                </div>
+            </div>
 
 
-    <?php if ($perawatan_aktif): ?>
-        <div class="info-box maintenance-info">
-            <h4>Informasi Perawatan</h4>
-            <p><?= htmlspecialchars($perawatan_aktif['keterangan']) ?></p>
-            <?php if (!empty($perawatan_aktif['tanggal_estimasi_selesai'])): ?>
-                <small>Estimasi selesai pada: <strong><?= date('d F Y', strtotime($perawatan_aktif['tanggal_estimasi_selesai'])) ?></strong></small>
+            <?php if ($perawatan_aktif): ?>
+                <div class="info-box maintenance-info">
+                    <h4>Informasi Perawatan</h4>
+                    <p><?= htmlspecialchars($perawatan_aktif['keterangan']) ?></p>
+                    <?php if (!empty($perawatan_aktif['tanggal_estimasi_selesai'])): ?>
+                        <small>Estimasi selesai pada: <strong><?= date('d F Y', strtotime($perawatan_aktif['tanggal_estimasi_selesai'])) ?></strong></small>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="detail-full-width">
+                <div class="info-item">
+                    <div class="spec-header">
+                        <span class="label">Spesifikasi & Fitur</span>
+                        <button id="toggle-spec-btn" class="btn btn-sm btn-secondary">Lihat Selengkapnya</button>
+                    </div>
+                    <div id="spec-content" class="value description collapsed">
+                        <?= nl2br(htmlspecialchars($mobil['spesifikasi'])) ?>
+                    </div>
+                </div>
+            </div>
+
+            <?php if ($role_session === 'Admin'): ?>
+                <form action="<?= BASE_URL ?>actions/mobil/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Anda yakin? Mobil yang belum pernah disewa akan dihapus permanen, sedangkan yang sudah memiliki riwayat akan dinonaktifkan.');">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
+                    <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
+                    <button type="submit" class="btn btn-danger">Hapus</button>
+                </form>
             <?php endif; ?>
         </div>
-    <?php endif; ?>
-
-    <div class="detail-full-width">
-        <div class="info-item">
-            <div class="spec-header">
-                <span class="label">Spesifikasi & Fitur</span>
-                <button id="toggle-spec-btn" class="btn btn-sm btn-secondary">Lihat Selengkapnya</button>
-            </div>
-            <div id="spec-content" class="value description collapsed">
-                <?= nl2br(htmlspecialchars($mobil['spesifikasi'])) ?>
-            </div>
-        </div>
     </div>
 
-    <?php if ($role_session === 'Admin'): ?>
-        <form action="<?= BASE_URL ?>actions/mobil/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Anda yakin? Mobil yang belum pernah disewa akan dihapus permanen, sedangkan yang sudah memiliki riwayat akan dinonaktifkan.');">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
-            <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
-            <button type="submit" class="btn btn-danger">Hapus</button>
-        </form>
-    <?php endif; ?>
+    <div id="riwayat-perawatan" class="tab-pane">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal Masuk</th>
+                        <th>Keterangan</th>
+                        <th>Biaya</th>
+                        <th>Nota</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($riwayat_perawatan)): ?>
+                        <tr>
+                            <td colspan="5">Belum ada riwayat perawatan untuk mobil ini.</td>
+                        </tr>
+                        <?php else: foreach ($riwayat_perawatan as $item): ?>
+                            <tr>
+                                <td><?= date('d M Y', strtotime($item['tanggal_masuk'])) ?></td>
+                                <td><?= htmlspecialchars($item['keterangan']) ?></td>
+                                <td><?= format_rupiah($item['biaya'] ?? 0) ?></td>
+                                <td>
+                                    <?php if (!empty($item['foto_nota'])): ?>
+                                        <a href="<?= BASE_URL ?>assets/img/nota_perawatan/<?= $item['foto_nota'] ?>" target="_blank">Lihat Nota</a>
+                                    <?php else: echo '-';
+                                    endif; ?>
+                                </td>
+                                <td><span class="status-badge status-<?= strtolower($item['status_perawatan']) ?>"><?= $item['status_perawatan'] ?></span></td>
+                            </tr>
+                    <?php endforeach;
+                    endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- Review Section -->

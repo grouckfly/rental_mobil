@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeTableSearch();
   initializeDashboardChart();
   initializeFilterToggle();
+  initializeServiceHistory();
 });
 
 /**
@@ -128,4 +129,25 @@ function initializeFilterToggle() {
       }
     });
   }
+}
+
+// Inisialisasi tab riwayat perawatan
+function initializeServiceHistory() {
+  const tabLinks = document.querySelectorAll(".tab-link");
+  const tabPanes = document.querySelectorAll(".tab-pane");
+
+  tabLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute("href");
+
+      tabLinks.forEach((l) => l.classList.remove("active"));
+      this.classList.add("active");
+
+      tabPanes.forEach((pane) => {
+        pane.style.display =
+          pane.id === targetId.substring(1) ? "block" : "none";
+      });
+    });
+  });
 }

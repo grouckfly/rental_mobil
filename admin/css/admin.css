@@ -270,3 +270,29 @@ body.dark-mode .maintenance-info {
 body.dark-mode .maintenance-info h4 {
     color: var(--warning-color);
 }
+
+.tab-nav {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.tab-nav .tab-link {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: var(--muted-text-color);
+    font-weight: 500;
+}
+
+.tab-nav .tab-link.active {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
