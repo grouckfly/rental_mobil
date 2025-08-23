@@ -19,11 +19,11 @@ function check_auth($required_roles = [])
     }
 
     // 2. KEAMANAN TAMBAHAN: Validasi User Agent untuk mencegah Session Hijacking
-    if ($_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT']) {
-        session_unset();
-        session_destroy();
-        redirect_with_message(BASE_URL . 'login.php', 'Sesi tidak valid, silakan login kembali.', 'error');
-    }
+    // if ($_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT']) {
+    //     session_unset();
+    //     session_destroy();
+    //     redirect_with_message(BASE_URL . 'login.php', 'Sesi tidak valid, silakan login kembali.', 'error');
+    // }
 
     // 3. Periksa apakah role pengguna sesuai dengan yang dibutuhkan
     $user_role = $_SESSION['role'];

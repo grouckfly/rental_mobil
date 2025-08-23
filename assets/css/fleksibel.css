@@ -123,6 +123,10 @@
         font-size: 1.8rem;
     }
 
+    .sidebar {
+        width: 280px; 
+    }
+
     /* Buat semua grid menjadi 1 kolom */
     .dashboard-widgets,
     .car-grid,
