@@ -231,7 +231,7 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         }
 
         // Tombol Batalkan Pesanan
-        $cancellable_statuses = ['Menunggu Pembayaran', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Pengajuan Ditolak'];
+        $cancellable_statuses = ['Menunggu Pembayaran', 'Menunggu Verifikasi', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Pengajuan Ditolak'];
         if (in_array($pemesanan['status_pemesanan'], $cancellable_statuses)) {
             echo '<form action="'.BASE_URL.'actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm(\'Anda yakin ingin membatalkan pesanan ini?\');"><input type="hidden" name="id_pemesanan" value="'.$pemesanan['id_pemesanan'].'"><button type="submit" class="btn btn-danger">Batalkan Pesanan</button></form>';
         }
@@ -245,10 +245,18 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         } 
         elseif ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda' && empty($pembayaran_denda)) {
             echo '<a href="'.BASE_URL.'pelanggan/bayar_denda.php?id='.$pemesanan['id_pemesanan'].'" class="btn btn-danger">Bayar Denda</a>';
-        } 
-        elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi') {
-            echo '<a href="'.BASE_URL.'pelanggan/ajukan_pembatalan.php?id='.$pemesanan['id_pemesanan'].'" class="btn btn-danger">Ajukan Pembatalan</a> ';
-            echo '<a href="'.BASE_URL.'pelanggan/ajukan_ambil_cepat.php?id='.$pemesanan['id_pemesanan'].'" class="btn btn-info">Ambil Lebih Cepat</a>';
+        } elseif ($pemesanan['status_pemesanan'] === 'Dikonfirmasi') {
+            echo '<a href="' . BASE_URL . 'pelanggan/ajukan_pembatalan.php?id=' . $pemesanan['id_pemesanan'] . '" class="btn btn-danger">Ajukan Pembatalan</a> ';
+            
+            // Cek selisih waktu sebelum menampilkan tombol
+            $waktu_sekarang = time();
+            $waktu_mulai_sewa = strtotime($pemesanan['tanggal_mulai']);
+            $selisih_detik = $waktu_mulai_sewa - $waktu_sekarang;
+
+            // Tampilkan tombol "Ambil Lebih Cepat" HANYA jika selisih waktu masih LEBIH DARI 1 jam (3600 detik)
+            if ($selisih_detik > 3600) {
+                echo '<a href="' . BASE_URL . 'pelanggan/ajukan_ambil_cepat.php?id=' . $pemesanan['id_pemesanan'] . '" class="btn btn-info">Ambil Lebih Cepat</a>';
+            }
         } 
         elseif ($pemesanan['status_pemesanan'] === 'Selesai') {
             if (empty($pemesanan['review_pelanggan'])) {
