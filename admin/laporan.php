@@ -6,7 +6,7 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 check_auth(['Admin', 'Karyawan']);
-$page_title = 'Laporan & Analitik';
+$page_title = 'Laporan & Analisa';
 require_once '../includes/header.php';
 
 // Atur filter tanggal, default untuk bulan berjalan
@@ -81,7 +81,7 @@ try {
 ?>
 
 <div class="page-header">
-    <h1>Laporan & Analitik</h1>
+    <h1>Laporan & Analisa</h1>
     <p>Analisis kinerja bisnis Anda berdasarkan rentang tanggal yang dipilih.</p>
 </div>
 

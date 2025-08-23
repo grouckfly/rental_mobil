@@ -34,6 +34,16 @@ try {
     if (!$mobil) {
         redirect_with_message('../../admin/mobil.php', 'Mobil dengan ID tersebut tidak ditemukan.', 'error');
     }
+    $perawatan_aktif = null;
+    if ($mobil['status'] === 'Perawatan') {
+        $stmt_perawatan = $pdo->prepare("
+            SELECT * FROM riwayat_perawatan 
+            WHERE id_mobil = ? AND status_perawatan = 'Dikerjakan' 
+            ORDER BY tanggal_masuk DESC LIMIT 1
+        ");
+        $stmt_perawatan->execute([$id_mobil]);
+        $perawatan_aktif = $stmt_perawatan->fetch();
+    }
 } catch (PDOException $e) {
     redirect_with_message('../../admin/mobil.php', 'Terjadi kesalahan pada database.', 'error');
 }
@@ -96,16 +106,17 @@ require_once '../../includes/header.php';
         <h1>Detail Mobil</h1>
     </div>
     <div class="detail-actions">
+        <?php // --- TOMBOL AKSI CERDAS UNTUK PERAWATAN ---
+        if ($mobil['status'] === 'Tersedia'): ?>
+            <a href="<?= BASE_URL ?>actions/mobil/mulai_perawatan.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-danger">Perawatan</a>
+        <?php elseif ($mobil['status'] === 'Perawatan'): ?>
+            <a href="<?= BASE_URL ?>actions/mobil/selesaikan_perawatan.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Selesaikan</a>
+        <?php endif; ?>
+
+        <?php if ($_SESSION['role'] === 'Admin'): ?>
+        <?php endif; ?>
         <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?>
-            <a href="<?= BASE_URL ?>admin/mobil.php" class="btn btn-secondary">Kembali</a>
             <a href="edit.php?id=<?= $mobil['id_mobil'] ?>" class="btn btn-primary">Edit</a>
-            <?php if ($role_session === 'Admin'): ?>
-                <form action="<?= BASE_URL ?>actions/mobil/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Anda yakin? Mobil yang belum pernah disewa akan dihapus permanen, sedangkan yang sudah memiliki riwayat akan dinonaktifkan.');">
-                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
-                    <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
-                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                </form>
-            <?php endif; ?>
         <?php endif; ?>
     </div>
 </div>
@@ -129,6 +140,17 @@ require_once '../../includes/header.php';
         </div>
     </div>
 
+
+    <?php if ($perawatan_aktif): ?>
+        <div class="info-box maintenance-info">
+            <h4>Informasi Perawatan</h4>
+            <p><?= htmlspecialchars($perawatan_aktif['keterangan']) ?></p>
+            <?php if (!empty($perawatan_aktif['tanggal_estimasi_selesai'])): ?>
+                <small>Estimasi selesai pada: <strong><?= date('d F Y', strtotime($perawatan_aktif['tanggal_estimasi_selesai'])) ?></strong></small>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+
     <div class="detail-full-width">
         <div class="info-item">
             <div class="spec-header">
@@ -140,6 +162,14 @@ require_once '../../includes/header.php';
             </div>
         </div>
     </div>
+
+    <?php if ($role_session === 'Admin'): ?>
+        <form action="<?= BASE_URL ?>actions/mobil/hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Anda yakin? Mobil yang belum pernah disewa akan dihapus permanen, sedangkan yang sudah memiliki riwayat akan dinonaktifkan.');">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
+            <input type="hidden" name="id_mobil" value="<?= $mobil['id_mobil'] ?>">
+            <button type="submit" class="btn btn-danger">Hapus</button>
+        </form>
+    <?php endif; ?>
 </div>
 
 <!-- Review Section -->

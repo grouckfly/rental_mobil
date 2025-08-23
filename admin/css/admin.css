@@ -249,3 +249,24 @@ body.dark-mode .cancellation-info {
         grid-template-columns: 1fr;
     }
 }
+
+/* Deskripsi Perawatan Mobil */
+.maintenance-info {
+    margin: 20px 0;
+    padding: 15px;
+    border-left: 4px solid var(--warning-color);
+    background-color: #fff9e6;
+}
+
+body.dark-mode .maintenance-info {
+    background-color: #3e3828;
+}
+
+.maintenance-info h4 {
+    margin-bottom: 8px;
+    color: #856404;
+}
+
+body.dark-mode .maintenance-info h4 {
+    color: var(--warning-color);
+}
