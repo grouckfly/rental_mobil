@@ -18,7 +18,34 @@ if (ENVIRONMENT === 'development') {
 }
 
 // ===================================================================
-// 2. KONSTANTA & PENGATURAN DASAR
+// 2. HTTP SECURITY HEADERS (PENINGKATAN KEAMANAN)
+// ===================================================================
+
+// Content Security Policy (CSP) - Melindungi dari XSS dan injeksi data
+// Hanya izinkan sumber daya (gambar, script, font) dari domain kita sendiri dan CDN terpercaya yang kita gunakan.
+$csp_directives = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://unpkg.com", // 'unsafe-inline' untuk script kecil
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net", // 'unsafe-inline' untuk <style>
+    "img-src 'self' data:",
+    "font-src 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'"
+];
+header("Content-Security-Policy: " . implode('; ', $csp_directives));
+
+// Melarang browser menebak-nebak tipe file (mencegah serangan MIME sniffing)
+header("X-Content-Type-Options: nosniff");
+
+// Melarang website lain menampilkan website Anda di dalam <iframe> (mencegah Clickjacking)
+header("X-Frame-Options: DENY");
+
+// (Hanya untuk HTTPS) Memaksa browser selalu menggunakan koneksi aman
+// JANGAN AKTIFKAN baris di bawah ini jika Anda masih di localhost (HTTP)
+// header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
+
+// ===================================================================
+// 3. KONSTANTA & PENGATURAN DASAR
 // ===================================================================
 // Atur zona waktu default
 date_default_timezone_set('Asia/Jakarta');
@@ -27,7 +54,7 @@ date_default_timezone_set('Asia/Jakarta');
 define('BASE_URL', 'http://localhost/rental_mobil/');
 
 // ===================================================================
-// 3. KONEKSI DATABASE
+// 4. KONEKSI DATABASE
 // ===================================================================
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'rental_mobil');
@@ -45,7 +72,7 @@ try {
 }
 
 // ===================================================================
-// 4. PENGATURAN KEAMANAN SESSION
+// 5. PENGATURAN KEAMANAN SESSION
 // ===================================================================
 ini_set('session.use_only_cookies', 1);
 ini_set('session.use_strict_mode', 1);
@@ -65,7 +92,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // ===================================================================
-// 5. MENJALANKAN TUGAS OTOMATIS (JIKA PERLU)
+// 6. MENJALANKAN TUGAS OTOMATIS (JIKA PERLU)
 // ===================================================================
 // Memanggil skrip pengecekan pesanan kedaluwarsa.
 if (isset($pdo)) {
