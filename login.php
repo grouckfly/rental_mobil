@@ -136,6 +136,7 @@ require_once 'includes/header.php';
         } ?>
 
         <form action="login.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <div class="form-group"><label for="username">Username</label><input type="text" id="username" name="username" required autocomplete="username"></div>
             <div class="form-group"><label for="password">Password</label><input type="password" id="password" name="password" required autocomplete="current-password"></div>
             <button type="submit" class="btn btn-primary">Login</button>

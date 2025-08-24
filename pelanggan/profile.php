@@ -67,7 +67,7 @@ try {
 <div class="detail-actions">
     <form action="<?= BASE_URL ?>actions/pengguna/hapus_akun.php" method="POST" onsubmit="return confirm('PERINGATAN: Anda akan menghapus akun Anda. Lanjutkan?');">
         
-        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         
         <button type="submit" class="btn btn-danger">Hapus Akun Saya</button>
     </form>

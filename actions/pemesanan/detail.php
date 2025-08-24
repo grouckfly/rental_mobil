@@ -111,6 +111,7 @@ if ($role_session === 'Pelanggan' && !empty($pemesanan['catatan_admin'])):
         <?= htmlspecialchars($pemesanan['catatan_admin']) ?>
 
         <form action="<?= BASE_URL ?>actions/pemesanan/hapus_catatan.php" method="POST" style="margin-top:10px;">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
             <button type="submit" class="btn btn-sm btn-light">Saya Mengerti</button>
         </form>
@@ -158,6 +159,7 @@ if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && $role_session ==
             <br>
             <h3>Unggah Bukti Pembayaran</h3>
             <form action="" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <input type="hidden" name="konfirmasi_pembayaran" value="1">
                 <div class="form-group"><label for="bukti_pembayaran">Pilih File</label><input type="file" id="bukti_pembayaran" name="bukti_pembayaran" required></div>
                 <button type="submit" class="btn btn-primary">Konfirmasi Pembayaran</button>
@@ -256,6 +258,7 @@ if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && $role_session ==
                 <div class="value"><?= htmlspecialchars($pemesanan['rekening_pembatalan']) ?></div>
             </div>
             <form action="<?= BASE_URL ?>actions/pemesanan/proses_pembatalan.php" method="POST" onsubmit="return confirm('Anda akan membatalkan pesanan ini. Lanjutkan?');" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>"><button type="submit" class="btn btn-danger">Proses Pembatalan</button>
             </form>
         </div>
@@ -277,6 +280,7 @@ if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && $role_session ==
                 <div class="value price"><?= format_rupiah($pemesanan['total_biaya_diajukan']) ?></div>
             </div>
             <div class="detail-actions">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <form action="<?= BASE_URL ?>actions/pemesanan/proses_pengajuan.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="keputusan" value="setuju"><button type="submit" class="btn btn-success">Setujui</button></form>
                 <form action="<?= BASE_URL ?>actions/pemesanan/proses_pengajuan.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>"><input type="hidden" name="keputusan" value="tolak"><button type="submit" class="btn btn-danger">Tolak</button></form>
             </div>
@@ -299,24 +303,44 @@ if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran' && $role_session ==
         if (in_array($role_session, ['Admin', 'Karyawan'])) {
 
             // Tombol Verifikasi Pembayaran SEWA
-            if ($pembayaran_sewa && $pembayaran_sewa['status_pembayaran'] === 'Menunggu Verifikasi') {
-                echo '<form action="' . BASE_URL . 'actions/pembayaran/verifikasi.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="' . $pemesanan['id_pemesanan'] . '"><input type="hidden" name="id_mobil" value="' . $pemesanan['id_mobil'] . '"><button type="submit" class="btn btn-primary">Verifikasi Bayar Sewa</button></form>';
+            if ($pemesanan['status_pemesanan'] === 'Menunggu Verifikasi') {
+                echo '<form action="' . BASE_URL . 'actions/pembayaran/verifikasi.php" method="POST" style="display:inline-block;">
+                <input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token']) . '">
+                <input type="hidden" name="id_pemesanan" value="' . $pemesanan['id_pemesanan'] . '">
+                <input type="hidden" name="id_mobil" value="' . $pemesanan['id_mobil'] . '">
+                <button type="submit" class="btn btn-primary">Verifikasi Bayar Sewa</button>
+                </form>';
             }
 
             // Tombol Verifikasi Pembayaran DENDA
             if ($pembayaran_denda && $pembayaran_denda['status_pembayaran'] === 'Menunggu Verifikasi') {
-                echo '<form action="' . BASE_URL . 'actions/pembayaran/verifikasi_denda.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pembayaran" value="' . $pembayaran_denda['id_pembayaran'] . '"><input type="hidden" name="id_pemesanan" value="' . $pemesanan['id_pemesanan'] . '"><input type="hidden" name="id_mobil" value="' . $pemesanan['id_mobil'] . '"><button type="submit" class="btn btn-success">Verifikasi Denda</button></form>';
+                echo '<form action="' . BASE_URL . 'actions/pembayaran/verifikasi_denda.php" method="POST" style="display:inline-block;">
+                <input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token']) . '">
+                <input type="hidden" name="id_pembayaran" value="' . $pembayaran_denda['id_pembayaran'] . '">
+                <input type="hidden" name="id_pemesanan" value="' . $pemesanan['id_pemesanan'] . '">
+                <input type="hidden" name="id_mobil" value="' . $pemesanan['id_mobil'] . '">
+                <button type="submit" class="btn btn-success">Verifikasi Denda</button>
+                </form>';
             }
 
             // Tombol Konfirmasi Bayar Denda di Tempat
             if ($pemesanan['status_pemesanan'] === 'Menunggu Pembayaran Denda' && !$pembayaran_denda) {
-                echo '<form action="' . BASE_URL . 'actions/pembayaran/konfirmasi_denda.php" method="POST" style="display:inline-block;"><input type="hidden" name="id_pemesanan" value="' . $pemesanan['id_pemesanan'] . '"><input type="hidden" name="id_mobil" value="' . $pemesanan['id_mobil'] . '"><button type="submit" class="btn btn-success">Konfirmasi Bayar Denda</button></form>';
+                echo '<form action="' . BASE_URL . 'actions/pembayaran/konfirmasi_denda.php" method="POST" style="display:inline-block;">
+                <input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token']) . '">
+                <input type="hidden" name="id_pemesanan" value="' . $pemesanan['id_pemesanan'] . '">
+                <input type="hidden" name="id_mobil" value="' . $pemesanan['id_mobil'] . '">
+                <button type="submit" class="btn btn-success">Konfirmasi Bayar Denda</button>
+                </form>';
             }
 
             // Tombol Batalkan Pesanan
             $cancellable_statuses = ['Menunggu Pembayaran', 'Menunggu Verifikasi', 'Dikonfirmasi', 'Pengajuan Ambil Cepat', 'Pengajuan Ditolak'];
             if (in_array($pemesanan['status_pemesanan'], $cancellable_statuses)) {
-                echo '<form action="' . BASE_URL . 'actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm(\'Anda yakin ingin membatalkan pesanan ini?\');"><input type="hidden" name="id_pemesanan" value="' . $pemesanan['id_pemesanan'] . '"><button type="submit" class="btn btn-danger">Batalkan Pesanan</button></form>';
+                echo '<form action="' . BASE_URL . 'actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm(\'Anda yakin ingin membatalkan pesanan ini?\');">
+                <input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token']) . '">
+                <input type="hidden" name="id_pemesanan" value="' . $pemesanan['id_pemesanan'] . '">
+                <button type="submit" class="btn btn-danger">Batalkan Pesanan</button>
+                </form>';
             }
         }
 

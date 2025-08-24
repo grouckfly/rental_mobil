@@ -61,6 +61,7 @@ $role_list = ['Admin', 'Karyawan', 'Pelanggan'];
 
 <div class="filter-container">
     <form action="" method="GET" class="filter-form">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         <div class="form-group" style="flex-grow: 1;">
             <label>Cari Pengguna</label>
             <input type="text" name="q" placeholder="Cari berdasarkan Nama, NIK, dll..." value="<?= htmlspecialchars($search_query) ?>" class="form-control">

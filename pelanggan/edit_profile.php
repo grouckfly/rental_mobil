@@ -23,6 +23,7 @@ try {
     <div class="form-box">
 
         <form action="<?= BASE_URL ?>actions/pengguna/update_profile.php" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <h1>Edit Profile</h1>
             <hr>
             <h3>Data Pribadi</h3>

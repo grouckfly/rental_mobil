@@ -87,6 +87,7 @@ try {
 
 <div class="filter-container">
     <form action="" method="GET" class="filter-form">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         <div class="form-group"><label>Dari Tanggal</label><input type="date" name="tgl_awal" value="<?= htmlspecialchars($tgl_awal) ?>"></div>
         <div class="form-group"><label>Sampai Tanggal</label><input type="date" name="tgl_akhir" value="<?= htmlspecialchars($tgl_akhir) ?>"></div>
         <button type="submit" class="btn btn-primary">Tampilkan Laporan</button>

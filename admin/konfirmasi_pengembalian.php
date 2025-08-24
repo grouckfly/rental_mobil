@@ -34,7 +34,8 @@ require_once '../includes/header.php';
         <p style="text-align:center; margin-top:20px;">Silakan terima pembayaran denda dari pelanggan. Setelah pembayaran diterima, selesaikan proses sewa.</p>
 
         <form action="<?= BASE_URL ?>actions/pemesanan/proses_penyelesaian.php" method="POST" style="margin-top: 20px;" onsubmit="return confirm('Anda yakin denda sudah dibayar dan ingin menyelesaikan penyewaan ini?');">
-            <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">    
+        <input type="hidden" name="id_pemesanan" value="<?= $pemesanan['id_pemesanan'] ?>">
             <input type="hidden" name="id_mobil" value="<?= $pemesanan['id_mobil'] ?>">
             <button type="submit" class="btn btn-success" style="width: 100%;">Denda Sudah Dibayar & Selesaikan Sewa</button>
         </form>

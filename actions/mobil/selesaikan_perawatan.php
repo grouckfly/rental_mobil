@@ -87,6 +87,7 @@ require_once '../../includes/header.php';
     <div class="form-box">
         <p><strong>Keterangan Awal:</strong> <?= htmlspecialchars($perawatan['keterangan']) ?></p>
         <form action="" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <div class="form-group"><label for="biaya">Total Biaya Perawatan (Rp)</label>
                 <input type="number" id="biaya" name="biaya" placeholder="Kosongkan jika tidak ada biaya">
             </div>

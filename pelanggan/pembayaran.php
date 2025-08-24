@@ -135,6 +135,7 @@ $durasi_sewa = hitung_durasi_sewa($booking['tanggal_mulai'], $booking['tanggal_s
         <hr>
         <h3>Unggah Bukti Pembayaran</h3>
         <form action="" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <div class="form-group">
                 <label for="bukti_pembayaran">Pilih File (JPG, PNG, PDF)</label>
                 <input type="file" id="bukti_pembayaran" name="bukti_pembayaran" required accept="image/*,application/pdf">

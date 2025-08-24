@@ -91,6 +91,7 @@ $cars = $stmt_data->fetchAll();
 
 <div class="filter-container">
     <form action="" method="GET" class="filter-form">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         <div class="form-group" style="flex-grow: 1;">
             <label>Cari Mobil</label>
             <input type="text" name="q" placeholder="Ketik Merk atau Model..." value="<?= htmlspecialchars($search_query) ?>">

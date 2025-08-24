@@ -127,6 +127,7 @@ require_once '../../includes/header.php';
         <form action="" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?= $mobil['id_mobil'] ?>">
             <input type="hidden" name="gambar_lama" value="<?= htmlspecialchars($mobil['gambar_mobil']) ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
 
             <div class="form-grid">
                 <div class="form-group">

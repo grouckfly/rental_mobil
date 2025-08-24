@@ -78,6 +78,7 @@ require_once '../../includes/header.php';
         <?php endif; ?>
 
         <form action="" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <div class="form-grid">
                 <div class="form-group"><label for="username">Username</label><input type="text" id="username" name="username" required value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"></div>
                 <div class="form-group"><label for="nama_lengkap">Nama Lengkap</label><input type="text" id="nama_lengkap" name="nama_lengkap" required value="<?= htmlspecialchars($_POST['nama_lengkap'] ?? '') ?>"></div>

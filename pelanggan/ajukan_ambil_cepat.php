@@ -45,6 +45,7 @@ require_once '../includes/header.php';
         <hr>
         
         <form action="<?= BASE_URL ?>actions/pemesanan/ajukan_ambil_cepat.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <input type="hidden" name="id_pemesanan" value="<?= $id_pemesanan ?>">
             
             <div class="form-group">

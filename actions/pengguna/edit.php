@@ -78,6 +78,7 @@ require_once '../../includes/header.php';
 <div class="form-container admin-form">
     <div class="form-box">
         <form action="" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <input type="hidden" name="id_pengguna" value="<?= $user['id_pengguna'] ?>">
             <div class="form-grid">
                 <div class="form-group"><label>Username</label><input type="text" name="username" required value="<?= htmlspecialchars($user['username']) ?>"></div>

@@ -15,6 +15,7 @@ require_once '../../includes/header.php';
 <div class="form-container">
     <div class="form-box">
         <form action="kirim.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <!-- Dropdown -->
             <?php if (in_array($role_session, ['Admin', 'Karyawan'])): ?> 
             <div class="form-group">

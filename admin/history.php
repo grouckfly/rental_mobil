@@ -110,6 +110,7 @@ try {
 
     <div class="filter-container" id="advanced-filter-container" style="display:none;">
         <form action="" method="GET" id="filter-form" class="filter-form">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <div class="form-group"><label>Dari Tgl</label><input type="date" name="tgl_awal" value="<?= htmlspecialchars($tgl_awal) ?>"></div>
             <div class="form-group"><label>Sampai Tgl</label><input type="date" name="tgl_akhir" value="<?= htmlspecialchars($tgl_akhir) ?>"></div>
             <div class="form-group"><label>Status</label>

@@ -85,7 +85,8 @@ try {
                             <a href="detail.php?id=<?= $pesan['id_pesan'] ?>" class="btn btn-info btn-sm">Lihat</a>
 
                             <form action="hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Anda yakin ingin menghapus seluruh percakapan ini? Tindakan ini tidak bisa dibatalkan.');">
-                                <input type="hidden" name="id_pesan" value="<?= $pesan['id_pesan'] ?>">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">    
+                            <input type="hidden" name="id_pesan" value="<?= $pesan['id_pesan'] ?>">
                                 <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                             </form>
                         </td>

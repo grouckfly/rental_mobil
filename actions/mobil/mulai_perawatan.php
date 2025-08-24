@@ -46,6 +46,7 @@ require_once '../../includes/header.php';
 <div class="form-container admin-form">
     <div class="form-box">
         <form action="" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <div class="form-group"><label for="keterangan">Keterangan Perawatan</label><textarea id="keterangan" name="keterangan" rows="4" required placeholder="Contoh: Ganti oli, servis rutin, perbaikan AC..."></textarea></div>
             <div class="form-group"><label for="tanggal_estimasi_selesai">Tanggal Estimasi Selesai</label><input type="date" id="tanggal_estimasi_selesai" name="tanggal_estimasi_selesai"></div>
             <button type="submit" class="btn btn-primary">Simpan</button>

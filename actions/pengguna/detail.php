@@ -63,8 +63,7 @@ require_once '../../includes/header.php';
 
             <form action="hapus.php" method="POST" style="display:inline;" onsubmit="return confirm('Peringatan: Yakin ingin menghapus pengguna ini?');">
 
-                <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
-
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <input type="hidden" name="id_pengguna" value="<?= $user['id_pengguna'] ?>">
                 <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
             </form>

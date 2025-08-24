@@ -112,6 +112,7 @@ try {
         <div class="form-group" style="flex-grow: 1;">
             <label for="kode-pesanan">Konfirmasi Pesanan Cepat</label>
             <form action="konfirmasi.php" method="GET" style="display: flex; gap: 10px;">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <input type="text" name="kode" id="kode-pesanan" class="form-control" placeholder="Masukkan Kode Pemesanan..." required>
                 <button type="submit" class="btn btn-primary">Cari</button>
             </form>

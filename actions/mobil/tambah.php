@@ -112,7 +112,7 @@ require_once '../../includes/header.php';
         <?php endif; ?>
 
         <form action="" method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
 
             <div class="form-grid">
                 <div class="form-group"><label for="merk">Merk Mobil</label><input type="text" id="merk" name="merk" required value="<?= htmlspecialchars($input['merk'] ?? '') ?>"></div>

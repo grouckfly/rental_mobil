@@ -94,7 +94,7 @@ require_once 'includes/header.php';
         <?php endif; ?>
 
         <form action="register.php" method="POST">
-            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
 
             <div class="form-group">
                 <label for="username">Username</label>

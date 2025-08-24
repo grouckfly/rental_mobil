@@ -65,6 +65,7 @@ try {
                             ?>
                                 <form action="../actions/pemesanan/batalkan.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
                                     <input type="hidden" name="id_pemesanan" value="<?= $booking['id_pemesanan'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                                 </form>
                             <?php endif; ?>
 

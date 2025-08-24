@@ -86,6 +86,7 @@ $kelas_list = ['Low Level', 'Mid Level', 'High Level', 'Luxury'];
 
 <div class="filter-container">
     <form action="" method="GET" class="filter-form">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         <div class="form-group" style="flex-grow: 1;">
             <label>Cari Mobil</label>
             <input type="text" name="q" placeholder="Ketik Merk, Model, Jenis, atau Plat Nomor..." value="<?= htmlspecialchars($search_query) ?>" class="form-control">

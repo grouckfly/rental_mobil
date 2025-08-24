@@ -92,6 +92,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Buat token HANYA jika belum ada di dalam sesi.
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // ===================================================================
 // 6. MENJALANKAN TUGAS OTOMATIS (JIKA PERLU)
 // ===================================================================

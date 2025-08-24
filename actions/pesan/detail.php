@@ -72,6 +72,7 @@ require_once '../../includes/header.php';
         <hr>
         <h4>Balas Percakapan</h4>
         <form action="balas.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <input type="hidden" name="parent_id" value="<?= $id_pesan_utama ?>">
             <input type="hidden" name="id_penerima_asli" value="<?= $pesan_utama['id_pengirim'] ?>">
             <div class="form-group">
