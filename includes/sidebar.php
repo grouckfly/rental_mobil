@@ -101,20 +101,14 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Pelanggan') {
                     <a href="<?= BASE_URL ?>mobil.php">Mobil Tersedia</a>
                 </li>
                 <li <?= is_active('pemesanan.php', $current_page) ?>>
-                    <a href="<?= BASE_URL ?>pelanggan/pemesanan.php">Pemesanan Saya</a>
+                    <a href="<?= BASE_URL ?>pelanggan/pemesanan.php">
+                        Pemesanan Saya
+                        <?php if ($id_pembayaran_tertunda): ?>
+                            <span class="notification-dot"></span>
+                        <?php endif; ?>
+                    </a>
                 </li>
-                <?php
-                // ================================================
-                // Tampilkan menu pembayaran hanya jika ada tagihan
-                // ================================================
-                if ($id_pembayaran_tertunda):
-                ?>
-                    <li <?= is_active('pembayaran.php', $current_page) ?>>
-                        <a href="<?= BASE_URL ?>pelanggan/pembayaran.php?id=<?= $id_pembayaran_tertunda ?>">
-                            Pembayaran <span class="notification-dot"></span>
-                        </a>
-                    </li>
-                <?php endif; ?>
+                </li>
                 <li <?= is_active('history.php', $current_page) ?>>
                     <a href="<?= BASE_URL ?>admin/history.php">Riwayat Sewa</a>
                 </li>

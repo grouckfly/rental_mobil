@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sewa_sekarang'])) {
                 $id_pemesanan_baru = $pdo->lastInsertId();
                 $pdo->commit();
 
-                redirect_with_message(BASE_URL . "actions/pemesanan/detail.php?id=" . $id_pemesanan_baru, 'Pemesanan berhasil dibuat! Segera lakukan pembayaran.');
+                redirect_with_message(BASE_URL . "pelanggan/pemesanan.php" , 'Pemesanan berhasil dibuat! Segera lakukan pembayaran.');
             }
         }
     } catch (PDOException $e) {
