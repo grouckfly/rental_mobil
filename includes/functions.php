@@ -123,6 +123,11 @@ function redirect_with_message($url, $message, $type = 'success') {
     // Bangun URL baru dengan parameter status
     $redirect_url = $url . $separator . 'status_type=' . $type . '&status_msg=' . urlencode($message);
     
+    // Hapus session token CSRF jika ada, karena aksi sudah selesai
+    if (isset($_SESSION['csrf_token'])) {
+        unset($_SESSION['csrf_token']);
+    }
+
     header("Location: " . $redirect_url);
     exit;
 }

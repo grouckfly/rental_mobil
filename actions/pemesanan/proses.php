@@ -65,8 +65,11 @@ try {
     $pdo->commit();
 
     // 5. Redirect ke halaman pembayaran dengan ID yang BENAR
-    redirect_with_message(BASE_URL . "pelanggan/pembayaran.php?id=" . $id_pemesanan_baru, 'Pemesanan berhasil dibuat! Segera lakukan pembayaran.');
-
+    $_SESSION['id_pemesanan_untuk_bayar'] = $id_pemesanan_baru;
+    
+    // Redirect ke halaman pembayaran TANPA ID di URL
+    redirect_with_message(BASE_URL . "pelanggan/pembayaran.php", 'Pemesanan berhasil dibuat! Segera lakukan pembayaran.');
+    
 } catch (PDOException $e) {
     $pdo->rollBack();
     redirect_with_message(BASE_URL . "actions/mobil/detail.php?id=$id_mobil", 'Gagal membuat pemesanan: ' . $e->getMessage(), 'error');

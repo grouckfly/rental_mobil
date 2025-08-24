@@ -10,6 +10,13 @@ check_auth('Pelanggan');
 
 // Ambil ID pemesanan dari URL dan ID pengguna dari session
 $id_pemesanan = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($id_pemesanan === 0 && isset($_SESSION['id_pemesanan_untuk_bayar'])) {
+    $id_pemesanan = $_SESSION['id_pemesanan_untuk_bayar'];
+    // Hapus session setelah digunakan agar tidak dipakai lagi
+    unset($_SESSION['id_pemesanan_untuk_bayar']);
+}
+
 $id_pengguna = $_SESSION['id_pengguna'];
 
 if ($id_pemesanan === 0) {
@@ -20,27 +27,17 @@ if ($id_pemesanan === 0) {
 try {
     // Ambil data pemesanan untuk ditampilkan
     $stmt = $pdo->prepare("
-        SELECT p.*, m.merk, m.model 
+        SELECT p.*, m.merk, m.model, m.harga_sewa_harian
         FROM pemesanan p 
         JOIN mobil m ON p.id_mobil = m.id_mobil 
         WHERE p.id_pemesanan = ? AND p.id_pengguna = ?
     ");
-    $stmt->execute([$id_pemesanan, $id_pengguna]);
+    $stmt->execute([$id_pemesanan, $_SESSION['id_pengguna']]);
     $booking = $stmt->fetch();
 
-    // ==========================================================
-    // PERBAIKAN LOGIKA VALIDASI
-    // ==========================================================
-    // Cek apakah pesanan ditemukan. Jika tidak, baru redirect.
-    if (!$booking) {
-        redirect_with_message('pemesanan.php', 'Pemesanan tidak ditemukan atau bukan milik Anda.', 'error');
+    if (!$booking || $booking['status_pemesanan'] !== 'Menunggu Pembayaran') {
+        redirect_with_message('pemesanan.php', 'Pemesanan ini tidak valid atau sudah diproses.', 'error');
     }
-    // Cek apakah pesanan ini memang sedang menunggu pembayaran.
-    // Jika statusnya sudah lain (misal: sudah dibayar), redirect.
-    if ($booking['status_pemesanan'] !== 'Menunggu Pembayaran') {
-        redirect_with_message('pemesanan.php', 'Pesanan ini sudah tidak dapat dibayar lagi.', 'error');
-    }
-
 } catch (PDOException $e) {
     redirect_with_message('pemesanan.php', 'Terjadi kesalahan pada database.', 'error');
 }
@@ -71,13 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 // Selesaikan transaksi
                 $pdo->commit();
-                
-                redirect_with_message(BASE_URL . "pelanggan/pemesanan.php", 'Terima kasih! Bukti pembayaran Anda telah diunggah dan sedang menunggu verifikasi.');
 
+                redirect_with_message(BASE_URL . "pelanggan/pemesanan.php", 'Terima kasih! Bukti pembayaran Anda telah diunggah dan sedang menunggu verifikasi.');
             } catch (PDOException $e) {
                 $pdo->rollBack(); // Batalkan semua jika ada error
                 if ($e->getCode() == '23000') {
-                     redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Anda sudah pernah mengunggah bukti untuk pesanan ini.', 'error');
+                    redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Anda sudah pernah mengunggah bukti untuk pesanan ini.', 'error');
                 }
                 redirect_with_message("pembayaran.php?id=$id_pemesanan", 'Gagal menyimpan data pembayaran.', 'error');
             }
@@ -89,6 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $page_title = 'Pembayaran Pesanan #' . $booking['kode_pemesanan'];
 require_once '../includes/header.php';
+
+// Hitung durasi untuk ditampilkan
+$durasi_sewa = hitung_durasi_sewa($booking['tanggal_mulai'], $booking['tanggal_selesai']);
 ?>
 
 <div class="page-header">
@@ -98,21 +97,42 @@ require_once '../includes/header.php';
 <div class="payment-container">
     <div class="payment-details">
         <h3>Detail Tagihan</h3>
-        <p>Kode Pemesanan: <strong><?= htmlspecialchars($booking['kode_pemesanan']) ?></strong></p>
-        <p>Mobil: <strong><?= htmlspecialchars($booking['merk'] . ' ' . $booking['model']) ?></strong></p>
-        <p>Total Pembayaran:</p>
-        <h2 class="total-amount"><?= format_rupiah($booking['total_biaya']) ?></h2>
-        <hr>
-        <div class="timer-container payment-timer">
-            <h4>Sisa Waktu Pembayaran</h4>
-            <div id="countdown-timer" data-end-time="<?= $booking['batas_pembayaran'] ?>" data-action-on-expire="redirect"></div>
+        <div class="info-item">
+            <span class="label">Kode Pemesanan</span>
+            <strong class="value"><?= htmlspecialchars($booking['kode_pemesanan']) ?></strong>
+        </div>
+        <div class="info-item">
+            <span class="label">Mobil</span>
+            <strong class="value"><?= htmlspecialchars($booking['merk'] . ' ' . $booking['model']) ?></strong>
         </div>
         <hr>
-        <h3>Instruksi Pembayaran</h3>
-        <p>Silakan lakukan transfer ke rekening berikut:</p>
-        <ul><li><strong>BCA:</strong> 1234567890 a.n. Rental Mobil Keren</li></ul>
+
+        <h4>Rincian Biaya</h4>
+        <div class="info-item">
+            <span class="label">Durasi Sewa</span>
+            <span class="value"><?= $durasi_sewa ?> hari</span>
+        </div>
+        <div class="info-item">
+            <span class="label">Harga per Hari</span>
+            <span class="value"><?= format_rupiah($booking['harga_sewa_harian']) ?></span>
+        </div>
+        <div class="info-item">
+            <span class="label">Subtotal</span>
+            <span class="value"><?= format_rupiah($booking['total_biaya']) ?></span>
+        </div>
+        <hr>
+
+        <p>Total Pembayaran:</p>
+        <h2 class="total-amount"><?= format_rupiah($booking['total_biaya']) ?></h2>
     </div>
     <div class="payment-form">
+        <h3>Instruksi Pembayaran</h3>
+        <p>Silakan lakukan transfer ke rekening berikut:</p>
+        <ul>
+            <li><strong>BCA:</strong> 1234567890 a.n. Rental Mobil Keren</li>
+        </ul>
+        <br>
+        <hr>
         <h3>Unggah Bukti Pembayaran</h3>
         <form action="" method="POST" enctype="multipart/form-data">
             <div class="form-group">
@@ -122,10 +142,16 @@ require_once '../includes/header.php';
             <button type="submit" class="btn btn-primary">Konfirmasi Pembayaran</button>
             <a href="pemesanan.php" class="btn btn-secondary">Nanti Saja</a>
         </form>
+        <br>
+        <hr>
+        <div class="timer-container payment-timer">
+            <h4>Sisa Waktu Pembayaran</h4>
+            <div id="countdown-timer" data-end-time="<?= $booking['batas_pembayaran'] ?>" data-action-on-expire="redirect"></div>
+        </div>
     </div>
 </div>
 
-<?php 
+<?php
 require_once '../includes/footer.php';
-echo '<script src="'.BASE_URL.'assets/js/rental-timer.js"></script>';
+echo '<script src="' . BASE_URL . 'assets/js/rental-timer.js"></script>';
 ?>
